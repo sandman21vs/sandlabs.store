@@ -124,7 +124,7 @@
     if(cupom) msg+=`\nvim pelo (${cupom})`;
   
     const url=(plataforma==='whats')
-      ? `https://wa.me/5544997272087?text=${encodeURIComponent(msg)}`
+      ? `https://wa.me/41779786651?text=${encodeURIComponent(msg)}`
       : `https://t.me/SandLabs_21?text=${encodeURIComponent(msg)}`;
     window.open(url,'_blank');
   }

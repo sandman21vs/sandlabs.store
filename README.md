@@ -99,7 +99,7 @@ Loja open-source para vender hardware/peças relacionadas a Bitcoin. Você pode 
 - Arquivo: `js/compras.js`
 - Altere as constantes no topo:
   ```js
-  const WHATS = '5544997272087'; // seu número com DDI/DDD
+  const WHATS = '41779786651'; // seu número com DDI/DDD
   const TELEGRAM = 'SeuUsuarioOuCanal'; // ex.: 'SandLabs_21'
   ```
 - Esses contatos são usados pelos botões “WhatsApp/Telegram” dos modais.

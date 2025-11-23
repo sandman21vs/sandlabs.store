@@ -2,7 +2,7 @@
 // Finalização de compra automática baseada apenas no /js/produtos-data.js
 
 (function(){
-  const WHATS = '5544997272087';
+  const WHATS = '41779786651';
   const TELEGRAM = 'SandLabs_21';
 
   function findProductById(id){
