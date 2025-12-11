@@ -63,34 +63,42 @@ Loja open-source para vender hardware/peças relacionadas a Bitcoin. Você pode 
 
 ---
 
-## 🚀 Requisitos / Deploy
+## 🚀 Deploy
 
-- Site estático (Nginx ou qualquer CDN de arquivos estáticos).
-- Exemplo de stack:
-  1. **Portainer** para orquestrar container.
-  2. **Cloudflare Tunnel** para expor seu serviço com HTTPS.
-  3. **Imagem Nginx** servindo a pasta do site.
-
-### Docker com Nginx (nginx:latest)
-
-O `Dockerfile` já usa `nginx:latest`, copia o conteúdo do repositório para `/usr/share/nginx/html` e expõe essa pasta como volume para facilitar bind mounts.
-
+### Opção 1 — Docker com Nginx (nginx:latest)
+- O `Dockerfile` usa `nginx:latest`, copia o repositório para `/usr/share/nginx/html` e expõe essa pasta como volume.
+- Com o bind mount, editar os arquivos locais reflete direto no container:
 ```bash
 docker build -t sandlabs-site .
-docker run -d --name sandlabs-site -p 8080:80 -v "$(pwd)":/usr/share/nginx/html sandlabs-site
+docker run -d --name sandlabs-site -p 8080:80 \
+  -v "$(pwd)":/usr/share/nginx/html \
+  sandlabs-site
 ```
+- Se preferir a imagem fechada (sem bind), remova o `-v` e recrie o container a cada mudança.
 
-> Com o bind mount, qualquer alteração nos arquivos locais reflete automaticamente no container; sem o mount, a imagem já leva todos os arquivos do site.
+### Opção 2 — Nginx instalado no host (sem Docker)
+1) Instale Nginx (ex.: `sudo apt install nginx`).  
+2) Limpe a pasta pública (ex.: `/var/www/html` ou `/usr/share/nginx/html`):  
+   `sudo rm -rf /var/www/html/*`  
+3) Copie o conteúdo do repositório para lá:  
+   `sudo cp -r . /var/www/html`  
+4) Garanta que o site está servindo na porta 80 (server block padrão do Nginx já atende).  
+5) Sempre que editar o site, copie os arquivos novamente ou use um deploy/rsync.
 
-> Em breve tutoriais detalhados. Enquanto isso, para testes locais, você pode rodar um servidor simples:
->
-> ```bash
-> # Python 3
-> python -m http.server 8080
-> # Acesse http://localhost:8080
-> ```
+> Para teste rápido local sem Nginx: `python -m http.server 8080` e acesse http://localhost:8080
 
 ---
+
+## 🛠️ Painel web de configuração (config.html)
+
+- A página não aparece no menu; acesse diretamente `/config.html` (admins).
+- Edite **contatos (Whats/Telegram)** e o catálogo (JSON de `js/produtos-data.js`) via interface.
+- **Salvar** grava no `localStorage` do navegador atual (só vale para quem usou o painel).
+- **Exportar produtos-data.js** baixa um arquivo já atualizado; substitua `js/produtos-data.js` no host ou dentro do container/volume.
+  - Docker com bind mount: basta salvar o arquivo exportado sobre `js/produtos-data.js` na pasta montada.
+  - Docker sem bind/host: copie o arquivo para `/usr/share/nginx/html/js/produtos-data.js` (container) ou `/var/www/html/js/` (host).
+- **Recarregar do arquivo** ignora overrides salvos e mostra o conteúdo original do repositório.
+- **Resetar** remove os overrides do `localStorage` e volta a usar os valores padrão do arquivo.
 
 ## 🧩 Personalização rápida (nome, logo, contatos)
 

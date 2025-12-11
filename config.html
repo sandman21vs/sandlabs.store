@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sandlabs — Configuração</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body class="theme-dark">
+  <div class="bg-blobs" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+  </div>
+
+  <header class="site-header glass">
+    <a class="brand" href="index.html">
+      <img src="images/logo.png" alt="Logo Sandlabs" class="brand-logo"/>
+      <span class="brand-name">Sandlabs</span>
+    </a>
+    <nav class="site-nav">
+      <a class="nav-link" href="index.html">Início</a>
+      <a class="nav-link" href="sobre.html">Sobre</a>
+      <a class="nav-link" href="produtos.html">Produtos</a>
+      <a class="nav-link" href="termos.html">Termos</a>
+      <a class="nav-link" href="suporte.html">Suporte</a>
+      <a class="nav-link active" href="config.html">Config</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="section-head">
+        <h1 class="section-title">Configuração via navegador</h1>
+        <p class="section-sub">Edite contatos e catálogo sem abrir código. Salvamos no localStorage ou exporte o arquivo para deploy.</p>
+      </div>
+
+      <div class="grid" style="max-width:var(--maxw);margin:0 auto;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4)">
+        <article class="card soft-shadow" style="padding:var(--space-4);">
+          <h3 style="font-size:1.2rem;margin-bottom:1rem;">Contatos</h3>
+          <label class="form-field" style="display:block;margin-bottom:1rem;">
+            <span class="muted" style="display:block;margin-bottom:.35rem;">WhatsApp (somente números, com DDI/DDD)</span>
+            <input id="cfg-whats" type="text" placeholder="5541..." style="width:100%;padding:.65rem;border-radius:8px;border:1px solid #333;background:#0f0f0f;color:#fff;">
+          </label>
+          <label class="form-field" style="display:block;margin-bottom:1rem;">
+            <span class="muted" style="display:block;margin-bottom:.35rem;">Telegram (@username)</span>
+            <input id="cfg-tele" type="text" placeholder="SeuUsuario" style="width:100%;padding:.65rem;border-radius:8px;border:1px solid #333;background:#0f0f0f;color:#fff;">
+          </label>
+          <p class="muted" style="font-size:.9rem;">Usado nos botões de compra (Whats/Tele) e na página de suporte.</p>
+        </article>
+
+        <article class="card soft-shadow" style="padding:var(--space-4);">
+          <h3 style="font-size:1.2rem;margin-bottom:1rem;">Ações rápidas</h3>
+          <div style="display:flex;flex-direction:column;gap:.5rem;">
+            <button class="btn btn-accent" type="button" id="btn-save">Salvar no navegador</button>
+            <button class="btn btn-ghost" type="button" id="btn-export">Exportar produtos-data.js</button>
+            <button class="btn btn-ghost" type="button" id="btn-reset">Resetar para padrão</button>
+          </div>
+          <p class="muted" style="margin-top:1rem;font-size:.9rem;">Salvar grava no <strong>localStorage</strong> do navegador atual. Use o botão de exportar para atualizar o arquivo no servidor/docker.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">Catálogo</h2>
+        <p class="section-sub">O formato segue o arquivo <code>js/produtos-data.js</code>. Edite os objetos JSON abaixo para criar, atualizar ou remover produtos.</p>
+        <div class="actions" style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.75rem;">
+          <button class="btn btn-accent" type="button" id="btn-add">Adicionar produto</button>
+          <button class="btn btn-ghost" type="button" id="btn-refresh">Recarregar do arquivo</button>
+        </div>
+      </div>
+
+      <div id="config-status" class="muted" style="margin-bottom:1rem;"></div>
+      <div id="product-list" class="stack-lg"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p class="muted">As alterações são locais. Exporte o arquivo para aplicar em produção.</p>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/produtos-data.js"></script>
+  <script src="js/config-store.js"></script>
+  <script src="js/config-page.js"></script>
+</body>
+</html>

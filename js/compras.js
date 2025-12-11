@@ -2,8 +2,15 @@
 // Finalização de compra automática baseada apenas no /js/produtos-data.js
 
 (function(){
-  const WHATS = '41779786651';
-  const TELEGRAM = 'SandLabs_21';
+  const contacts = window.CONTACTS
+    || (window.CONFIG && (CONFIG.contacts || {
+      whatsapp: CONFIG.whatsappNumber,
+      telegram: CONFIG.telegramUsername
+    }))
+    || { whatsapp:'41779786651', telegram:'SandLabs_21' };
+
+  const WHATS = contacts.whatsapp || '41779786651';
+  const TELEGRAM = contacts.telegram || 'SandLabs_21';
 
   function findProductById(id){
     const list = (window.PRODUTOS || []);
