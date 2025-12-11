@@ -71,6 +71,17 @@ Loja open-source para vender hardware/peças relacionadas a Bitcoin. Você pode 
   2. **Cloudflare Tunnel** para expor seu serviço com HTTPS.
   3. **Imagem Nginx** servindo a pasta do site.
 
+### Docker com Nginx (nginx:latest)
+
+O `Dockerfile` já usa `nginx:latest`, copia o conteúdo do repositório para `/usr/share/nginx/html` e expõe essa pasta como volume para facilitar bind mounts.
+
+```bash
+docker build -t sandlabs-site .
+docker run -d --name sandlabs-site -p 8080:80 -v "$(pwd)":/usr/share/nginx/html sandlabs-site
+```
+
+> Com o bind mount, qualquer alteração nos arquivos locais reflete automaticamente no container; sem o mount, a imagem já leva todos os arquivos do site.
+
 > Em breve tutoriais detalhados. Enquanto isso, para testes locais, você pode rodar um servidor simples:
 >
 > ```bash
