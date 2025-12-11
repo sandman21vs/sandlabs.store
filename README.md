@@ -75,6 +75,17 @@ docker run -d --name sandlabs-site -p 8080:80 \
   sandlabs-site
 ```
 - Se preferir a imagem fechada (sem bind), remova o `-v` e recrie o container a cada mudança.
+- Atualização automática opcional:
+  - A imagem instala `git` e `rsync` e usa `/entrypoint.sh` para sincronizar o conteúdo antes de subir o Nginx.
+  - Defina `REPO_URL` (ex.: `https://github.com/seuuser/sandlabs.store.git`) e, opcionalmente, `REPO_BRANCH` (padrão `main`). Exemplo:
+  ```bash
+  docker run -d --name sandlabs-site -p 8080:80 \
+    -e REPO_URL=https://github.com/seuuser/sandlabs.store.git \
+    -e REPO_BRANCH=main \
+    -v "$(pwd)":/usr/share/nginx/html \
+    sandlabs-site
+  ```
+  - Para desativar a checagem: `-e AUTO_UPDATE=false`.
 
 ### Opção 2 — Nginx instalado no host (sem Docker)
 1) Instale Nginx (ex.: `sudo apt install nginx`).  
