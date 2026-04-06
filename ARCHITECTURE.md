@@ -12,18 +12,21 @@ O sandlabs.store esta sendo convertido de um site estatico (HTML/CSS/JS puro ser
 
 ---
 
-## Estado Atual (Fase 3 Completa)
+## Estado Atual (Fase 4 Completa)
 
-As Fases 1, 2 e 3 ja foram implementadas. O projeto ja possui:
+As Fases 1, 2, 3 e 4 ja foram implementadas. O projeto ja possui:
 
 - Flask servindo as paginas publicas com rotas limpas e redirects `.html` legados
 - Produtos servidos do SQLite e injetados no frontend como `window.PRODUTOS`
 - Carrinho com sessao anonima, endpoints JSON, badge no header e pagina `/carrinho`
+- Autenticacao com registro/login/logout, CSRF global, headers de seguranca e area `/account/orders`
 
 ### Registro de execucao
 
 - Fase 2 executada no commit `c9a024f` — banco SQLite, inicializacao, model de produtos e seed
 - Fase 3 executada no commit `62d7383` — carrinho, APIs `/api/cart`, badge no header e pagina `/carrinho`
+- Fase 4 executada no commit `e6a403d` — autenticacao, CSRF, bootstrap de admin e area de pedidos
+- Suite de testes apos Fase 4: `pytest tests/ -v` -> `135 passed`
 
 ### Convencao de rastreabilidade
 
@@ -1358,7 +1361,7 @@ Fase 1 (Flask Skeleton) ........... COMPLETA
   v
 Fase 2 (Database + Produtos) ...... COMPLETA
   |
-  +---> Fase 3 (Carrinho) [COMPLETA] ---> Fase 4 (Auth) -------> Fase 5 (Pagamento) -------> Fase 6 (Frete)
+  +---> Fase 3 (Carrinho) [COMPLETA] ---> Fase 4 (Auth) [COMPLETA] ---> Fase 5 (Pagamento) -------> Fase 6 (Frete)
   |
   +---> Fase 7 (Admin) [inicia apos Fase 2, completa apos Fase 5 para views de pagamento]
   |
@@ -1373,6 +1376,57 @@ Fase 9 (Polish) [apos todas as demais]
 
 **Fases estritamente sequenciais:**
 - Fase 3 -> Fase 4 -> Fase 5 -> Fase 6
+
+---
+
+## Regras de Workflow para Agentes
+
+### 1. Testes devem ser executados por um agente de menor custo
+
+Apos cada fase ou alteracao significativa, os testes automatizados devem ser executados por um **subagente mais barato** (ex: Claude Haiku, `subagent_type: "general-purpose"` com `model: "haiku"`). Isso reduz custo sem sacrificar validacao.
+
+```bash
+python -m pytest tests/ -v
+```
+
+O agente principal (Opus/Sonnet) **nao deve gastar tokens rodando testes** — deve delegar para o subagente barato.
+
+### 2. Gate de fase: testes devem passar antes de avancar
+
+Uma fase so e considerada **completa** e a proxima fase so pode **iniciar** quando:
+
+- Todos os testes existentes passam com **0 falhas** (`python -m pytest tests/ -v`)
+- Novos testes foram adicionados para cobrir a funcionalidade da fase recem-implementada
+- O resultado do pytest e reportado ao usuario
+
+Se algum teste falhar, o agente deve **corrigir o codigo** ate que todos passem antes de prosseguir.
+
+### 3. Commit git obrigatorio por fase
+
+Cada fase ou bloco relevante de alteracoes deve ser finalizado com um **commit git separado** usando o git do usuario:
+
+```bash
+git add <arquivos relevantes>
+git commit -m "Fase N: descricao curta do que foi feito"
+```
+
+**Regras:**
+- Mensagem de commit descritiva, indicando a fase e o que mudou
+- Nunca acumular multiplas fases em um unico commit
+- Apos o commit, atualizar este `ARCHITECTURE.md` para registrar o hash do commit e marcar a fase como completa
+- O commit so deve ser feito **apos os testes passarem** (regra 2)
+
+### Resumo do fluxo por fase
+
+```
+1. Implementar codigo da fase N
+2. Escrever/atualizar testes para fase N
+3. Delegar execucao de testes para subagente barato (Haiku)
+4. Se falhou: corrigir → voltar ao passo 3
+5. Se passou: git commit com mensagem descritiva
+6. Atualizar ARCHITECTURE.md (hash do commit, estado da fase)
+7. Iniciar fase N+1
+```
 
 ---
 
