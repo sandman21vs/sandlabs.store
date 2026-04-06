@@ -49,6 +49,23 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 - Cada fase ou bloco relevante de alteracoes deve ser finalizado em commit separado, com mensagem descritiva.
 - Apos concluir uma fase, atualizar este `ARCHITECTURE.md` para refletir o estado atual e registrar que a fase foi executada.
 
+### Estado atual do pricing
+
+- O schema `product_prices` aceita dois modos: `pricing_mode='sats'` ou `pricing_mode='fiat'`.
+- Para precos em fiat, o banco guarda `currency_code` e `amount_fiat`; o valor em sats e resolvido no carrinho e no checkout usando a cotacao BTC atual.
+- A UI do admin hoje esta priorizada para `SATS` e `CHF`, que cobrem o fluxo operacional atual da loja.
+- O backend ja esta preparado para outras moedas fiat suportadas pelo service de cotacao, hoje: `USD`, `BRL` e `EUR`.
+- Produtos legados com `display_text` antigo continuam sendo interpretados pelo backend para evitar quebra de compatibilidade.
+- O pedido continua sendo fechado em sats no momento da compra, ou seja: o valor Lightning cobrado e sempre um snapshot da cotacao daquele instante.
+
+### Roadmap sugerido para futuras adicoes
+
+1. Expandir a UI do admin para permitir selecao explicita de `USD`, `BRL`, `EUR` e outras moedas suportadas, em vez de expor so `CHF` e `SATS`.
+2. Persistir no `order_items` um snapshot completo do preco no momento da compra: `pricing_mode`, `currency_code`, `amount_fiat`, `btc_rate_used` e `unit_sats_resolved`, para auditoria e rastreabilidade historica.
+3. Adicionar cache/telemetria de cotacao com fallback controlado no admin, para que a loja sinalize claramente quando a conversao fiat -> sats estiver indisponivel.
+4. Permitir exibicao multi-moeda no frontend publico: por exemplo mostrar `CHF + sats` agora e futuramente alternar para `USD`, `EUR`, `BRL` por configuracao global ou preferencia do visitante.
+5. Criar testes especificos para regressao de moedas futuras, cobrindo parser legados, arredondamento decimal, snapshot de pedido e indisponibilidade do feed de preco.
+
 ### Arquivos ja criados
 
 ```
