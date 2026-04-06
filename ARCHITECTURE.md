@@ -25,9 +25,10 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 - Calculo de frete Post.ch integrado ao checkout, com conversao CHF -> sats via `service_btc_price.py`
 - Painel admin para produtos, pedidos e configuracoes, com tracking/status de pedidos alinhados ao schema atual
 - Configuracoes do Coinos persistidas no SQLite via `/admin/setup` e `/admin/settings`, com prioridade sobre o `.env` durante o runtime de checkout e webhook
+- Pricing dinamico por moeda: cada `product_price` pode ser salvo em `SATS` ou fiat; no momento da compra, valores em CHF sao convertidos para sats usando a cotacao BTC atual
 - Galeria e cards usando thumbnails WebP em `static/images/thumb/`, com fallback para a imagem original e geracao automatica em uploads do admin
 - Flash messages globais, metadados SEO/Open Graph, endpoint `/health`, logging adicional em checkout/admin, Docker multi-stage com usuario non-root e healthcheck
-- Exibicao de sats ao lado dos precos em BRL no payload `window.PRODUTOS`, e limpeza dos arquivos HTML/CSS/JS/imagens legados da raiz do repositorio
+- Exibicao de sats ao lado dos precos fiat no payload `window.PRODUTOS`, e limpeza dos arquivos HTML/CSS/JS/imagens legados da raiz do repositorio
 
 ### Registro de execucao
 
@@ -40,7 +41,8 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 - Fase 8 executada no commit `f4dff62` — service de thumbnails, script batch, frontend servindo thumbs e 44 thumbnails gerados
 - Fase 9 executada no commit `790ae88` — polish final, SEO, `/health`, Docker de producao, precos em sats e limpeza dos legados da raiz
 - Ajuste pos-Fase 9 executado no commit `32a38f2` — setup inicial estilo wizard, Coinos configuravel via UI e runtime alinhado ao banco
-- Suite de testes apos o ajuste pos-Fase 9: `pytest tests/ -q` -> `193 passed`
+- Ajuste pos-Fase 9 executado no commit `46a116d` — pricing multi-moeda com conversao dinamica fiat -> sats no carrinho e checkout
+- Suite de testes apos o ajuste de pricing: `pytest tests/ -q` -> `201 passed`
 
 ### Convencao de rastreabilidade
 
@@ -66,6 +68,7 @@ routes/
 models/__init__.py         # Vazio (pacote)
 models/model_config.py     # Config key-value com fallback para env, setup inicial e Coinos runtime
 services/__init__.py       # Vazio (pacote)
+services/service_pricing.py # Resolucao de preco em SATS/fiat e conversao dinamica para sats
 
 templates/
   base.html                # Layout Jinja2 (header/nav/footer/bg-blobs, block content/scripts/footer)
@@ -152,8 +155,11 @@ CREATE TABLE IF NOT EXISTS product_prices (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     product_id  TEXT NOT NULL,
     label       TEXT NOT NULL,             -- 'Jade DIY', 'Box de Protecao'
-    amount_sats INTEGER NOT NULL,          -- preco canonico em satoshis
-    display_text TEXT NOT NULL,            -- 'R$ 230' ou '5 000 sats'
+    amount_sats INTEGER NOT NULL,          -- usado diretamente quando pricing_mode='sats'
+    pricing_mode TEXT,                     -- 'sats' ou 'fiat'
+    currency_code TEXT,                    -- 'SATS', 'CHF', 'USD', 'BRL', 'EUR'...
+    amount_fiat TEXT,                      -- valor fiat como decimal string
+    display_text TEXT NOT NULL,            -- 'CHF 149.00' ou '5 000 sats'
     sort_order  INTEGER DEFAULT 0,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
@@ -320,7 +326,7 @@ Produtos atuais (IDs): `jade`, `pico`, `nerd`, `sandseed`, `krux`, `kruxcase`, `
 
 Cores atuais (de `static/js/config.js`): `amarelo`, `azul`, `laranja`, `preto`, `translucido`, `vermelho`.
 
-**Nota sobre precos em sats:** Os precos atuais sao em BRL (ex: "R$ 230"). Para `amount_sats`, usar um valor aproximado baseado na taxa do momento ou deixar como 0 para o admin atualizar depois. O campo `display_text` preserva o texto original.
+**Nota sobre pricing dinamico:** `amount_sats` continua existindo para precos nativos em sats, mas precos fiat agora podem ser salvos com `pricing_mode='fiat'`, `currency_code` e `amount_fiat`. Nesses casos, carrinho e checkout resolvem o valor em sats no momento da compra. A UI do admin foi priorizada para `CHF` e `SATS`, mas a base ja aceita extensao futura para `USD`, `BRL`, `EUR` e outras moedas.
 
 #### Alteracoes em `routes/routes_public.py`
 
@@ -1100,7 +1106,7 @@ GET /admin/products/new
 POST /admin/products/new
     Formulario de criacao de produto
     Campos: id (slug), nome, resumo, detalhes_html, peso, buy_button_text, allow_addon_seed, badge
-    Precos: lista dinamica (label + display_text + amount_sats)
+    Precos: lista dinamica (label + currency_code + amount_sats/amount_fiat + preview)
     Opcoes: lista dinamica (tipo + config JSON)
     Upload de imagens: multiplos arquivos PNG
     Ao salvar: INSERT no banco + salvar imagens em static/images/ + gerar thumbnail (se Fase 8 implementada)
