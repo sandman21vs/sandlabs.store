@@ -250,6 +250,38 @@ class TestAdminOrders:
         resp = admin_client.get("/admin/orders/99999")
         assert resp.status_code == 302
 
+    def test_update_order_status_with_tracking(self, admin_client, csrf_headers, seeded_product, db_conn):
+        cursor = db_conn.execute(
+            """
+            INSERT INTO orders (
+                user_id, session_id, status, total_sats, shipping_sats,
+                shipping_name, shipping_address, shipping_postal_code, shipping_country
+            ) VALUES (1, 'admin-session', 'paid', 10000, 0, 'Buyer', 'Street 1', '8000', 'CH')
+            """
+        )
+        order_id = cursor.lastrowid
+        db_conn.execute(
+            """
+            INSERT INTO order_items (order_id, product_id, price_id, quantity, unit_sats, options_json)
+            VALUES (?, ?, ?, 1, ?, '{}')
+            """,
+            (order_id, seeded_product["id"], seeded_product["prices"][0]["id"], seeded_product["prices"][0]["amount_sats"]),
+        )
+        db_conn.commit()
+
+        resp = _form(admin_client, csrf_headers, f"/admin/orders/{order_id}/status", {
+            "status": "shipped",
+            "tracking": "CH123456789CH",
+        })
+        assert resp.status_code == 302
+
+        row = db_conn.execute(
+            "SELECT status, shipping_tracking FROM orders WHERE id = ?",
+            (order_id,),
+        ).fetchone()
+        assert row["status"] == "shipped"
+        assert row["shipping_tracking"] == "CH123456789CH"
+
 
 # ── Settings ──────────────────────────────────────────────────────────────────
 

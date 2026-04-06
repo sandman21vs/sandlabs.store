@@ -16,6 +16,11 @@ import db
 from models.model_products import (create_product, delete_product,
                                     get_product_by_id, update_product)
 from models.model_products import _PRODUCT_SELECT, _row_to_product, _load_related_records
+from models.model_orders import (
+    get_order as get_order_record,
+    set_order_tracking,
+    update_order_status,
+)
 from routes.auth_utils import admin_required
 
 logger = logging.getLogger(__name__)
@@ -339,10 +344,11 @@ def orders():
 @admin.route("/orders/<int:order_id>")
 @admin_required
 def order_detail(order_id):
-    order, items = _get_order_with_items(order_id)
+    order = get_order_record(order_id)
     if not order:
         flash("Pedido não encontrado.", "error")
         return redirect(url_for("admin.orders"))
+    items = order.get("items", [])
     return render_template("admin/order_detail.html",
                            order=order,
                            items=items,
@@ -359,21 +365,9 @@ def order_status(order_id):
         flash("Status inválido.", "error")
         return redirect(url_for("admin.order_detail", order_id=order_id))
 
-    conn = db.get_db()
-    try:
-        with conn:
-            if tracking:
-                conn.execute(
-                    "UPDATE orders SET status=?, tracking_code=? WHERE id=?",
-                    (new_status, tracking, order_id),
-                )
-            else:
-                conn.execute(
-                    "UPDATE orders SET status=? WHERE id=?",
-                    (new_status, order_id),
-                )
-    finally:
-        conn.close()
+    update_order_status(order_id, new_status)
+    if tracking:
+        set_order_tracking(order_id, tracking)
 
     flash(f"Status atualizado para '{new_status}'.", "success")
     return redirect(url_for("admin.order_detail", order_id=order_id))

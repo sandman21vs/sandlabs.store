@@ -31,9 +31,9 @@
         <dt class="muted">Invoice hash</dt>
         <dd style="font-family:monospace;font-size:.78rem;word-break:break-all">{{ order.invoice_hash }}</dd>
         {% endif %}
-        {% if order.tracking_code %}
+        {% if order.shipping_tracking %}
         <dt class="muted">Tracking</dt>
-        <dd><strong>{{ order.tracking_code }}</strong></dd>
+        <dd><strong>{{ order.shipping_tracking }}</strong></dd>
         {% endif %}
       </dl>
     </div>
@@ -44,9 +44,7 @@
       <address style="font-style:normal;font-size:.9rem;line-height:1.7">
         {% if order.shipping_name %}<strong>{{ order.shipping_name }}</strong><br>{% endif %}
         {% if order.shipping_address %}{{ order.shipping_address }}<br>{% endif %}
-        {% if order.shipping_city %}{{ order.shipping_city }}{% endif %}
-        {% if order.shipping_postal %}{{ ' — ' ~ order.shipping_postal }}{% endif %}
-        {% if order.shipping_city or order.shipping_postal %}<br>{% endif %}
+        {% if order.shipping_postal_code %}{{ order.shipping_postal_code }}<br>{% endif %}
         {% if order.shipping_country %}<span class="muted">{{ order.shipping_country }}</span>{% endif %}
       </address>
     </div>
@@ -70,7 +68,7 @@
         <div class="form-group">
           <label>Código de rastreamento (opcional)</label>
           <input type="text" name="tracking" class="form-input"
-                 placeholder="CH000000000CH" value="{{ order.tracking_code or '' }}">
+                 placeholder="CH000000000CH" value="{{ order.shipping_tracking or '' }}">
         </div>
         <button type="submit" class="btn btn-accent btn-sm">Salvar status</button>
       </form>
