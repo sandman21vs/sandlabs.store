@@ -12,9 +12,9 @@ O sandlabs.store esta sendo convertido de um site estatico (HTML/CSS/JS puro ser
 
 ---
 
-## Estado Atual (Fase 7 Completa)
+## Estado Atual (Fase 8 Completa)
 
-As Fases 1, 2, 3, 4, 5, 6 e 7 ja foram implementadas. O projeto ja possui:
+As Fases 1, 2, 3, 4, 5, 6, 7 e 8 ja foram implementadas. O projeto ja possui:
 
 - Flask servindo as paginas publicas com rotas limpas e redirects `.html` legados
 - Produtos servidos do SQLite e injetados no frontend como `window.PRODUTOS`
@@ -23,6 +23,7 @@ As Fases 1, 2, 3, 4, 5, 6 e 7 ja foram implementadas. O projeto ja possui:
 - Checkout autenticado com criacao de pedidos, invoice Lightning via Coinos, QR code, polling e webhook de confirmacao
 - Calculo de frete Post.ch integrado ao checkout, com conversao CHF -> sats via `service_btc_price.py`
 - Painel admin para produtos, pedidos e configuracoes, com tracking/status de pedidos alinhados ao schema atual
+- Galeria e cards usando thumbnails WebP em `static/images/thumb/`, com fallback para a imagem original e geracao automatica em uploads do admin
 
 ### Registro de execucao
 
@@ -32,7 +33,8 @@ As Fases 1, 2, 3, 4, 5, 6 e 7 ja foram implementadas. O projeto ja possui:
 - Fase 5 executada no commit `2019500` — checkout, criacao de orders, invoice Coinos, QR, polling e webhook
 - Fase 6 executada no commit `ebcea21` e integrada ao checkout no commit `2019500` — calculo de frete Post.ch + conversao BTC/CHF
 - Fase 7 executada no commit `394588e` e corrigida no commit `5e069ee` — painel admin e alinhamento do tracking/status ao schema de pedidos
-- Suite de testes apos Fase 7: `pytest tests/ -q` -> `178 passed`
+- Fase 8 executada no commit `f4dff62` — service de thumbnails, script batch, frontend servindo thumbs e 44 thumbnails gerados
+- Suite de testes apos Fase 8: `pytest tests/ -q` -> `182 passed`
 
 ### Convencao de rastreabilidade
 
@@ -1371,7 +1373,7 @@ Fase 2 (Database + Produtos) ...... COMPLETA
   |
   +---> Fase 7 (Admin) [COMPLETA]
   |
-  +---> Fase 8 (Imagens) [independente, pode rodar em paralelo com qualquer fase apos Fase 2]
+  +---> Fase 8 (Imagens) [COMPLETA]
 
 Fase 9 (Polish) [apos todas as demais]
 ```
