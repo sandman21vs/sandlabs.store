@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Início{% endblock %}
+
+{% block content %}
+    <section class="hero hero-with-bg">
+      <div class="hero-inner glass soft-shadow">
+        <div class="hero-badge">open source &bull; self-custody &bull; seguran&ccedil;a</div>
+        <h1 class="hero-title">Dinheiro seguro, soberania real.</h1>
+        <p class="hero-subtitle">
+          Hardware wallets e acess&oacute;rios com transpar&ecirc;ncia, est&eacute;tica e foco na sua liberdade.
+        </p>
+        <div class="hero-cta">
+          <a href="{{ url_for('public.produtos') }}" class="btn btn-accent">Ver produtos</a>
+          <a href="{{ url_for('public.sobre') }}" class="btn btn-ghost">Saiba mais</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">Destaques</h2>
+        <p class="section-sub">Escolha o seu caminho para a autocust&oacute;dia.</p>
+      </div>
+      <div id="home-products" class="grid cards-3"></div>
+    </section>
+
+    <section class="section section-cta">
+      <div class="cta glass soft-shadow">
+        <h3>Pronto para assumir o controle?</h3>
+        <p>Monte seu pedido, escolha cores e finalize por WhatsApp ou Telegram.</p>
+        <a class="btn btn-accent" href="{{ url_for('public.produtos') }}">Come&ccedil;ar agora</a>
+      </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/produtos-data.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/config-store.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/render-home.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/cupom.js') }}"></script>
+{% endblock %}

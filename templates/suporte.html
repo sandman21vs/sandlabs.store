@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Suporte{% endblock %}
+
+{% block content %}
+    <section class="section">
+      <div class="section-head">
+        <h1 class="section-title">Suporte</h1>
+        <p class="section-sub">Escolha um canal e fale diretamente comigo.</p>
+      </div>
+
+      <div class="grid cards-3">
+        <article class="card soft-shadow hover-lift">
+          <div class="card-body">
+            <h3 class="card-title">WhatsApp</h3>
+            <p class="card-text">Conversa r&aacute;pida e direta.</p>
+            <a class="btn btn-accent" href="https://wa.me/41779786651" data-contact="whats" target="_blank" rel="noopener">Abrir WhatsApp</a>
+          </div>
+        </article>
+
+        <article class="card soft-shadow hover-lift">
+          <div class="card-body">
+            <h3 class="card-title">Telegram</h3>
+            <p class="card-text">Atendimento e atualiza&ccedil;&otilde;es.</p>
+            <a class="btn btn-accent" href="https://t.me/SandLabs_21" data-contact="tele" target="_blank" rel="noopener">Abrir Telegram</a>
+          </div>
+        </article>
+
+        <article class="card soft-shadow hover-lift">
+          <div class="card-body">
+            <h3 class="card-title">Twitter / X</h3>
+            <p class="card-text">Novidades, bastidores e dicas.</p>
+            <a class="btn btn-accent" href="https://x.com/SandLabs_21" target="_blank" rel="noopener">Abrir Twitter</a>
+          </div>
+        </article>
+      </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/config-store.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/contact-links.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/cupom.js') }}"></script>
+{% endblock %}

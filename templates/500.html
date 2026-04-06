@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Erro{% endblock %}
+
+{% block content %}
+    <section class="section" style="text-align:center;padding-top:6rem">
+      <h1 class="section-title">Erro interno</h1>
+      <p class="section-sub">Algo deu errado. Tente novamente mais tarde.</p>
+      <a href="{{ url_for('public.index') }}" class="btn btn-accent" style="margin-top:2rem">Voltar ao in&iacute;cio</a>
+    </section>
+{% endblock %}

@@ -1,28 +1,18 @@
-# Dockerfile
-FROM nginx:latest
+FROM python:3.12-slim
 
-WORKDIR /usr/share/nginx/html
+WORKDIR /app
 
-# Pacotes para atualização via Git
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends git rsync ca-certificates \
+  && apt-get install -y --no-install-recommends git \
   && rm -rf /var/lib/apt/lists/*
 
-# Remove o conteúdo padrão do Nginx
-RUN rm -rf /usr/share/nginx/html/*
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia os arquivos do site para o diretório público
-COPY . /usr/share/nginx/html
+COPY . .
 
-# Entrypoint customizado para puxar atualizações automáticas (opcional)
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN mkdir -p /app/data
 
-# Expõe a pasta estática como volume para facilitar edições com bind mount
-VOLUME ["/usr/share/nginx/html"]
+EXPOSE 8000
 
-# Expõe a porta HTTP
-EXPOSE 80
-
-# Sincroniza com repositório remoto (se REPO_URL definido) e inicia o Nginx
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "app:app"]

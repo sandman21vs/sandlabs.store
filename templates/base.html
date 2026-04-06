@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sandlabs — {% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  {% block head %}{% endblock %}
+</head>
+<body class="theme-dark">
+  <div class="bg-blobs" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+  </div>
+
+  <header class="site-header glass">
+    <a class="brand" href="{{ url_for('public.index') }}">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Sandlabs" class="brand-logo"/>
+      <span class="brand-name">Sandlabs</span>
+    </a>
+    <nav class="site-nav">
+      <a class="nav-link{{ ' active' if active == 'inicio' }}" href="{{ url_for('public.index') }}">In&iacute;cio</a>
+      <a class="nav-link{{ ' active' if active == 'sobre' }}" href="{{ url_for('public.sobre') }}">Sobre</a>
+      <a class="nav-link{{ ' active' if active == 'produtos' }}" href="{{ url_for('public.produtos') }}">Produtos</a>
+      <a class="nav-link{{ ' active' if active == 'termos' }}" href="{{ url_for('public.termos') }}">Termos</a>
+      <a class="nav-link{{ ' active' if active == 'suporte' }}" href="{{ url_for('public.suporte') }}">Suporte</a>
+      {% if active == 'config' %}
+      <a class="nav-link active" href="{{ url_for('public.config_page') }}">Config</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    {% block footer %}
+    <p class="muted">&copy; Sandlabs &bull; Open source de ponta a ponta.</p>
+    {% endblock %}
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/config.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

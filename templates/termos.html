@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Termos{% endblock %}
+
+{% block content %}
+    <section class="section">
+      <div class="section-head">
+        <h1 class="section-title">Termos</h1>
+        <p class="section-sub">Condi&ccedil;&otilde;es resumidas de pagamento, envio e privacidade.</p>
+      </div>
+
+      <div class="grid" style="max-width:var(--maxw);margin:0 auto;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4)">
+        <article class="card soft-shadow" style="padding:var(--space-4);">
+          <h3 style="font-size:1.25rem;margin-bottom:.75rem">Pagamentos</h3>
+          <ul style="color:#d6d6d6;line-height:1.7">
+            <li>Pagamento preferencial via <strong>Bitcoin</strong>.</li>
+            <li>Pagamentos em moeda fiduci&aacute;ria: acr&eacute;scimo de <strong>21%</strong>.</li>
+          </ul>
+        </article>
+
+        <article class="card soft-shadow" style="padding:var(--space-4);">
+          <h3 style="font-size:1.25rem;margin-bottom:.75rem">Envio &amp; Privacidade</h3>
+          <ul style="color:#d6d6d6;line-height:1.7">
+            <li>Dados pessoais coletados apenas para a remessa;</li>
+            <li>Ap&oacute;s a confirma&ccedil;&atilde;o de entrega, os dados s&atilde;o <strong>exclu&iacute;dos</strong>;</li>
+            <li>Produ&ccedil;&atilde;o <strong>sob demanda</strong> (at&eacute; 7 dias);</li>
+            <li>Rastreamento informado ao final da produ&ccedil;&atilde;o.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+{% endblock %}
+
+{% block footer %}
+    <p class="muted">Em caso de d&uacute;vidas, consulte a p&aacute;gina de <a href="{{ url_for('public.suporte') }}">suporte</a>.</p>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/cupom.js') }}"></script>
+{% endblock %}

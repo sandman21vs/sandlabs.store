@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Produtos{% endblock %}
+
+{% block content %}
+    <section class="section">
+      <div class="section-head">
+        <h1 class="section-title">Monte o seu</h1>
+        <p class="section-sub">Escolha cores, acess&oacute;rios e finalize por WhatsApp ou Telegram.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div id="produtos-container" class="stack-lg"></div>
+    </section>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox" aria-hidden="true">
+      <div class="lightbox-inner">
+        <button class="close-btn" data-action="close" aria-label="Fechar">&times;</button>
+        <figure class="lightbox-figure">
+          <img id="imagemModal" alt="Imagem expandida">
+        </figure>
+        <button class="nav-btn prev-btn" data-action="prev" aria-label="Anterior">&#10094;</button>
+        <button class="nav-btn next-btn" data-action="next" aria-label="Pr&oacute;xima">&#10095;</button>
+      </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <p class="muted">D&uacute;vidas? <a href="{{ url_for('public.suporte') }}">Fale conosco</a>.</p>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/produtos-data.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/config-store.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/cupom.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/lightbox.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/color-selector.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/compras.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/render-produtos.js') }}"></script>
+{% endblock %}
