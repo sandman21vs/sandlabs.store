@@ -1,0 +1,65 @@
+{% extends "admin/base_admin.html" %}
+{% set admin_section = "products" %}
+{% block title %}Produtos — Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+  <h1>Produtos</h1>
+  <a href="{{ url_for('admin.product_new') }}" class="btn btn-accent btn-sm">+ Novo produto</a>
+</div>
+
+{% if products %}
+<div class="admin-card">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Preço principal</th>
+        <th>Badge</th>
+        <th>Ordem</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+      <tr>
+        <td class="muted" style="font-family:monospace;font-size:.8rem">{{ p.id }}</td>
+        <td><strong>{{ p.name }}</strong></td>
+        <td class="muted">
+          {% if p.prices %}{{ p.prices[0].display_text }}{% else %}—{% endif %}
+        </td>
+        <td>
+          {% if p.badge_text %}
+          <span class="badge badge-active">{{ p.badge_text }}</span>
+          {% else %}—{% endif %}
+        </td>
+        <td class="muted">{{ p.sort_order }}</td>
+        <td>
+          <span class="badge {{ 'badge-active' if p.active else 'badge-inactive' }}">
+            {{ 'Ativo' if p.active else 'Inativo' }}
+          </span>
+        </td>
+        <td>
+          <div class="actions-row">
+            <a href="{{ url_for('admin.product_edit', product_id=p.id) }}" class="btn btn-ghost btn-sm">Editar</a>
+            <form method="post" action="{{ url_for('admin.product_delete', product_id=p.id) }}"
+                  onsubmit="return confirm('Remover produto \'{{ p.name }}\'?')">
+              <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+              <button type="submit" class="btn btn-danger btn-sm">Remover</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="admin-card" style="text-align:center;padding:var(--space-5)">
+  <p class="muted">Nenhum produto cadastrado.</p>
+  <a href="{{ url_for('admin.product_new') }}" class="btn btn-accent" style="margin-top:1rem">Criar primeiro produto</a>
+</div>
+{% endif %}
+{% endblock %}

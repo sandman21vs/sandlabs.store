@@ -1,0 +1,73 @@
+{% extends "admin/base_admin.html" %}
+{% set admin_section = "dashboard" %}
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+  <h1>Dashboard</h1>
+  <a href="{{ url_for('admin.product_new') }}" class="btn btn-accent btn-sm">+ Novo produto</a>
+</div>
+
+<div class="admin-stats">
+  <div class="stat-card">
+    <div class="stat-val">{{ stats.total_orders }}</div>
+    <div class="stat-label">Total de pedidos</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val">{{ "{:,}".format(stats.total_revenue_sats) }}</div>
+    <div class="stat-label">Receita (sats)</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val">{{ stats.pending_shipments }}</div>
+    <div class="stat-label">Aguardando envio</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val">{{ product_count }}</div>
+    <div class="stat-label">Produtos</div>
+  </div>
+</div>
+
+{% if stats.by_status %}
+<div class="admin-card" style="margin-bottom:var(--space-3)">
+  <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Pedidos por status</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:.75rem">
+    {% for status, data in stats.by_status.items() %}
+    <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:.5rem 1rem;text-align:center;min-width:100px">
+      <div style="font-size:1.3rem;font-weight:700">{{ data.count }}</div>
+      <span class="badge badge-{{ status }}">{{ status }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="admin-card">
+  <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Últimos pedidos</h3>
+  {% if recent_orders %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Data</th>
+        <th>Total (sats)</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in recent_orders %}
+      <tr>
+        <td>#{{ o.id }}</td>
+        <td class="muted">{{ o.created_at[:10] if o.created_at else '—' }}</td>
+        <td>{{ "{:,}".format(o.total_sats) }}</td>
+        <td><span class="badge badge-{{ o.status }}">{{ o.status }}</span></td>
+        <td><a href="{{ url_for('admin.order_detail', order_id=o.id) }}" class="btn btn-ghost btn-sm">Ver</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">Nenhum pedido ainda.</p>
+  {% endif %}
+</div>
+{% endblock %}

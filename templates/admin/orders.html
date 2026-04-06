@@ -1,0 +1,61 @@
+{% extends "admin/base_admin.html" %}
+{% set admin_section = "orders" %}
+{% block title %}Pedidos — Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+  <h1>Pedidos</h1>
+</div>
+
+<div class="admin-card" style="margin-bottom:var(--space-2)">
+  <form method="get" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+    <select name="status" class="form-input" style="width:auto;padding:.45rem .75rem">
+      <option value="">Todos os status</option>
+      {% for s in valid_statuses %}
+      <option value="{{ s }}" {{ 'selected' if status_filter == s }}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-ghost btn-sm">Filtrar</button>
+    {% if status_filter %}
+    <a href="{{ url_for('admin.orders') }}" class="btn btn-ghost btn-sm">Limpar</a>
+    {% endif %}
+  </form>
+</div>
+
+<div class="admin-card">
+  {% if orders %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Data</th>
+        <th>Session</th>
+        <th>Total (sats)</th>
+        <th>Frete (sats)</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td>#{{ o.id }}</td>
+        <td class="muted">{{ o.created_at[:10] if o.created_at else '—' }}</td>
+        <td class="muted" style="font-family:monospace;font-size:.8rem">
+          {{ o.session_id[:8] ~ '…' if o.session_id else '—' }}
+        </td>
+        <td>{{ "{:,}".format(o.total_sats) }}</td>
+        <td class="muted">{{ "{:,}".format(o.shipping_sats or 0) }}</td>
+        <td><span class="badge badge-{{ o.status }}">{{ o.status }}</span></td>
+        <td><a href="{{ url_for('admin.order_detail', order_id=o.id) }}" class="btn btn-ghost btn-sm">Ver</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted" style="text-align:center;padding:var(--space-4)">
+    {{ 'Nenhum pedido com status "' ~ status_filter ~ '".' if status_filter else 'Nenhum pedido ainda.' }}
+  </p>
+  {% endif %}
+</div>
+{% endblock %}

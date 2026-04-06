@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Setup Admin{% endblock %}
+
+{% block content %}
+<section class="section" style="max-width:480px;margin:0 auto">
+  <div class="section-head">
+    <h1 class="section-title">Criar conta admin</h1>
+    <p class="section-sub">Nenhum admin cadastrado. Configure a primeira conta para acessar o painel.</p>
+  </div>
+  {% if error %}
+  <div style="padding:.75rem 1rem;border-radius:8px;background:rgba(255,56,56,.1);border:1px solid rgba(255,56,56,.3);color:var(--accent);margin-bottom:1rem">{{ error }}</div>
+  {% endif %}
+  <form method="post" action="{{ url_for('admin.setup') }}" class="admin-card" style="background:var(--glass);border:1px solid var(--border);border-radius:var(--radius-sm);padding:2rem">
+    <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+    <div style="margin-bottom:1rem">
+      <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Nome</label>
+      <input type="text" name="name" value="Admin" required
+             style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
+    </div>
+    <div style="margin-bottom:1rem">
+      <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Email</label>
+      <input type="email" name="email" required
+             style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
+    </div>
+    <div style="margin-bottom:1rem">
+      <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Senha (mín. 8 caracteres)</label>
+      <input type="password" name="password" required minlength="8"
+             style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
+    </div>
+    <div style="margin-bottom:1.5rem">
+      <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Confirmar senha</label>
+      <input type="password" name="confirm" required
+             style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
+    </div>
+    <button type="submit" class="btn btn-accent" style="width:100%">Criar conta admin</button>
+  </form>
+</section>
+{% endblock %}

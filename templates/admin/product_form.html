@@ -1,0 +1,222 @@
+{% extends "admin/base_admin.html" %}
+{% set admin_section = "products" %}
+{% block title %}{{ 'Editar' if action == 'edit' else 'Novo' }} Produto — Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+  <h1>{{ 'Editar' if action == 'edit' else 'Novo produto' }}{% if product %}: {{ product.name }}{% endif %}</h1>
+  <a href="{{ url_for('admin.products') }}" class="btn btn-ghost btn-sm">← Voltar</a>
+</div>
+
+{% if error %}
+<div class="flash-msg flash-error">{{ error }}</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data"
+      action="{{ url_for('admin.product_edit', product_id=product.id) if action == 'edit' else url_for('admin.product_new') }}">
+  <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+  <input type="hidden" name="prices_json" id="prices_json" value="{{ product.prices | tojson if product else '[]' }}">
+  <input type="hidden" name="existing_images_json" id="existing_images_json"
+         value="{{ product.images | tojson if product else '[]' }}">
+
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:var(--space-3);align-items:start">
+
+    {# Left column: main fields #}
+    <div>
+      {% if action == 'new' %}
+      <div class="admin-card" style="margin-bottom:var(--space-2)">
+        <div class="form-group">
+          <label>ID do produto (slug único)</label>
+          <input class="form-input" type="text" name="id"
+                 placeholder="ex: jade, pico, sandseed" required pattern="[a-z0-9\-]+"
+                 title="Apenas letras minúsculas, números e hífen">
+          <span class="form-hint">Usado na URL e como chave no banco. Não pode ser alterado depois.</span>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="admin-card" style="margin-bottom:var(--space-2)">
+        <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Informações básicas</h3>
+        <div class="form-group">
+          <label>Nome</label>
+          <input class="form-input" type="text" name="name" required
+                 value="{{ product.name if product else '' }}">
+        </div>
+        <div class="form-group">
+          <label>Resumo</label>
+          <input class="form-input" type="text" name="summary"
+                 value="{{ product.summary if product else '' }}">
+        </div>
+        <div class="form-group">
+          <label>Detalhes (HTML)</label>
+          <textarea class="form-input" name="details_html" style="min-height:150px">{{ product.details_html if product else '' }}</textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Texto do botão de compra</label>
+            <input class="form-input" type="text" name="buy_button_text"
+                   value="{{ product.buy_button_text if product else 'Comprar' }}">
+          </div>
+          <div class="form-group">
+            <label>Peso (gramas)</label>
+            <input class="form-input" type="number" name="weight_grams" min="0"
+                   value="{{ product.weight_grams if product else 200 }}">
+          </div>
+          <div class="form-group">
+            <label>Ordem (sort)</label>
+            <input class="form-input" type="number" name="sort_order"
+                   value="{{ product.sort_order if product else 0 }}">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Badge texto</label>
+            <input class="form-input" type="text" name="badge_text"
+                   placeholder="Novo, Promo, Popular..."
+                   value="{{ product.badge_text or '' if product else '' }}">
+          </div>
+          <div class="form-group">
+            <label>Badge variante</label>
+            <select class="form-input" name="badge_variant">
+              <option value="">—</option>
+              {% for v in ['new', 'promo', 'neutral'] %}
+              <option value="{{ v }}" {{ 'selected' if product and product.badge_variant == v }}>{{ v }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
+          <input type="checkbox" class="form-input" name="allow_addon_seed" id="allow_addon_seed"
+                 {{ 'checked' if product and product.allow_addon_seed }}>
+          <label for="allow_addon_seed" style="margin-bottom:0">Allow addon seed</label>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
+          <input type="checkbox" class="form-input" name="active" id="active"
+                 {{ 'checked' if not product or product.active }}>
+          <label for="active" style="margin-bottom:0">Produto ativo (visível na loja)</label>
+        </div>
+      </div>
+
+      {# Prices #}
+      <div class="admin-card" style="margin-bottom:var(--space-2)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <h3 style="font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Preços</h3>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="addPriceRow()">+ Adicionar preço</button>
+        </div>
+        <div id="prices-list"></div>
+        <p class="form-hint">Cada produto pode ter múltiplos preços (ex: Com bateria, Sem bateria).</p>
+      </div>
+
+      {# Options #}
+      <div class="admin-card" style="margin-bottom:var(--space-2)">
+        <h3 style="margin-bottom:.5rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Opções (JSON)</h3>
+        <textarea class="form-input" name="options_json" id="options_json"
+                  style="min-height:160px;font-family:monospace;font-size:.82rem"
+                  placeholder='[{"type":"colorPair","title":"Cores","inputs":[{"name":"bodyColor","label":"Corpo"},{"name":"capColor","label":"Tampa"}]}]'
+        >{{ product.options | tojson(indent=2) if product else '[]' }}</textarea>
+        <span class="form-hint">Array JSON de opções. Tipos: colorPair, colorSingle, seedPack.</span>
+      </div>
+    </div>
+
+    {# Right column: images #}
+    <div>
+      <div class="admin-card" style="margin-bottom:var(--space-2)">
+        <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Imagens</h3>
+
+        {% if product and product.images %}
+        <div id="existing-images" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem">
+          {% for img in product.images %}
+          <div style="position:relative;display:inline-block" data-img="{{ img.filename }}">
+            <img src="{{ url_for('static', filename=img.filename) }}"
+                 style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border)"
+                 onerror="this.style.display='none'">
+            <button type="button" onclick="removeExistingImage(this)"
+                    style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--accent);border:none;color:#fff;cursor:pointer;font-size:.75rem;line-height:1">×</button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label>Fazer upload (PNG/JPG/WebP)</label>
+          <input type="file" name="product_images" multiple accept="image/png,image/jpeg,image/webp"
+                 class="form-input" style="padding:.4rem">
+        </div>
+        <div class="form-group">
+          <label>Ou caminhos de imagens existentes (um por linha)</label>
+          <textarea class="form-input" name="image_paths" rows="4"
+                    placeholder="images/jade1.png&#10;images/jade2.png"></textarea>
+          <span class="form-hint">Relativo à pasta static/</span>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:.5rem;flex-direction:column">
+        <button type="submit" class="btn btn-accent">
+          {{ 'Salvar alterações' if action == 'edit' else 'Criar produto' }}
+        </button>
+        <a href="{{ url_for('admin.products') }}" class="btn btn-ghost">Cancelar</a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ─── Prices management ───────────────────────────────────────────────────────
+let prices = {{ (product.prices | tojson) if product else '[]' }};
+
+function renderPrices() {
+  const list = document.getElementById('prices-list');
+  list.innerHTML = '';
+  prices.forEach((p, i) => {
+    list.innerHTML += `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;margin-bottom:.5rem;align-items:center">
+      <input class="form-input" placeholder="Label (ex: Com bateria)" value="${p.label||''}"
+             oninput="prices[${i}].label=this.value;syncPrices()">
+      <input class="form-input" type="number" placeholder="Sats" value="${p.amount_sats||''}"
+             oninput="prices[${i}].amount_sats=parseInt(this.value)||0;syncPrices()">
+      <input class="form-input" placeholder="Exibição (ex: 50 000 sats)" value="${p.display_text||''}"
+             oninput="prices[${i}].display_text=this.value;syncPrices()">
+      <button type="button" class="btn btn-danger btn-sm" onclick="removePrice(${i})">×</button>
+    </div>`;
+  });
+}
+
+function syncPrices() {
+  document.getElementById('prices_json').value = JSON.stringify(prices);
+}
+
+function addPriceRow() {
+  prices.push({label:'', amount_sats:0, display_text:''});
+  renderPrices();
+  syncPrices();
+}
+
+function removePrice(i) {
+  prices.splice(i, 1);
+  renderPrices();
+  syncPrices();
+}
+
+renderPrices();
+syncPrices();
+
+// ─── Existing images management ──────────────────────────────────────────────
+let existingImages = {{ (product.images | tojson) if product else '[]' }};
+
+function syncExistingImages() {
+  document.getElementById('existing_images_json').value = JSON.stringify(existingImages);
+}
+
+function removeExistingImage(btn) {
+  const div = btn.closest('[data-img]');
+  const fname = div.getAttribute('data-img');
+  existingImages = existingImages.filter(img => img.filename !== fname);
+  div.remove();
+  syncExistingImages();
+}
+
+syncExistingImages();
+</script>
+{% endblock %}

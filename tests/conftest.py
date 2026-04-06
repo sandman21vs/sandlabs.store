@@ -222,3 +222,31 @@ def test_user(tmp_db):
     finally:
         conn.close()
     return 1
+
+
+@pytest.fixture()
+def admin_user(tmp_db):
+    """Create an admin user and return (id, email, password)."""
+    from werkzeug.security import generate_password_hash
+    import db as db_mod
+    conn = db_mod.get_db()
+    try:
+        conn.execute(
+            "INSERT INTO users (email, display_name, password_hash, is_admin) VALUES (?,?,?,1)",
+            ("admin@test.com", "Admin", generate_password_hash("adminpass123")),
+        )
+        conn.commit()
+        row = conn.execute("SELECT id FROM users WHERE email='admin@test.com'").fetchone()
+    finally:
+        conn.close()
+    return {"id": row["id"], "email": "admin@test.com", "password": "adminpass123"}
+
+
+@pytest.fixture()
+def admin_client(client, admin_user):
+    """Test client with an active admin session."""
+    with client.session_transaction() as sess:
+        sess["user_id"] = admin_user["id"]
+        sess["is_admin"] = True
+        sess["display_name"] = "Admin"
+    return client

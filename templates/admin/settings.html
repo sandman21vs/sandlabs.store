@@ -1,0 +1,67 @@
+{% extends "admin/base_admin.html" %}
+{% set admin_section = "settings" %}
+{% block title %}Configurações — Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+  <h1>Configurações</h1>
+</div>
+
+<form method="post" action="{{ url_for('admin.settings') }}">
+  <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);align-items:start">
+
+    {# Coinos / Lightning #}
+    <div class="admin-card">
+      <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Lightning / Coinos</h3>
+      <div class="form-group">
+        <label>Coinos API Key</label>
+        <input type="password" name="coinos_api_key" class="form-input"
+               placeholder="Deixe em branco para manter atual"
+               autocomplete="new-password">
+        <span class="form-hint">{{ '✓ Configurada' if cfg.coinos_api_key else '⚠ Não configurada' }}</span>
+      </div>
+      <div class="form-group">
+        <label>Webhook Secret</label>
+        <input type="password" name="coinos_webhook_secret" class="form-input"
+               placeholder="Deixe em branco para manter atual"
+               autocomplete="new-password">
+        <span class="form-hint">{{ '✓ Configurado' if cfg.coinos_webhook_secret else '⚠ Não configurado' }}</span>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
+        <input type="checkbox" name="coinos_enabled" id="coinos_enabled" class="form-input"
+               {{ 'checked' if cfg.coinos_enabled == '1' }}>
+        <label for="coinos_enabled" style="margin-bottom:0">Pagamentos Lightning habilitados</label>
+      </div>
+    </div>
+
+    {# Contatos #}
+    <div class="admin-card">
+      <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Contatos</h3>
+      <div class="form-group">
+        <label>WhatsApp (somente números, com DDI)</label>
+        <input type="text" name="whatsapp" class="form-input"
+               placeholder="5541999990000" value="{{ cfg.whatsapp }}">
+      </div>
+      <div class="form-group">
+        <label>Telegram (@username)</label>
+        <input type="text" name="telegram" class="form-input"
+               placeholder="SeuUsuario" value="{{ cfg.telegram }}">
+      </div>
+    </div>
+  </div>
+
+  {# Shipping rates #}
+  <div class="admin-card" style="margin-top:var(--space-3)">
+    <h3 style="margin-bottom:.5rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Tabela de frete Post.ch (JSON)</h3>
+    <p class="form-hint" style="margin-bottom:.75rem">Chaves são peso máximo em kg, valores em CHF. Zonas: CH (Suíça), EU (Europa/EEA/UK), WORLD (resto).</p>
+    <textarea name="shipping_rates" class="form-input" style="min-height:200px;font-family:monospace;font-size:.85rem">{{ cfg.shipping_rates }}</textarea>
+  </div>
+
+  <div style="margin-top:var(--space-3);display:flex;gap:.75rem">
+    <button type="submit" class="btn btn-accent">Salvar configurações</button>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-ghost">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "admin/base_admin.html" %}
+{% set admin_section = "orders" %}
+{% block title %}Pedido #{{ order.id }} — Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+  <h1>Pedido #{{ order.id }}
+    <span class="badge badge-{{ order.status }}" style="vertical-align:middle;margin-left:.5rem">{{ order.status }}</span>
+  </h1>
+  <a href="{{ url_for('admin.orders') }}" class="btn btn-ghost btn-sm">← Voltar</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);align-items:start">
+
+  {# Order info #}
+  <div>
+    <div class="admin-card" style="margin-bottom:var(--space-2)">
+      <h3 style="margin-bottom:.75rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Informações do pedido</h3>
+      <dl style="display:grid;grid-template-columns:1fr 2fr;gap:.4rem .75rem;font-size:.9rem">
+        <dt class="muted">Data</dt>
+        <dd>{{ order.created_at[:16].replace('T',' ') if order.created_at else '—' }}</dd>
+        <dt class="muted">Total</dt>
+        <dd><strong>{{ "{:,}".format(order.total_sats) }} sats</strong></dd>
+        <dt class="muted">Frete</dt>
+        <dd>{{ "{:,}".format(order.shipping_sats or 0) }} sats</dd>
+        {% if order.coupon_code %}
+        <dt class="muted">Cupom</dt>
+        <dd>{{ order.coupon_code }}</dd>
+        {% endif %}
+        {% if order.invoice_hash %}
+        <dt class="muted">Invoice hash</dt>
+        <dd style="font-family:monospace;font-size:.78rem;word-break:break-all">{{ order.invoice_hash }}</dd>
+        {% endif %}
+        {% if order.tracking_code %}
+        <dt class="muted">Tracking</dt>
+        <dd><strong>{{ order.tracking_code }}</strong></dd>
+        {% endif %}
+      </dl>
+    </div>
+
+    {% if order.shipping_name or order.shipping_address %}
+    <div class="admin-card" style="margin-bottom:var(--space-2)">
+      <h3 style="margin-bottom:.75rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Endereço de envio</h3>
+      <address style="font-style:normal;font-size:.9rem;line-height:1.7">
+        {% if order.shipping_name %}<strong>{{ order.shipping_name }}</strong><br>{% endif %}
+        {% if order.shipping_address %}{{ order.shipping_address }}<br>{% endif %}
+        {% if order.shipping_city %}{{ order.shipping_city }}{% endif %}
+        {% if order.shipping_postal %}{{ ' — ' ~ order.shipping_postal }}{% endif %}
+        {% if order.shipping_city or order.shipping_postal %}<br>{% endif %}
+        {% if order.shipping_country %}<span class="muted">{{ order.shipping_country }}</span>{% endif %}
+      </address>
+    </div>
+    {% endif %}
+  </div>
+
+  {# Status update #}
+  <div>
+    <div class="admin-card" style="margin-bottom:var(--space-2)">
+      <h3 style="margin-bottom:.75rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Atualizar status</h3>
+      <form method="post" action="{{ url_for('admin.order_status', order_id=order.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+        <div class="form-group">
+          <label>Novo status</label>
+          <select name="status" class="form-input">
+            {% for s in valid_statuses %}
+            <option value="{{ s }}" {{ 'selected' if order.status == s }}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Código de rastreamento (opcional)</label>
+          <input type="text" name="tracking" class="form-input"
+                 placeholder="CH000000000CH" value="{{ order.tracking_code or '' }}">
+        </div>
+        <button type="submit" class="btn btn-accent btn-sm">Salvar status</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{# Order items #}
+<div class="admin-card">
+  <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Itens do pedido</h3>
+  {% if items %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Produto</th>
+        <th>Qtd</th>
+        <th>Preço unit. (sats)</th>
+        <th>Subtotal (sats)</th>
+        <th>Opções</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.product_name or item.product_id }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ "{:,}".format(item.unit_sats) }}</td>
+        <td>{{ "{:,}".format(item.unit_sats * item.quantity) }}</td>
+        <td class="muted" style="font-size:.82rem">
+          {{ item.options_json if item.options_json and item.options_json != '{}' else '—' }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">Nenhum item encontrado.</p>
+  {% endif %}
+</div>
+{% endblock %}
