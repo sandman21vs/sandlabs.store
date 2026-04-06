@@ -12,9 +12,23 @@ O sandlabs.store esta sendo convertido de um site estatico (HTML/CSS/JS puro ser
 
 ---
 
-## Estado Atual (Fase 1 Completa)
+## Estado Atual (Fase 3 Completa)
 
-A Fase 1 ja foi implementada. O site Flask serve as mesmas paginas identicas ao original estatico.
+As Fases 1, 2 e 3 ja foram implementadas. O projeto ja possui:
+
+- Flask servindo as paginas publicas com rotas limpas e redirects `.html` legados
+- Produtos servidos do SQLite e injetados no frontend como `window.PRODUTOS`
+- Carrinho com sessao anonima, endpoints JSON, badge no header e pagina `/carrinho`
+
+### Registro de execucao
+
+- Fase 2 executada no commit `c9a024f` — banco SQLite, inicializacao, model de produtos e seed
+- Fase 3 executada no commit `62d7383` — carrinho, APIs `/api/cart`, badge no header e pagina `/carrinho`
+
+### Convencao de rastreabilidade
+
+- Cada fase ou bloco relevante de alteracoes deve ser finalizado em commit separado, com mensagem descritiva.
+- Apos concluir uma fase, atualizar este `ARCHITECTURE.md` para refletir o estado atual e registrar que a fase foi executada.
 
 ### Arquivos ja criados
 
@@ -1342,9 +1356,9 @@ Mesma logica para `render-home.js` na funcao `buildCard()` (linha 26): usar thum
 Fase 1 (Flask Skeleton) ........... COMPLETA
   |
   v
-Fase 2 (Database + Produtos) ...... proxima
+Fase 2 (Database + Produtos) ...... COMPLETA
   |
-  +---> Fase 3 (Carrinho) -------> Fase 4 (Auth) -------> Fase 5 (Pagamento) -------> Fase 6 (Frete)
+  +---> Fase 3 (Carrinho) [COMPLETA] ---> Fase 4 (Auth) -------> Fase 5 (Pagamento) -------> Fase 6 (Frete)
   |
   +---> Fase 7 (Admin) [inicia apos Fase 2, completa apos Fase 5 para views de pagamento]
   |
