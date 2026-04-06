@@ -12,9 +12,9 @@ O sandlabs.store esta sendo convertido de um site estatico (HTML/CSS/JS puro ser
 
 ---
 
-## Estado Atual (Fase 8 Completa)
+## Estado Atual (Fase 9 Completa)
 
-As Fases 1, 2, 3, 4, 5, 6, 7 e 8 ja foram implementadas. O projeto ja possui:
+As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 
 - Flask servindo as paginas publicas com rotas limpas e redirects `.html` legados
 - Produtos servidos do SQLite e injetados no frontend como `window.PRODUTOS`
@@ -24,6 +24,8 @@ As Fases 1, 2, 3, 4, 5, 6, 7 e 8 ja foram implementadas. O projeto ja possui:
 - Calculo de frete Post.ch integrado ao checkout, com conversao CHF -> sats via `service_btc_price.py`
 - Painel admin para produtos, pedidos e configuracoes, com tracking/status de pedidos alinhados ao schema atual
 - Galeria e cards usando thumbnails WebP em `static/images/thumb/`, com fallback para a imagem original e geracao automatica em uploads do admin
+- Flash messages globais, metadados SEO/Open Graph, endpoint `/health`, logging adicional em checkout/admin, Docker multi-stage com usuario non-root e healthcheck
+- Exibicao de sats ao lado dos precos em BRL no payload `window.PRODUTOS`, e limpeza dos arquivos HTML/CSS/JS/imagens legados da raiz do repositorio
 
 ### Registro de execucao
 
@@ -34,7 +36,8 @@ As Fases 1, 2, 3, 4, 5, 6, 7 e 8 ja foram implementadas. O projeto ja possui:
 - Fase 6 executada no commit `ebcea21` e integrada ao checkout no commit `2019500` — calculo de frete Post.ch + conversao BTC/CHF
 - Fase 7 executada no commit `394588e` e corrigida no commit `5e069ee` — painel admin e alinhamento do tracking/status ao schema de pedidos
 - Fase 8 executada no commit `f4dff62` — service de thumbnails, script batch, frontend servindo thumbs e 44 thumbnails gerados
-- Suite de testes apos Fase 8: `pytest tests/ -q` -> `182 passed`
+- Fase 9 executada no commit `790ae88` — polish final, SEO, `/health`, Docker de producao, precos em sats e limpeza dos legados da raiz
+- Suite de testes apos Fase 9: `pytest tests/ -q` -> `189 passed`
 
 ### Convencao de rastreabilidade
 
@@ -1375,7 +1378,7 @@ Fase 2 (Database + Produtos) ...... COMPLETA
   |
   +---> Fase 8 (Imagens) [COMPLETA]
 
-Fase 9 (Polish) [apos todas as demais]
+Fase 9 (Polish) [COMPLETA]
 ```
 
 **Fases que podem ser executadas em paralelo:**
