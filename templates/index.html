@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="{{ url_for('static', filename='js/produtos-data.js') }}"></script>
+  <script>window.PRODUTOS = {{ products_json|safe }};</script>
   <script src="{{ url_for('static', filename='js/config-store.js') }}"></script>
   <script src="{{ url_for('static', filename='js/render-home.js') }}"></script>
   <script src="{{ url_for('static', filename='js/cupom.js') }}"></script>

@@ -3,6 +3,7 @@ import logging
 from flask import Flask, redirect, request
 
 import config
+from init_db import init_db
 from routes.routes_public import public
 
 if not logging.getLogger().handlers:
@@ -16,6 +17,7 @@ app = Flask(__name__, static_url_path="")
 app.secret_key = config.SECRET_KEY
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
+init_db()
 app.register_blueprint(public)
 
 

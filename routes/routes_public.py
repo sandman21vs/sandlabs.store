@@ -1,16 +1,24 @@
+import json
+
 from flask import Blueprint, render_template
+
+from models.model_products import get_all_products, products_to_js_format
 
 public = Blueprint("public", __name__)
 
 
 @public.route("/")
 def index():
-    return render_template("index.html", active="inicio")
+    products = get_all_products()
+    products_json = json.dumps(products_to_js_format(products), ensure_ascii=False)
+    return render_template("index.html", active="inicio", products_json=products_json)
 
 
 @public.route("/produtos")
 def produtos():
-    return render_template("produtos.html", active="produtos")
+    products = get_all_products()
+    products_json = json.dumps(products_to_js_format(products), ensure_ascii=False)
+    return render_template("produtos.html", active="produtos", products_json=products_json)
 
 
 @public.route("/sobre")
