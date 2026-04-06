@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtualenv / pip
+venv/
+.venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Database (gerado em runtime)
+data/
+*.db
+*.sqlite3
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
