@@ -5,6 +5,7 @@ from flask import Flask, redirect, request
 import config
 from init_db import init_db
 from routes.routes_cart import cart
+from routes.routes_checkout import checkout
 from routes.routes_public import public
 
 if not logging.getLogger().handlers:
@@ -21,6 +22,7 @@ app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 init_db()
 app.register_blueprint(public)
 app.register_blueprint(cart)
+app.register_blueprint(checkout)
 
 
 # Legacy .html redirects so existing JS links (e.g. location.href='produtos.html') keep working

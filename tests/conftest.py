@@ -52,6 +52,8 @@ def app(tmp_db):
     importlib.reload(rp)
     import routes.routes_cart as rc
     importlib.reload(rc)
+    import routes.routes_checkout as rco
+    importlib.reload(rco)
 
     from flask import Flask
     test_app = Flask(
@@ -64,6 +66,7 @@ def app(tmp_db):
     test_app.config["TESTING"] = True
     test_app.register_blueprint(rp.public)
     test_app.register_blueprint(rc.cart)
+    test_app.register_blueprint(rco.checkout)
 
     # Register legacy .html redirects (same as app.py)
     from flask import redirect, request as flask_request
