@@ -32,6 +32,9 @@ CREATE TABLE IF NOT EXISTS product_prices (
     product_id   TEXT NOT NULL,
     label        TEXT NOT NULL,
     amount_sats  INTEGER NOT NULL,
+    pricing_mode TEXT,
+    currency_code TEXT,
+    amount_fiat  TEXT,
     display_text TEXT NOT NULL,
     sort_order   INTEGER DEFAULT 0,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
@@ -134,6 +137,15 @@ DEFAULT_COLORS = [
 ]
 
 
+def _ensure_column(conn, table_name, column_name, column_sql):
+    existing_columns = {
+        row["name"]
+        for row in conn.execute(f"PRAGMA table_info({table_name})").fetchall()
+    }
+    if column_name not in existing_columns:
+        conn.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_sql}")
+
+
 def init_db():
     db_dir = os.path.dirname(config.DATABASE_PATH)
     if db_dir:
@@ -142,6 +154,9 @@ def init_db():
     conn = db.get_db()
     try:
         conn.executescript(SCHEMA)
+        _ensure_column(conn, "product_prices", "pricing_mode", "pricing_mode TEXT")
+        _ensure_column(conn, "product_prices", "currency_code", "currency_code TEXT")
+        _ensure_column(conn, "product_prices", "amount_fiat", "amount_fiat TEXT")
         conn.executemany(
             """
             INSERT INTO colors (id, name)

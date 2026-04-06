@@ -185,7 +185,7 @@ class TestCheckoutFlow:
         assert len(items) == 1
         assert get_cart_count("test-session", test_user) == 0
 
-    def test_create_order_rejects_items_without_sats_price(self, client, test_user, csrf_headers, tmp_db):
+    def test_create_order_rejects_items_without_available_sats_conversion(self, client, test_user, csrf_headers, tmp_db, monkeypatch):
         conn = get_db()
         try:
             conn.execute(
@@ -196,8 +196,10 @@ class TestCheckoutFlow:
             )
             conn.execute(
                 """
-                INSERT INTO product_prices (product_id, label, amount_sats, display_text, sort_order)
-                VALUES ('zero-prod', 'Base', 0, 'R$ 10', 0)
+                INSERT INTO product_prices (
+                    product_id, label, amount_sats, pricing_mode, currency_code, amount_fiat, display_text, sort_order
+                )
+                VALUES ('zero-prod', 'Base', 0, 'fiat', 'CHF', '10.00', 'CHF 10.00', 0)
                 """
             )
             conn.commit()
@@ -205,6 +207,7 @@ class TestCheckoutFlow:
         finally:
             conn.close()
 
+        monkeypatch.setattr("services.service_pricing.fiat_to_sats", lambda amount, currency: 0)
         _login_session(client, user_id=test_user)
         add_to_cart("test-session", "zero-prod", price["id"], 1, {}, user_id=test_user)
 
@@ -221,7 +224,56 @@ class TestCheckoutFlow:
                 headers=csrf_headers,
             )
         assert resp.status_code == 400
-        assert b"sem preco em sats" in resp.data.lower()
+        assert b"sem conversao disponivel para sats" in resp.data.lower()
+
+    def test_create_order_supports_dynamic_chf_pricing(self, client, test_user, csrf_headers, tmp_db):
+        conn = get_db()
+        try:
+            conn.execute(
+                """
+                INSERT INTO products (id, name, summary, details_html, weight_grams, buy_button_text, active)
+                VALUES ('chf-prod', 'CHF Product', 'test', '', 100, 'Comprar', 1)
+                """
+            )
+            conn.execute(
+                """
+                INSERT INTO product_prices (
+                    product_id, label, amount_sats, pricing_mode, currency_code, amount_fiat, display_text, sort_order
+                )
+                VALUES ('chf-prod', 'Base', 0, 'fiat', 'CHF', '25.00', 'CHF 25.00', 0)
+                """
+            )
+            conn.commit()
+            price = conn.execute("SELECT id FROM product_prices WHERE product_id='chf-prod'").fetchone()
+        finally:
+            conn.close()
+
+        _login_session(client, user_id=test_user)
+        add_to_cart("test-session", "chf-prod", price["id"], 2, {}, user_id=test_user)
+
+        with patch("services.service_pricing.fiat_to_sats", return_value=2500), \
+             patch("routes.routes_checkout.calculate_shipping_chf", return_value=7.0), \
+             patch("routes.routes_checkout.chf_to_sats", return_value=8500), \
+             patch("routes.routes_checkout.create_invoice", return_value={"hash": "hashchf", "text": "lnbc1chf"}):
+            resp = client.post(
+                "/checkout/create-order",
+                data={
+                    "name": "Buyer",
+                    "address": "Street 1",
+                    "postal_code": "8000",
+                    "country": "CH",
+                },
+                headers=csrf_headers,
+                follow_redirects=False,
+            )
+
+        assert resp.status_code == 302
+        conn = get_db()
+        try:
+            order = conn.execute("SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC LIMIT 1", (test_user,)).fetchone()
+        finally:
+            conn.close()
+        assert order["total_sats"] == 5000
 
     def test_payment_page_renders_for_owner(self, client, test_user, seeded_product):
         _login_session(client, user_id=test_user)

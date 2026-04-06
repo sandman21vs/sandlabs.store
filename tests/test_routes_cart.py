@@ -70,6 +70,32 @@ class TestGetCartAPI:
         assert len(data["items"]) == 1
         assert data["items"][0]["product_id"] == pid
 
+    def test_cart_with_fiat_price_returns_dynamic_sats_total(self, client, csrf_headers, db_conn, monkeypatch):
+        monkeypatch.setattr("services.service_pricing.fiat_to_sats", lambda amount, currency: 3200)
+        db_conn.execute(
+            """
+            INSERT INTO products (id, name, summary, details_html, buy_button_text, active)
+            VALUES ('fiat-route', 'Fiat Route', 'Produto Fiat', '', 'Comprar', 1)
+            """
+        )
+        db_conn.execute(
+            """
+            INSERT INTO product_prices (
+                product_id, label, amount_sats, pricing_mode, currency_code, amount_fiat, display_text, sort_order
+            )
+            VALUES ('fiat-route', 'Base', 0, 'fiat', 'CHF', '32.00', 'CHF 32.00', 0)
+            """
+        )
+        db_conn.commit()
+        price_id = db_conn.execute("SELECT id FROM product_prices WHERE product_id='fiat-route'").fetchone()["id"]
+
+        client.post("/api/cart/add", json={
+            "product_id": "fiat-route", "price_id": price_id, "quantity": 2, "options": {},
+        }, headers=csrf_headers)
+        data = client.get("/api/cart").get_json()
+        assert data["total_sats"] == 6400
+        assert data["items"][0]["display_text"] == "CHF 32.00"
+
 
 class TestUpdateCartAPI:
     def test_update_quantity(self, client, product_ids, csrf_headers):

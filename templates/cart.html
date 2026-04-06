@@ -31,7 +31,7 @@
                     {% if item.has_amount_sats %}
                       <p><strong>Subtotal:</strong> {{ item.line_total_sats }} sats</p>
                     {% else %}
-                      <p><strong>Subtotal em sats:</strong> indisponível</p>
+                      <p><strong>Subtotal em sats:</strong> indisponível no momento</p>
                     {% endif %}
                   </div>
                 </div>
@@ -53,7 +53,7 @@
             <p class="cart-summary-label">Itens no carrinho: {{ count }}</p>
             <h2 class="cart-summary-total">{{ total_sats }} sats</h2>
             {% if has_pending_prices %}
-              <p class="muted">Alguns itens mantêm apenas o texto original em BRL; o total em sats depende do campo `amount_sats` cadastrado.</p>
+              <p class="muted">Alguns itens não puderam ser convertidos para sats agora. Verifique a cotação BTC/fiat ou ajuste a moeda do preço no admin.</p>
             {% endif %}
             <div class="cart-actions">
               <a class="btn btn-accent" href="/checkout">Finalizar compra</a>

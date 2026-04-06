@@ -200,7 +200,7 @@ def create_order():
     if _has_unpriced_items(items):
         logger.warning("checkout_create_order_unpriced_items user_id=%s session_id=%s", user_id, session_id)
         return _render_checkout(
-            error="Existem itens sem preco em sats cadastrado. Atualize os precos antes de gerar a invoice Lightning.",
+            error="Existem itens sem conversao disponivel para sats. Ajuste os precos fiat ou aguarde a cotacao BTC voltar.",
             form_data=request.form,
             status_code=400,
         )

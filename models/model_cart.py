@@ -1,6 +1,7 @@
 import json
 
 import db
+from services.service_pricing import resolve_price_snapshot
 
 
 def _scope_clause(session_id, user_id=None, alias="ci"):
@@ -42,6 +43,9 @@ def get_cart(session_id, user_id=None):
                 p.name AS product_name,
                 p.weight_grams,
                 pp.label AS price_label,
+                pp.pricing_mode,
+                pp.currency_code,
+                pp.amount_fiat,
                 pp.display_text,
                 pp.amount_sats,
                 ci.quantity,
@@ -58,7 +62,10 @@ def get_cart(session_id, user_id=None):
         items = []
         for row in rows:
             item = dict(row)
-            item["amount_sats"] = int(item["amount_sats"] or 0)
+            price_snapshot = resolve_price_snapshot(item)
+            item.update(price_snapshot)
+            item["display_text"] = price_snapshot["display_text_resolved"]
+            item["amount_sats"] = int(price_snapshot["resolved_amount_sats"] or 0)
             item["quantity"] = int(item["quantity"] or 0)
             item["weight_grams"] = int(item["weight_grams"] or 0)
             item["line_total_sats"] = item["amount_sats"] * item["quantity"]
@@ -184,21 +191,7 @@ def merge_cart(session_id, user_id):
 
 def get_cart_total(session_id, user_id=None):
     """Retorna total em sats de todos os itens."""
-    where_clause, params = _scope_clause(session_id, user_id)
-    conn = db.get_db()
-    try:
-        row = conn.execute(
-            f"""
-            SELECT COALESCE(SUM(pp.amount_sats * ci.quantity), 0) AS total_sats
-            FROM cart_items ci
-            JOIN product_prices pp ON pp.id = ci.price_id
-            WHERE {where_clause}
-            """,
-            params,
-        ).fetchone()
-        return int(row["total_sats"] or 0)
-    finally:
-        conn.close()
+    return sum(item["line_total_sats"] for item in get_cart(session_id, user_id))
 
 
 def get_cart_count(session_id, user_id=None):

@@ -104,7 +104,7 @@
           <button type="button" class="btn btn-ghost btn-sm" onclick="addPriceRow()">+ Adicionar preço</button>
         </div>
         <div id="prices-list"></div>
-        <p class="form-hint">Cada produto pode ter múltiplos preços (ex: Com bateria, Sem bateria).</p>
+        <p class="form-hint">Cada preço pode ser definido em sats ou em CHF. Preços fiat são convertidos para sats no carrinho e no checkout usando a cotação BTC atual.</p>
       </div>
 
       {# Options #}
@@ -165,30 +165,119 @@
 <script>
 // ─── Prices management ───────────────────────────────────────────────────────
 let prices = {{ (product.prices | tojson) if product else '[]' }};
+const PRICE_CURRENCIES = Array.from(new Set(
+  ['SATS', 'CHF'].concat(
+    prices.map((price) => (price.currency_code || '').toUpperCase()).filter(Boolean)
+  )
+));
+const PRICE_CURRENCY_PREFIX = {
+  CHF: 'CHF',
+  USD: 'USD',
+  EUR: 'EUR',
+  BRL: 'R$',
+};
+
+function formatPreview(price) {
+  const currency = (price.currency_code || 'SATS').toUpperCase();
+  if (currency === 'SATS') {
+    const amount = parseInt(price.amount_sats || 0, 10) || 0;
+    return amount > 0 ? `${amount.toLocaleString('pt-BR')} sats` : '—';
+  }
+
+  const raw = String(price.amount_fiat || '').trim();
+  if (!raw) return '—';
+  const numeric = Number(raw.replace(',', '.'));
+  if (!Number.isFinite(numeric) || numeric <= 0) return '—';
+  return `${PRICE_CURRENCY_PREFIX[currency] || currency} ${numeric.toFixed(2)}`;
+}
+
+function normalizePriceEntry(price) {
+  const currency = ((price.currency_code || (price.pricing_mode === 'fiat' ? 'CHF' : 'SATS')) || 'SATS').toUpperCase();
+  return {
+    id: price.id || null,
+    label: price.label || '',
+    pricing_mode: currency === 'SATS' ? 'sats' : 'fiat',
+    currency_code: currency,
+    amount_sats: currency === 'SATS' ? (parseInt(price.amount_sats || 0, 10) || 0) : 0,
+    amount_fiat: currency === 'SATS' ? '' : String(price.amount_fiat || ''),
+    display_text: price.display_text || '',
+    sort_order: price.sort_order || 0,
+  };
+}
+
+prices = prices.map(normalizePriceEntry);
 
 function renderPrices() {
   const list = document.getElementById('prices-list');
   list.innerHTML = '';
   prices.forEach((p, i) => {
+    const currencyOptions = PRICE_CURRENCIES.map((currency) => (
+      `<option value="${currency}" ${currency === (p.currency_code || 'SATS') ? 'selected' : ''}>${currency}</option>`
+    )).join('');
+    const valueInput = (p.currency_code || 'SATS') === 'SATS'
+      ? `<input class="form-input" type="number" min="1" step="1" placeholder="Sats" value="${p.amount_sats || ''}"
+             oninput="updatePriceAmount(${i}, 'amount_sats', this.value)">`
+      : `<input class="form-input" type="number" min="0" step="0.01" placeholder="Valor em ${(p.currency_code || 'CHF')}" value="${p.amount_fiat || ''}"
+             oninput="updatePriceAmount(${i}, 'amount_fiat', this.value)">`;
     list.innerHTML += `
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;margin-bottom:.5rem;align-items:center">
+    <div style="display:grid;grid-template-columns:1.4fr .8fr 1fr 1fr auto;gap:.5rem;margin-bottom:.5rem;align-items:center">
       <input class="form-input" placeholder="Label (ex: Com bateria)" value="${p.label||''}"
              oninput="prices[${i}].label=this.value;syncPrices()">
-      <input class="form-input" type="number" placeholder="Sats" value="${p.amount_sats||''}"
-             oninput="prices[${i}].amount_sats=parseInt(this.value)||0;syncPrices()">
-      <input class="form-input" placeholder="Exibição (ex: 50 000 sats)" value="${p.display_text||''}"
-             oninput="prices[${i}].display_text=this.value;syncPrices()">
+      <select class="form-input" onchange="setPriceCurrency(${i}, this.value)">${currencyOptions}</select>
+      ${valueInput}
+      <input class="form-input" data-price-preview="${i}" value="${formatPreview(p)}" readonly>
       <button type="button" class="btn btn-danger btn-sm" onclick="removePrice(${i})">×</button>
     </div>`;
   });
 }
 
 function syncPrices() {
+  prices = prices.map((price, index) => {
+    const normalized = normalizePriceEntry(price);
+    normalized.sort_order = index;
+    normalized.display_text = formatPreview(normalized);
+    return normalized;
+  });
   document.getElementById('prices_json').value = JSON.stringify(prices);
 }
 
+function setPriceCurrency(index, currency) {
+  prices[index].currency_code = currency;
+  prices[index].pricing_mode = currency === 'SATS' ? 'sats' : 'fiat';
+  if (currency === 'SATS') {
+    prices[index].amount_fiat = '';
+  } else {
+    prices[index].amount_sats = 0;
+  }
+  prices[index].display_text = formatPreview(prices[index]);
+  syncPrices();
+  renderPrices();
+}
+
+function updatePriceAmount(index, field, value) {
+  if (field === 'amount_sats') {
+    prices[index].amount_sats = parseInt(value || '0', 10) || 0;
+  } else {
+    prices[index].amount_fiat = value;
+  }
+  prices[index].display_text = formatPreview(prices[index]);
+  syncPrices();
+  const preview = document.querySelector(`[data-price-preview="${index}"]`);
+  if (preview) {
+    preview.value = formatPreview(prices[index]);
+  }
+}
+
 function addPriceRow() {
-  prices.push({label:'', amount_sats:0, display_text:''});
+  prices.push({
+    label: '',
+    pricing_mode: 'sats',
+    currency_code: 'SATS',
+    amount_sats: 0,
+    amount_fiat: '',
+    display_text: '',
+    sort_order: prices.length,
+  });
   renderPrices();
   syncPrices();
 }

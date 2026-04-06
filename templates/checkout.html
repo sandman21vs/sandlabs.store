@@ -24,7 +24,7 @@
       {% endif %}
       {% if has_unpriced_items %}
       <div class="checkout-error">
-        Existem itens no carrinho sem preço em sats. O checkout Lightning só funciona para produtos com `amount_sats` cadastrado.
+        Existem itens no carrinho sem conversão disponível para sats. O checkout Lightning depende da cotação BTC atual para preços fiat.
       </div>
       {% endif %}
 

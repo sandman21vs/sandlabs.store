@@ -204,7 +204,7 @@ class TestProductsToJsFormat:
     def test_brl_prices_gain_sats_display(self, tmp_db, monkeypatch):
         from models.model_products import create_product, get_all_products, products_to_js_format
 
-        monkeypatch.setattr("models.model_products.brl_to_sats", lambda amount: 4600)
+        monkeypatch.setattr("services.service_pricing.fiat_to_sats", lambda amount, currency: 4600)
         create_product({
             "id": "brl-product",
             "name": "BRL Product",
@@ -217,6 +217,32 @@ class TestProductsToJsFormat:
         price = js[0]["preco"][0]
         assert price["valor"] == "R$ 230"
         assert price["satsDisplay"] == "~4 600 sats"
+        assert price["currencyCode"] == "BRL"
+        assert price["pricingMode"] == "fiat"
+
+    def test_chf_prices_are_resolved_to_sats_dynamically(self, tmp_db, monkeypatch):
+        from models.model_products import create_product, get_all_products, products_to_js_format
+
+        monkeypatch.setattr("services.service_pricing.fiat_to_sats", lambda amount, currency: 12345)
+        create_product({
+            "id": "chf-product",
+            "name": "CHF Product",
+            "summary": "Test",
+            "prices": [{
+                "label": "Base",
+                "pricing_mode": "fiat",
+                "currency_code": "CHF",
+                "amount_fiat": "49.90",
+            }],
+            "images": [],
+            "options": [],
+        })
+        js = products_to_js_format(get_all_products())
+        price = js[0]["preco"][0]
+        assert price["valor"] == "CHF 49.90"
+        assert price["amountSats"] == 12345
+        assert price["satsDisplay"] == "~12 345 sats"
+        assert price["amountFiat"] == "49.90"
 
     def test_options_have_correct_structure(self, seeded_product):
         from models.model_products import get_all_products, products_to_js_format

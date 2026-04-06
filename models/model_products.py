@@ -1,8 +1,7 @@
 import json
-import re
 
 import db
-from services.service_btc_price import brl_to_sats
+from services.service_pricing import normalize_price_record, resolve_price_snapshot
 
 
 _PRODUCT_SELECT = """
@@ -48,7 +47,16 @@ def _load_related_records(conn, products):
 
     price_rows = conn.execute(
         f"""
-        SELECT id, product_id, label, amount_sats, display_text, sort_order
+        SELECT
+            id,
+            product_id,
+            label,
+            amount_sats,
+            pricing_mode,
+            currency_code,
+            amount_fiat,
+            display_text,
+            sort_order
         FROM product_prices
         WHERE product_id IN ({placeholders})
         ORDER BY product_id, sort_order, id
@@ -56,7 +64,7 @@ def _load_related_records(conn, products):
         product_ids,
     ).fetchall()
     for row in price_rows:
-        product_map[row["product_id"]]["prices"].append(dict(row))
+        product_map[row["product_id"]]["prices"].append(resolve_price_snapshot(dict(row)))
 
     image_rows = conn.execute(
         f"""
@@ -95,14 +103,7 @@ def _load_related_records(conn, products):
 def _normalize_prices(prices):
     normalized = []
     for index, price in enumerate(prices or []):
-        normalized.append(
-            {
-                "label": price["label"],
-                "amount_sats": int(price.get("amount_sats", 0)),
-                "display_text": price["display_text"],
-                "sort_order": int(price.get("sort_order", index)),
-            }
-        )
+        normalized.append(normalize_price_record(price, index))
     return normalized
 
 
@@ -151,14 +152,26 @@ def _replace_related_records(conn, product_id, prices, images, options):
 
     conn.executemany(
         """
-        INSERT INTO product_prices (product_id, label, amount_sats, display_text, sort_order)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO product_prices (
+            product_id,
+            label,
+            amount_sats,
+            pricing_mode,
+            currency_code,
+            amount_fiat,
+            display_text,
+            sort_order
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
         [
             (
                 product_id,
                 price["label"],
                 price["amount_sats"],
+                price["pricing_mode"],
+                price["currency_code"],
+                price["amount_fiat"],
                 price["display_text"],
                 price["sort_order"],
             )
@@ -191,43 +204,6 @@ def _replace_related_records(conn, product_id, prices, images, options):
             for option in _normalize_options(options)
         ],
     )
-
-
-_BRL_PATTERN = re.compile(r"R\$\s*([0-9\.\,]+)")
-
-
-def _format_sats(amount_sats):
-    return f"{int(amount_sats):,} sats".replace(",", " ")
-
-
-def _parse_brl_amount(display_text):
-    match = _BRL_PATTERN.search(display_text or "")
-    if not match:
-        return None
-    raw = match.group(1).replace(".", "").replace(",", ".")
-    try:
-        return float(raw)
-    except ValueError:
-        return None
-
-
-def _build_sats_display(display_text, amount_sats):
-    amount_sats = int(amount_sats or 0)
-    if amount_sats > 0:
-        display = _format_sats(amount_sats)
-        if "sats" in (display_text or "").lower():
-            return display_text
-        return display
-
-    brl_amount = _parse_brl_amount(display_text)
-    if brl_amount is None:
-        return None
-
-    converted_sats = brl_to_sats(brl_amount)
-    if converted_sats <= 0:
-        return None
-    return f"~{_format_sats(converted_sats)}"
-
 
 def get_all_products():
     """Retorna lista de dicts com produtos ativos, incluindo prices, images e options."""
@@ -410,12 +386,12 @@ def products_to_js_format(products):
                     {
                         "id": price["id"],
                         "label": price["label"],
-                        "valor": price["display_text"],
-                        "amountSats": price["amount_sats"],
-                        "satsDisplay": _build_sats_display(
-                            price["display_text"],
-                            price["amount_sats"],
-                        ),
+                        "valor": price["display_text_resolved"],
+                        "amountSats": price["resolved_amount_sats"],
+                        "satsDisplay": price["sats_display"],
+                        "pricingMode": price["pricing_mode"],
+                        "currencyCode": price["currency_code"],
+                        "amountFiat": price["amount_fiat"],
                     }
                     for price in product.get("prices", [])
                 ],

@@ -87,6 +87,30 @@ class TestGetCart:
         assert get_cart("sess1", user_id=None) == []
         assert len(get_cart("sess1", user_id=test_user)) == 1
 
+    def test_fiat_prices_resolve_to_dynamic_sats(self, tmp_db, monkeypatch):
+        from models.model_cart import add_to_cart, get_cart
+        from models.model_products import create_product
+
+        monkeypatch.setattr("services.service_pricing.fiat_to_sats", lambda amount, currency: 2500)
+        product = create_product({
+            "id": "fiat-cart",
+            "name": "Fiat Cart",
+            "summary": "Test",
+            "prices": [{
+                "label": "Base",
+                "pricing_mode": "fiat",
+                "currency_code": "CHF",
+                "amount_fiat": "25.00",
+            }],
+            "images": [],
+            "options": [],
+        })
+        add_to_cart("sess1", product["id"], product["prices"][0]["id"], 2, {})
+        items = get_cart("sess1")
+        assert items[0]["display_text"] == "CHF 25.00"
+        assert items[0]["amount_sats"] == 2500
+        assert items[0]["line_total_sats"] == 5000
+
 
 class TestUpdateCartItem:
     def test_update_quantity(self, product_with_price):
@@ -186,6 +210,27 @@ class TestCartTotal:
     def test_empty_cart_total_is_zero(self, tmp_db):
         from models.model_cart import get_cart_total
         assert get_cart_total("empty") == 0
+
+    def test_total_uses_current_fiat_conversion(self, tmp_db, monkeypatch):
+        from models.model_cart import add_to_cart, get_cart_total
+        from models.model_products import create_product
+
+        monkeypatch.setattr("services.service_pricing.fiat_to_sats", lambda amount, currency: 8000)
+        product = create_product({
+            "id": "fiat-total",
+            "name": "Fiat Total",
+            "summary": "Test",
+            "prices": [{
+                "label": "Base",
+                "pricing_mode": "fiat",
+                "currency_code": "CHF",
+                "amount_fiat": "80.00",
+            }],
+            "images": [],
+            "options": [],
+        })
+        add_to_cart("sess1", product["id"], product["prices"][0]["id"], 3, {})
+        assert get_cart_total("sess1") == 24000
 
 
 class TestCartCount:

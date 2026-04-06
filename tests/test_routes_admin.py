@@ -204,6 +204,38 @@ class TestAdminProducts:
         assert len(p["prices"]) == 1
         assert p["prices"][0]["amount_sats"] == 5000
 
+    def test_create_fiat_product_via_form(self, admin_client, csrf_headers, monkeypatch):
+        monkeypatch.setattr("services.service_pricing.fiat_to_sats", lambda amount, currency: 14900)
+        resp = _form(admin_client, csrf_headers, "/admin/products/new", {
+            "id": "new-chf-prod",
+            "name": "CHF Product",
+            "summary": "Created via form",
+            "details_html": "<p>Test</p>",
+            "weight_grams": "100",
+            "buy_button_text": "Comprar",
+            "sort_order": "0",
+            "active": "on",
+            "prices_json": json.dumps([
+                {
+                    "label": "Base",
+                    "pricing_mode": "fiat",
+                    "currency_code": "CHF",
+                    "amount_fiat": "149.00",
+                }
+            ]),
+            "options_json": "[]",
+            "existing_images_json": "[]",
+        })
+        assert resp.status_code == 302
+
+        from models.model_products import get_product_by_id, products_to_js_format
+        p = get_product_by_id("new-chf-prod")
+        assert p is not None
+        assert p["prices"][0]["currency_code"] == "CHF"
+        assert p["prices"][0]["amount_fiat"] == "149.00"
+        js_price = products_to_js_format([p])[0]["preco"][0]
+        assert js_price["amountSats"] == 14900
+
     def test_create_product_missing_id_shows_error(self, admin_client, csrf_headers):
         resp = _form(admin_client, csrf_headers, "/admin/products/new", {
             "name": "No ID Product",

@@ -135,7 +135,7 @@ class TestProductInjection:
         assert "Operação concluída" in html
 
     def test_brl_products_include_sats_display_in_json(self, client, db_conn, monkeypatch):
-        monkeypatch.setattr("models.model_products.brl_to_sats", lambda amount: 4600)
+        monkeypatch.setattr("services.service_pricing.fiat_to_sats", lambda amount, currency: 4600)
         db_conn.execute(
             """
             INSERT INTO products (id, name, summary, details_html, buy_button_text, active)
@@ -152,6 +152,28 @@ class TestProductInjection:
 
         html = client.get("/").data.decode()
         assert "~4 600 sats" in html
+
+    def test_chf_products_include_dynamic_sats_display_in_json(self, client, db_conn, monkeypatch):
+        monkeypatch.setattr("services.service_pricing.fiat_to_sats", lambda amount, currency: 9900)
+        db_conn.execute(
+            """
+            INSERT INTO products (id, name, summary, details_html, buy_button_text, active)
+            VALUES ('chf-home', 'CHF Home', 'Produto CHF', '', 'Comprar', 1)
+            """
+        )
+        db_conn.execute(
+            """
+            INSERT INTO product_prices (
+                product_id, label, amount_sats, pricing_mode, currency_code, amount_fiat, display_text, sort_order
+            )
+            VALUES ('chf-home', 'Base', 0, 'fiat', 'CHF', '99.00', 'CHF 99.00', 0)
+            """
+        )
+        db_conn.commit()
+
+        html = client.get("/").data.decode()
+        assert "CHF 99.00" in html
+        assert "~9 900 sats" in html
 
 
 class TestNavigation:
