@@ -14,6 +14,14 @@
     return (src || '').replace(/^(images\/)(.+)\.\w+$/, '$1thumb/$2.webp');
   }
 
+  function buildSecondaryPrice(price){
+    const bits = [];
+    if (price && price.satsDisplay && !/sats/i.test(price.valor || '')) {
+      bits.push(price.satsDisplay);
+    }
+    return bits.join(' • ');
+  }
+
   function buildCard(prod){
     const a = el('article','',null);
     a.className = 'card product soft-shadow hover-lift';
@@ -47,9 +55,14 @@
     body.appendChild(el('p',{class:'card-text'}, prod.resumo));
 
     const price = el('div',{class:'price-line'});
-    const p0 = Array.isArray(prod.preco) && prod.preco[0] ? prod.preco[0].valor : '';
-    const p1 = Array.isArray(prod.preco) && prod.preco[1] ? `${prod.preco[1].label} ${prod.preco[1].valor}` : '';
-    price.innerHTML = `<span>${p0}</span><span class="muted">${p1}</span>`;
+    const firstPrice = Array.isArray(prod.preco) && prod.preco[0] ? prod.preco[0] : null;
+    const secondPrice = Array.isArray(prod.preco) && prod.preco[1] ? prod.preco[1] : null;
+    const p0 = firstPrice ? firstPrice.valor : '';
+    const secondaryBits = [];
+    const firstSats = buildSecondaryPrice(firstPrice);
+    if (firstSats) secondaryBits.push(firstSats);
+    if (secondPrice) secondaryBits.push(`${secondPrice.label} ${secondPrice.valor}`);
+    price.innerHTML = `<span>${p0}</span><span class="muted">${secondaryBits.join(' • ')}</span>`;
     body.appendChild(price);
 
     a.appendChild(body);

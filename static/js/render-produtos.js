@@ -192,7 +192,10 @@
   /* Lista de preços HTML */
   function priceListHTML(precos) {
     if (!Array.isArray(precos)) return '';
-    return precos.map(p => `<p><strong>${p.label}:</strong> ${p.valor}</p>`).join('');
+    return precos.map((p) => {
+      const sats = p.satsDisplay && !/sats/i.test(p.valor || '') ? ` <span class="muted">${p.satsDisplay}</span>` : '';
+      return `<p><strong>${p.label}:</strong> ${p.valor}${sats}</p>`;
+    }).join('');
   }
 
   /* Galeria por produto */

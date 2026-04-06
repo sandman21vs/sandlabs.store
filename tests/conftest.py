@@ -110,6 +110,10 @@ def app(tmp_db):
     test_app.register_blueprint(racc.account)
     test_app.register_blueprint(radm.admin)
 
+    @test_app.route("/health")
+    def health():
+        return {"status": "ok"}, 200
+
     # Register legacy .html redirects (same as app.py)
     from flask import redirect, request as flask_request
     _HTML_ROUTES = {

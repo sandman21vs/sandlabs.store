@@ -284,9 +284,11 @@ def product_new():
             _ensure_local_thumbnails(data["images"])
             try:
                 create_product(data)
+                logger.info("admin_product_created product_id=%s admin_user_id=%s", product_id, session.get("user_id"))
                 flash("Produto criado com sucesso.", "success")
                 return redirect(url_for("admin.products"))
             except Exception as exc:
+                logger.exception("admin_product_create_failed product_id=%s", product_id)
                 error = str(exc)
 
     return render_template("admin/product_form.html", product=None, error=error, action="new")
@@ -321,9 +323,11 @@ def product_edit(product_id):
 
         try:
             update_product(product_id, data)
+            logger.info("admin_product_updated product_id=%s admin_user_id=%s", product_id, session.get("user_id"))
             flash("Produto atualizado.", "success")
             return redirect(url_for("admin.products"))
         except Exception as exc:
+            logger.exception("admin_product_update_failed product_id=%s", product_id)
             error = str(exc)
 
     return render_template("admin/product_form.html",
@@ -334,8 +338,10 @@ def product_edit(product_id):
 @admin_required
 def product_delete(product_id):
     if delete_product(product_id):
+        logger.info("admin_product_deleted product_id=%s admin_user_id=%s", product_id, session.get("user_id"))
         flash("Produto removido.", "success")
     else:
+        logger.warning("admin_product_delete_not_found product_id=%s", product_id)
         flash("Produto não encontrado.", "error")
     return redirect(url_for("admin.products"))
 
@@ -381,6 +387,13 @@ def order_status(order_id):
     update_order_status(order_id, new_status)
     if tracking:
         set_order_tracking(order_id, tracking)
+    logger.info(
+        "admin_order_status_updated order_id=%s status=%s tracking=%s admin_user_id=%s",
+        order_id,
+        new_status,
+        tracking or "",
+        session.get("user_id"),
+    )
 
     flash(f"Status atualizado para '{new_status}'.", "success")
     return redirect(url_for("admin.order_detail", order_id=order_id))
@@ -401,8 +414,10 @@ def settings():
         try:
             json.loads(shipping_json)
             _set_config("shipping_rates", shipping_json)
+            logger.info("admin_settings_updated admin_user_id=%s", session.get("user_id"))
             flash("Configurações salvas.", "success")
         except json.JSONDecodeError:
+            logger.warning("admin_settings_invalid_shipping_json admin_user_id=%s", session.get("user_id"))
             flash("Tabela de frete com JSON inválido. Restante salvo.", "error")
 
         return redirect(url_for("admin.settings"))

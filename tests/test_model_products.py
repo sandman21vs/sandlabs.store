@@ -199,6 +199,24 @@ class TestProductsToJsFormat:
         assert prices[0]["label"] == "Base"
         assert prices[0]["valor"] == "10 000 sats"
         assert prices[0]["amountSats"] == 10000
+        assert prices[0]["satsDisplay"] == "10 000 sats"
+
+    def test_brl_prices_gain_sats_display(self, tmp_db, monkeypatch):
+        from models.model_products import create_product, get_all_products, products_to_js_format
+
+        monkeypatch.setattr("models.model_products.brl_to_sats", lambda amount: 4600)
+        create_product({
+            "id": "brl-product",
+            "name": "BRL Product",
+            "summary": "Test",
+            "prices": [{"label": "Base", "amount_sats": 0, "display_text": "R$ 230"}],
+            "images": [],
+            "options": [],
+        })
+        js = products_to_js_format(get_all_products())
+        price = js[0]["preco"][0]
+        assert price["valor"] == "R$ 230"
+        assert price["satsDisplay"] == "~4 600 sats"
 
     def test_options_have_correct_structure(self, seeded_product):
         from models.model_products import get_all_products, products_to_js_format

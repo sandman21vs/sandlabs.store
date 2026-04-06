@@ -63,6 +63,11 @@ app.register_blueprint(checkout)
 app.register_blueprint(admin)
 
 
+@app.route("/health")
+def health():
+    return {"status": "ok"}, 200
+
+
 # Legacy .html redirects so existing JS links (e.g. location.href='produtos.html') keep working
 _HTML_ROUTES = {
     "index.html": "public.index",

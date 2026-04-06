@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Sandlabs — {% block title %}{% endblock %}</title>
+  {% set page_title = self.title()|striptags|trim %}
+  <title>Sandlabs{% if page_title %} — {{ page_title }}{% endif %}</title>
+  <meta name="description" content="{% block meta_description %}Hardware wallets Bitcoin open source{% endblock %}"/>
+  <meta property="og:title" content="Sandlabs{% if page_title %} — {{ page_title }}{% endif %}"/>
+  <meta property="og:description" content="Hardware wallets e acessórios Bitcoin"/>
+  <meta property="og:image" content="{{ url_for('static', filename='images/logo.png', _external=True) }}"/>
   <meta name="csrf-token" content="{{ session.get('csrf_token', '') }}"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
   {% block head %}{% endblock %}
@@ -42,6 +47,16 @@
       {% endif %}
     </nav>
   </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-container">
+    {% for category, message in messages %}
+    <div class="flash flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
 
   <main>
     {% block content %}{% endblock %}

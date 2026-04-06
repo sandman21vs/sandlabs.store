@@ -121,6 +121,36 @@ body.modal-open{
 .nav-link.active{background:rgba(255,255,255,.1); color:#fff; border:1px solid var(--border)}
 
 /* ===================== */
+/*    FLASH MESSAGES     */
+/* ===================== */
+.flash-container{
+  position:sticky;
+  top:72px;
+  z-index:45;
+  max-width:var(--maxw);
+  margin:var(--space-2) auto 0;
+  padding:0 var(--space-2);
+  display:grid;
+  gap:.75rem;
+}
+.flash{
+  padding:.9rem 1rem;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:rgba(18,18,22,.92);
+  backdrop-filter:blur(12px);
+  box-shadow:var(--shadow-sm);
+}
+.flash-success{
+  border-color:rgba(49,163,84,.35);
+  background:rgba(49,163,84,.14);
+}
+.flash-error{
+  border-color:rgba(255,56,56,.35);
+  background:rgba(255,56,56,.14);
+}
+
+/* ===================== */
 /*         HERO          */
 /* ===================== */
 .hero{

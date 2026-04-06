@@ -1,6 +1,8 @@
 import json
+import re
 
 import db
+from services.service_btc_price import brl_to_sats
 
 
 _PRODUCT_SELECT = """
@@ -191,6 +193,42 @@ def _replace_related_records(conn, product_id, prices, images, options):
     )
 
 
+_BRL_PATTERN = re.compile(r"R\$\s*([0-9\.\,]+)")
+
+
+def _format_sats(amount_sats):
+    return f"{int(amount_sats):,} sats".replace(",", " ")
+
+
+def _parse_brl_amount(display_text):
+    match = _BRL_PATTERN.search(display_text or "")
+    if not match:
+        return None
+    raw = match.group(1).replace(".", "").replace(",", ".")
+    try:
+        return float(raw)
+    except ValueError:
+        return None
+
+
+def _build_sats_display(display_text, amount_sats):
+    amount_sats = int(amount_sats or 0)
+    if amount_sats > 0:
+        display = _format_sats(amount_sats)
+        if "sats" in (display_text or "").lower():
+            return display_text
+        return display
+
+    brl_amount = _parse_brl_amount(display_text)
+    if brl_amount is None:
+        return None
+
+    converted_sats = brl_to_sats(brl_amount)
+    if converted_sats <= 0:
+        return None
+    return f"~{_format_sats(converted_sats)}"
+
+
 def get_all_products():
     """Retorna lista de dicts com produtos ativos, incluindo prices, images e options."""
     conn = db.get_db()
@@ -374,6 +412,10 @@ def products_to_js_format(products):
                         "label": price["label"],
                         "valor": price["display_text"],
                         "amountSats": price["amount_sats"],
+                        "satsDisplay": _build_sats_display(
+                            price["display_text"],
+                            price["amount_sats"],
+                        ),
                     }
                     for price in product.get("prices", [])
                 ],

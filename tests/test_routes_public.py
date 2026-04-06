@@ -9,6 +9,8 @@ class TestPublicPages:
         assert resp.status_code == 200
         assert b"Sandlabs" in resp.data
         assert b"PRODUTOS" in resp.data  # window.PRODUTOS injected
+        assert b'property="og:title"' in resp.data
+        assert b'name="description"' in resp.data
 
     def test_produtos_page(self, client, seeded_product):
         resp = client.get("/produtos")
@@ -38,6 +40,11 @@ class TestPublicPages:
     def test_carrinho_page(self, client):
         resp = client.get("/carrinho")
         assert resp.status_code == 200
+
+    def test_health_endpoint(self, client):
+        resp = client.get("/health")
+        assert resp.status_code == 200
+        assert resp.get_json() == {"status": "ok"}
 
 
 class TestLegacyHtmlRedirects:
@@ -118,6 +125,33 @@ class TestProductInjection:
         resp = client.get("/")
         html = resp.data.decode()
         assert "window.PRODUTOS = []" in html
+
+    def test_flash_messages_render_in_base(self, client):
+        client.get("/")
+        with client.session_transaction() as sess:
+            sess["_flashes"] = [("success", "Operação concluída")]
+        html = client.get("/").data.decode()
+        assert "flash-container" in html
+        assert "Operação concluída" in html
+
+    def test_brl_products_include_sats_display_in_json(self, client, db_conn, monkeypatch):
+        monkeypatch.setattr("models.model_products.brl_to_sats", lambda amount: 4600)
+        db_conn.execute(
+            """
+            INSERT INTO products (id, name, summary, details_html, buy_button_text, active)
+            VALUES ('brl-home', 'BRL Home', 'Produto BRL', '', 'Comprar', 1)
+            """
+        )
+        db_conn.execute(
+            """
+            INSERT INTO product_prices (product_id, label, amount_sats, display_text, sort_order)
+            VALUES ('brl-home', 'Base', 0, 'R$ 230', 0)
+            """
+        )
+        db_conn.commit()
+
+        html = client.get("/").data.decode()
+        assert "~4 600 sats" in html
 
 
 class TestNavigation:
