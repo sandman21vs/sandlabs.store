@@ -12,7 +12,7 @@ O sandlabs.store esta sendo convertido de um site estatico (HTML/CSS/JS puro ser
 
 ---
 
-## Estado Atual (Fase 9 Completa)
+## Estado Atual (Fase 9 Completa + Ajustes Pos-Fase 9)
 
 As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 
@@ -20,9 +20,11 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 - Produtos servidos do SQLite e injetados no frontend como `window.PRODUTOS`
 - Carrinho com sessao anonima, endpoints JSON, badge no header e pagina `/carrinho`
 - Autenticacao com registro/login/logout, CSRF global, headers de seguranca e area `/account/orders`
+- Setup inicial em `/admin/setup`, inspirado no FREESANDMANN, com criacao do primeiro admin, definicao da senha e login imediato no painel
 - Checkout autenticado com criacao de pedidos, invoice Lightning via Coinos, QR code, polling e webhook de confirmacao
 - Calculo de frete Post.ch integrado ao checkout, com conversao CHF -> sats via `service_btc_price.py`
 - Painel admin para produtos, pedidos e configuracoes, com tracking/status de pedidos alinhados ao schema atual
+- Configuracoes do Coinos persistidas no SQLite via `/admin/setup` e `/admin/settings`, com prioridade sobre o `.env` durante o runtime de checkout e webhook
 - Galeria e cards usando thumbnails WebP em `static/images/thumb/`, com fallback para a imagem original e geracao automatica em uploads do admin
 - Flash messages globais, metadados SEO/Open Graph, endpoint `/health`, logging adicional em checkout/admin, Docker multi-stage com usuario non-root e healthcheck
 - Exibicao de sats ao lado dos precos em BRL no payload `window.PRODUTOS`, e limpeza dos arquivos HTML/CSS/JS/imagens legados da raiz do repositorio
@@ -37,7 +39,8 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 - Fase 7 executada no commit `394588e` e corrigida no commit `5e069ee` — painel admin e alinhamento do tracking/status ao schema de pedidos
 - Fase 8 executada no commit `f4dff62` — service de thumbnails, script batch, frontend servindo thumbs e 44 thumbnails gerados
 - Fase 9 executada no commit `790ae88` — polish final, SEO, `/health`, Docker de producao, precos em sats e limpeza dos legados da raiz
-- Suite de testes apos Fase 9: `pytest tests/ -q` -> `189 passed`
+- Ajuste pos-Fase 9 executado no commit `32a38f2` — setup inicial estilo wizard, Coinos configuravel via UI e runtime alinhado ao banco
+- Suite de testes apos o ajuste pos-Fase 9: `pytest tests/ -q` -> `193 passed`
 
 ### Convencao de rastreabilidade
 
@@ -48,19 +51,20 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 
 ```
 app.py                     # Flask app, static_url_path="", redirects .html legados
-config.py                  # SECRET_KEY, DATABASE_PATH, COINOS_* via env vars
+config.py                  # SECRET_KEY, DATABASE_PATH, COINOS_* como defaults de bootstrap via env
 db.py                      # get_db() com sqlite3.Row + WAL mode + foreign_keys
 requirements.txt           # Flask==3.1.0, gunicorn==23.0.0, Pillow==11.1.0, qrcode==8.0
 gunicorn.conf.py           # bind 0.0.0.0:8000, 2 workers, preload
 Dockerfile                 # python:3.12-slim + gunicorn
 docker-compose.yml         # port 8080:8000, volume ./data:/app/data
-.env.example               # Template de variaveis de ambiente
+.env.example               # Template de variaveis de ambiente e bootstrap opcional do admin/Coinos
 
 routes/
   __init__.py
   routes_public.py         # Blueprint "public" com rotas /, /produtos, /sobre, /termos, /suporte, /config
 
 models/__init__.py         # Vazio (pacote)
+models/model_config.py     # Config key-value com fallback para env, setup inicial e Coinos runtime
 services/__init__.py       # Vazio (pacote)
 
 templates/
@@ -100,6 +104,8 @@ python app.py
 docker compose up --build
 # Acesse http://localhost:8080
 ```
+
+Se `ADMIN_PASSWORD` estiver vazio, o primeiro acesso ao painel admin deve passar por `/admin/setup`.
 
 ### Verificacao da Fase 1
 
@@ -651,10 +657,17 @@ Todos usando o design system existente (`.card`, `.glass`, `.btn-accent`, tema d
 No `init_db.py`, apos criar tabelas, verificar se existe admin:
 ```python
 if config.ADMIN_PASSWORD:
-    # Criar usuario admin se nao existe
+    # Criar usuario admin bootstrap se nao existe
     # email: config.ADMIN_USERNAME + "@admin.local"
     # is_admin: 1
+    # marcar setup_complete=1 no config
 ```
+
+Se `ADMIN_PASSWORD` estiver vazio, o fluxo padrao agora e:
+
+- qualquer rota `/admin/*` redireciona para `/admin/setup` enquanto nao existir admin
+- `/admin/setup` cria o primeiro admin, define a senha e inicia a sessao automaticamente
+- o wizard pode opcionalmente salvar `coinos_api_key`, `coinos_webhook_secret` e `coinos_enabled`
 
 #### Alteracoes no `templates/base.html`
 
@@ -695,9 +708,9 @@ Os seguintes arquivos devem ser adaptados (NAO copiados literalmente):
 
 Adaptar de `/home/msi/FREESANDMANN/coinos_client.py`. Mudancas:
 
-1. **API key:** Ler de `config.COINOS_API_KEY` (env var) em vez de `models.get_config("coinos_api_key")` (banco)
-2. **Webhook secret:** Ler de `config.COINOS_WEBHOOK_SECRET`
-3. **Enabled check:** Usar `config.COINOS_ENABLED`
+1. **API key:** Ler de `models/model_config.py` (`get_config("coinos_api_key")`) com fallback para `config.COINOS_API_KEY`
+2. **Webhook secret:** Ler de `models/model_config.py` (`get_config("coinos_webhook_secret")`) com fallback para `config.COINOS_WEBHOOK_SECRET`
+3. **Enabled check:** Usar `get_bool_config("coinos_enabled")` com fallback para `config.COINOS_ENABLED`
 4. **Remover:** `get_received_sats()`, `check_lightning_balance()`, `get_onchain_address()`, `get_fresh_*_address()`, `get_account_username()`, `_coinos_public_request()` — funcoes especificas de balance tracking de doacoes
 5. **Manter:** `_coinos_request()`, `create_invoice()`, `check_invoice()`
 
@@ -706,24 +719,26 @@ Estrutura final:
 """Coinos.io API client for sandlabs.store"""
 import json, logging, re, urllib.request
 import config
+from models.model_config import get_config, get_bool_config
 
 COINOS_API_BASE = "https://coinos.io/api"
 _COINOS_HASH_PATTERN = re.compile(r"^[a-zA-Z0-9]+$")
 
 def _coinos_request(method, path, body=None):
-    api_key = config.COINOS_API_KEY  # <-- mudanca principal
+    api_key = get_config("coinos_api_key", config.COINOS_API_KEY)
     if not api_key:
         return None
     # ... resto identico ao FREESANDMANN ...
 
 def create_invoice(amount_sats, invoice_type="lightning", webhook_url=None):
-    if not config.COINOS_ENABLED:  # <-- mudanca
+    if not get_bool_config("coinos_enabled", config.COINOS_ENABLED):  # <-- mudanca
         return None
     # ... validacoes identicas ...
     invoice_data = {"amount": amount_sats, "type": invoice_type}
     if webhook_url:
-        if config.COINOS_WEBHOOK_SECRET:  # <-- mudanca
-            invoice_data["secret"] = config.COINOS_WEBHOOK_SECRET
+        secret = get_config("coinos_webhook_secret", config.COINOS_WEBHOOK_SECRET)
+        if secret:
+            invoice_data["secret"] = secret
         invoice_data["webhook"] = webhook_url
     return _coinos_request("POST", "/invoice", {"invoice": invoice_data})
 
