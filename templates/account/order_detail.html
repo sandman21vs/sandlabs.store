@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Pedido #{{ order.id }}{% endblock %}
+
+{% block content %}
+    <section class="section">
+      <div class="section-head">
+        <h1 class="section-title">Pedido #{{ order.id }}</h1>
+        <p class="section-sub">Detalhes do pedido, itens, envio e status atual.</p>
+      </div>
+
+      <div class="order-detail-shell stack-lg">
+        <article class="card glass order-detail-card">
+          <div class="order-card-head">
+            <div>
+              <p class="order-label">Status atual</p>
+              <h2 class="order-title">{{ order.total_sats }} sats</h2>
+            </div>
+            <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
+          </div>
+          <p class="muted">Criado em {{ order.created_at }}</p>
+          <p class="muted">Frete: {{ order.shipping_sats }} sats</p>
+          <p class="muted">Pais: {{ order.shipping_country or 'CH' }}</p>
+          {% if order.shipping_tracking %}
+            <p><strong>Tracking:</strong> {{ order.shipping_tracking }}</p>
+          {% endif %}
+          {% if order.payment_confirmed_at %}
+            <p><strong>Pagamento confirmado em:</strong> {{ order.payment_confirmed_at }}</p>
+          {% endif %}
+        </article>
+
+        <article class="card glass order-detail-card">
+          <h2 class="order-section-title">Itens</h2>
+          {% if order["items"] %}
+            <div class="order-items">
+              {% for item in order["items"] %}
+                <div class="order-item-row">
+                  <div>
+                    <p class="order-item-title">{{ item.product_name or item.product_id }}</p>
+                    <p class="muted">{{ item.price_label or 'Preco' }}</p>
+                    {% if item["options"].get('selections') %}
+                      <ul class="cart-option-list">
+                        {% for selection in item["options"].get('selections', []) %}
+                          <li>
+                            {{ selection.title }}:
+                            {% for entry in selection.inputs %}
+                              {{ entry.label }} {{ entry.value }}{% if not loop.last %} • {% endif %}
+                            {% endfor %}
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% elif item["options"].get('mode') %}
+                      <p class="muted">Formato: {{ item["options"].get('mode') }}</p>
+                    {% endif %}
+                  </div>
+                  <div class="order-item-meta">
+                    <p>Qtd: {{ item.quantity }}</p>
+                    <p>{{ item.line_total_sats }} sats</p>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="muted">Este pedido ainda nao possui itens registrados.</p>
+          {% endif %}
+        </article>
+      </div>
+    </section>
+{% endblock %}

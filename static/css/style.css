@@ -93,6 +93,13 @@ body.modal-open{
   color:var(--text); text-decoration:none; padding:.45rem .85rem;
   border-radius:10px; transition:background .2s, color .2s
 }
+.nav-form{margin:0}
+.nav-button{
+  background:transparent;
+  border:none;
+  font:inherit;
+  cursor:pointer;
+}
 .cart-link{position:relative}
 .cart-badge{
   position:absolute;
@@ -464,6 +471,125 @@ Editar
 .card-badge.neutral{ background:rgba(255,255,255,.15) }
 
 /* ===================== */
+/*      AUTH / AREA      */
+/* ===================== */
+.auth-shell,
+.orders-shell,
+.order-detail-shell{
+  max-width:var(--maxw);
+  margin:0 auto;
+}
+.auth-card,
+.order-detail-card{
+  max-width:720px;
+  margin:0 auto;
+  padding:var(--space-4);
+}
+.auth-head{margin-bottom:var(--space-3)}
+.form-stack{display:grid; gap:var(--space-3)}
+.field{display:grid; gap:.55rem}
+.field span{font-weight:700; letter-spacing:.2px}
+.field input{
+  width:100%;
+  padding:.85rem 1rem;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:#131317;
+  color:#fff;
+}
+.field input:focus{
+  outline:none;
+  border-color:rgba(255,56,56,.45);
+  box-shadow:0 0 0 3px rgba(255,56,56,.08);
+}
+.auth-submit{width:100%}
+.auth-helper{
+  margin-top:var(--space-3);
+  color:var(--muted);
+  text-align:center;
+}
+.auth-helper a{color:#fff}
+.form-alert{
+  margin-bottom:var(--space-3);
+  padding:.85rem 1rem;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.05);
+}
+.form-alert.is-error{
+  border-color:rgba(255,56,56,.45);
+  background:rgba(255,56,56,.12);
+}
+.orders-grid{display:grid; gap:var(--space-3)}
+.order-card{
+  padding:var(--space-3);
+  display:grid;
+  gap:var(--space-2);
+}
+.order-card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:var(--space-2);
+}
+.order-label{
+  color:var(--muted);
+  text-transform:uppercase;
+  font-size:.78rem;
+  letter-spacing:.45px;
+  margin-bottom:.25rem;
+}
+.order-title{
+  font-size:1.3rem;
+  line-height:1.2;
+}
+.status-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:92px;
+  padding:.38rem .65rem;
+  border-radius:999px;
+  font-size:.76rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.35px;
+  border:1px solid var(--border);
+}
+.status-pending{background:rgba(255,255,255,.1)}
+.status-paid{background:rgba(49,163,84,.25); border-color:rgba(49,163,84,.45)}
+.status-processing{background:rgba(107,141,255,.25); border-color:rgba(107,141,255,.45)}
+.status-shipped{background:rgba(255,184,77,.22); border-color:rgba(255,184,77,.45)}
+.status-delivered{background:rgba(0,184,148,.22); border-color:rgba(0,184,148,.45)}
+.status-cancelled{background:rgba(255,56,56,.18); border-color:rgba(255,56,56,.45)}
+.orders-empty{
+  max-width:720px;
+  margin:0 auto;
+  padding:var(--space-4);
+  text-align:center;
+}
+.orders-empty h2{margin-bottom:.75rem}
+.orders-empty .btn{margin-top:var(--space-3)}
+.order-section-title{
+  font-size:1.1rem;
+  margin-bottom:var(--space-3);
+}
+.order-items{display:grid; gap:var(--space-3)}
+.order-item-row{
+  display:flex;
+  justify-content:space-between;
+  gap:var(--space-3);
+  padding-top:var(--space-2);
+  border-top:1px solid var(--border);
+}
+.order-item-row:first-child{
+  border-top:none;
+  padding-top:0;
+}
+.order-item-title{font-weight:700; margin-bottom:.25rem}
+.order-item-meta{text-align:right; color:#d8d8d8}
+
+/* ===================== */
 /*        CARRINHO       */
 /* ===================== */
 .cart-shell{max-width:var(--maxw); margin:0 auto}
@@ -510,8 +636,12 @@ Editar
 .cart-toast.is-error{border-color:rgba(255,56,56,.45)}
 
 @media (max-width: 720px){
+  .site-nav{flex-wrap:wrap; justify-content:flex-end}
   .cart-item-main{flex-direction:column}
   .cart-item-meta{min-width:0; text-align:left}
   .cart-item-actions{flex-direction:column; align-items:stretch}
   .cart-qty-controls{justify-content:center}
+  .order-card-head,
+  .order-item-row{flex-direction:column}
+  .order-item-meta{text-align:left}
 }

@@ -12,40 +12,40 @@ def product_ids(seeded_product):
 
 
 class TestAddCartAPI:
-    def test_add_item(self, client, product_ids):
+    def test_add_item(self, client, product_ids, csrf_headers):
         pid, price_id = product_ids
         resp = client.post("/api/cart/add", json={
             "product_id": pid,
             "price_id": price_id,
             "quantity": 1,
             "options": {},
-        })
+        }, headers=csrf_headers)
         assert resp.status_code == 200
         data = resp.get_json()
         assert data["ok"] is True
         assert data["cart_count"] == 1
 
-    def test_add_missing_product_id(self, client):
-        resp = client.post("/api/cart/add", json={"price_id": 1})
+    def test_add_missing_product_id(self, client, csrf_headers):
+        resp = client.post("/api/cart/add", json={"price_id": 1}, headers=csrf_headers)
         assert resp.status_code == 400
 
-    def test_add_missing_price_id(self, client, product_ids):
+    def test_add_missing_price_id(self, client, product_ids, csrf_headers):
         pid, _ = product_ids
-        resp = client.post("/api/cart/add", json={"product_id": pid})
+        resp = client.post("/api/cart/add", json={"product_id": pid}, headers=csrf_headers)
         assert resp.status_code == 400
 
-    def test_add_invalid_product(self, client):
+    def test_add_invalid_product(self, client, csrf_headers):
         resp = client.post("/api/cart/add", json={
             "product_id": "nonexistent",
             "price_id": 9999,
-        })
+        }, headers=csrf_headers)
         assert resp.status_code == 400
 
-    def test_add_increments_quantity(self, client, product_ids):
+    def test_add_increments_quantity(self, client, product_ids, csrf_headers):
         pid, price_id = product_ids
         payload = {"product_id": pid, "price_id": price_id, "quantity": 1, "options": {}}
-        client.post("/api/cart/add", json=payload)
-        resp = client.post("/api/cart/add", json=payload)
+        client.post("/api/cart/add", json=payload, headers=csrf_headers)
+        resp = client.post("/api/cart/add", json=payload, headers=csrf_headers)
         assert resp.get_json()["cart_count"] == 2
 
 
@@ -58,11 +58,11 @@ class TestGetCartAPI:
         assert data["total_sats"] == 0
         assert data["count"] == 0
 
-    def test_cart_with_items(self, client, product_ids):
+    def test_cart_with_items(self, client, product_ids, csrf_headers):
         pid, price_id = product_ids
         client.post("/api/cart/add", json={
             "product_id": pid, "price_id": price_id, "quantity": 2, "options": {},
-        })
+        }, headers=csrf_headers)
         resp = client.get("/api/cart")
         data = resp.get_json()
         assert data["count"] == 2
@@ -72,11 +72,11 @@ class TestGetCartAPI:
 
 
 class TestUpdateCartAPI:
-    def test_update_quantity(self, client, product_ids):
+    def test_update_quantity(self, client, product_ids, csrf_headers):
         pid, price_id = product_ids
         client.post("/api/cart/add", json={
             "product_id": pid, "price_id": price_id, "quantity": 1, "options": {},
-        })
+        }, headers=csrf_headers)
         items = client.get("/api/cart").get_json()["items"]
         item_id = items[0]["id"]
 
@@ -87,11 +87,11 @@ class TestUpdateCartAPI:
         updated = client.get("/api/cart").get_json()
         assert updated["count"] == 5
 
-    def test_update_missing_quantity(self, client, product_ids):
+    def test_update_missing_quantity(self, client, product_ids, csrf_headers):
         pid, price_id = product_ids
         client.post("/api/cart/add", json={
             "product_id": pid, "price_id": price_id, "quantity": 1, "options": {},
-        })
+        }, headers=csrf_headers)
         items = client.get("/api/cart").get_json()["items"]
         item_id = items[0]["id"]
         resp = client.put(f"/api/cart/{item_id}", json={})
@@ -103,11 +103,11 @@ class TestUpdateCartAPI:
 
 
 class TestRemoveCartAPI:
-    def test_remove_item(self, client, product_ids):
+    def test_remove_item(self, client, product_ids, csrf_headers):
         pid, price_id = product_ids
         client.post("/api/cart/add", json={
             "product_id": pid, "price_id": price_id, "quantity": 1, "options": {},
-        })
+        }, headers=csrf_headers)
         items = client.get("/api/cart").get_json()["items"]
         item_id = items[0]["id"]
 
@@ -121,11 +121,11 @@ class TestRemoveCartAPI:
 
 
 class TestClearCartAPI:
-    def test_clear_all(self, client, product_ids):
+    def test_clear_all(self, client, product_ids, csrf_headers):
         pid, price_id = product_ids
         client.post("/api/cart/add", json={
             "product_id": pid, "price_id": price_id, "quantity": 1, "options": {},
-        })
+        }, headers=csrf_headers)
         resp = client.delete("/api/cart")
         assert resp.status_code == 200
         assert resp.get_json()["ok"] is True
@@ -141,11 +141,11 @@ class TestCartPage:
         resp = client.get("/carrinho")
         assert resp.status_code == 200
 
-    def test_cart_page_shows_items(self, client, product_ids):
+    def test_cart_page_shows_items(self, client, product_ids, csrf_headers):
         pid, price_id = product_ids
         client.post("/api/cart/add", json={
             "product_id": pid, "price_id": price_id, "quantity": 2, "options": {},
-        })
+        }, headers=csrf_headers)
         resp = client.get("/carrinho")
         html = resp.data.decode()
         assert "Test Product" in html
@@ -159,12 +159,19 @@ class TestCartSessionIsolation:
         c1 = app.test_client()
         c2 = app.test_client()
 
+        c1.get("/")
+        with c1.session_transaction() as sess:
+            csrf1 = sess["csrf_token"]
+        c2.get("/")
+        with c2.session_transaction() as sess:
+            csrf2 = sess["csrf_token"]
+
         c1.post("/api/cart/add", json={
             "product_id": pid, "price_id": price_id, "quantity": 3, "options": {},
-        })
+        }, headers={"X-CSRFToken": csrf1})
         c2.post("/api/cart/add", json={
             "product_id": pid, "price_id": price_id, "quantity": 1, "options": {},
-        })
+        }, headers={"X-CSRFToken": csrf2})
 
         assert c1.get("/api/cart").get_json()["count"] == 3
         assert c2.get("/api/cart").get_json()["count"] == 1

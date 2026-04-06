@@ -2,6 +2,7 @@ import os
 
 import config
 import db
+from werkzeug.security import generate_password_hash
 
 
 SCHEMA = """
@@ -149,6 +150,24 @@ def init_db():
             """,
             DEFAULT_COLORS,
         )
+        if config.ADMIN_PASSWORD:
+            admin_email = f"{config.ADMIN_USERNAME}@admin.local"
+            admin_exists = conn.execute(
+                "SELECT id FROM users WHERE email = ? LIMIT 1",
+                (admin_email,),
+            ).fetchone()
+            if admin_exists is None:
+                conn.execute(
+                    """
+                    INSERT INTO users (email, display_name, password_hash, is_admin)
+                    VALUES (?, ?, ?, 1)
+                    """,
+                    (
+                        admin_email,
+                        config.ADMIN_USERNAME,
+                        generate_password_hash(config.ADMIN_PASSWORD),
+                    ),
+                )
         conn.commit()
     finally:
         conn.close()

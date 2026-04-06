@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Entrar{% endblock %}
+
+{% block content %}
+    <section class="section">
+      <div class="auth-shell">
+        <article class="card glass auth-card">
+          <div class="section-head auth-head">
+            <h1 class="section-title">Entrar</h1>
+            <p class="section-sub">Acesse sua conta para acompanhar pedidos e manter o carrinho vinculado.</p>
+          </div>
+
+          {% if error %}
+            <div class="form-alert is-error">{{ error }}</div>
+          {% endif %}
+
+          <form method="post" action="{{ url_for('auth.login') }}" class="form-stack">
+            <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+            <input type="hidden" name="next" value="{{ next_url or '' }}">
+
+            <label class="field">
+              <span>Email</span>
+              <input type="email" name="email" value="{{ (form_data or {}).get('email', '') }}" required>
+            </label>
+
+            <label class="field">
+              <span>Senha</span>
+              <input type="password" name="password" required>
+            </label>
+
+            <button type="submit" class="btn btn-accent auth-submit">Entrar</button>
+          </form>
+
+          <p class="auth-helper">Ainda nao tem conta? <a href="{{ url_for('auth.register') }}">Crie seu cadastro</a>.</p>
+        </article>
+      </div>
+    </section>
+{% endblock %}

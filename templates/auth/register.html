@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Cadastro{% endblock %}
+
+{% block content %}
+    <section class="section">
+      <div class="auth-shell">
+        <article class="card glass auth-card">
+          <div class="section-head auth-head">
+            <h1 class="section-title">Criar conta</h1>
+            <p class="section-sub">Salve seus pedidos e vincule o carrinho a uma sessao persistente.</p>
+          </div>
+
+          {% if error %}
+            <div class="form-alert is-error">{{ error }}</div>
+          {% endif %}
+
+          <form method="post" action="{{ url_for('auth.register') }}" class="form-stack">
+            <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+
+            <label class="field">
+              <span>Nome</span>
+              <input type="text" name="display_name" value="{{ (form_data or {}).get('display_name', '') }}" placeholder="Como devemos te chamar">
+            </label>
+
+            <label class="field">
+              <span>Email</span>
+              <input type="email" name="email" value="{{ (form_data or {}).get('email', '') }}" required>
+            </label>
+
+            <label class="field">
+              <span>Senha</span>
+              <input type="password" name="password" required>
+            </label>
+
+            <label class="field">
+              <span>Confirmar senha</span>
+              <input type="password" name="password_confirm" required>
+            </label>
+
+            <button type="submit" class="btn btn-accent auth-submit">Criar conta</button>
+          </form>
+
+          <p class="auth-helper">Ja tem conta? <a href="{{ url_for('auth.login') }}">Entre aqui</a>.</p>
+        </article>
+      </div>
+    </section>
+{% endblock %}

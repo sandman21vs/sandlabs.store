@@ -1,6 +1,20 @@
 (function(){
+  function getCsrfToken() {
+    if (window.CSRF_TOKEN) return window.CSRF_TOKEN;
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute('content') : '';
+  }
+
   async function fetchJSON(url, options = {}) {
-    const response = await fetch(url, options);
+    const requestOptions = { ...options };
+    const method = (requestOptions.method || 'GET').toUpperCase();
+    const headers = new Headers(requestOptions.headers || {});
+    if (method !== 'GET' && method !== 'HEAD') {
+      headers.set('X-CSRFToken', getCsrfToken());
+    }
+    requestOptions.headers = headers;
+
+    const response = await fetch(url, requestOptions);
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
       const message = data.error || `HTTP ${response.status}`;

@@ -1,5 +1,7 @@
 """Tests for database initialization and schema."""
 
+import importlib
+
 
 def test_schema_creates_all_tables(db_conn):
     """All expected tables exist after init_db()."""
@@ -60,3 +62,33 @@ def test_init_db_idempotent(tmp_db):
     count = conn.execute("SELECT COUNT(*) FROM colors").fetchone()[0]
     conn.close()
     assert count == 6
+
+
+def test_admin_bootstrap_creates_admin_user(tmp_path, monkeypatch):
+    db_path = str(tmp_path / "admin.db")
+    monkeypatch.setenv("DATABASE_PATH", db_path)
+    monkeypatch.setenv("SECRET_KEY", "test-secret-key")
+    monkeypatch.setenv("ADMIN_USERNAME", "owner")
+    monkeypatch.setenv("ADMIN_PASSWORD", "admin-secret")
+
+    import config
+    import db as db_mod
+    import init_db
+
+    importlib.reload(config)
+    importlib.reload(db_mod)
+    importlib.reload(init_db)
+    init_db.init_db()
+
+    conn = db_mod.get_db()
+    row = conn.execute(
+        "SELECT email, display_name, is_admin, password_hash FROM users WHERE email = ?",
+        ("owner@admin.local",),
+    ).fetchone()
+    conn.close()
+
+    assert row is not None
+    assert row["email"] == "owner@admin.local"
+    assert row["display_name"] == "owner"
+    assert row["is_admin"] == 1
+    assert row["password_hash"] != "admin-secret"

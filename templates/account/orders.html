@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Pedidos{% endblock %}
+
+{% block content %}
+    <section class="section">
+      <div class="section-head">
+        <h1 class="section-title">Seus pedidos</h1>
+        <p class="section-sub">Acompanhe status, pagamento confirmado e codigo de rastreio.</p>
+      </div>
+
+      <div class="orders-shell">
+        {% if orders %}
+          <div class="orders-grid">
+            {% for order in orders %}
+              <article class="card glass order-card">
+                <div class="order-card-head">
+                  <div>
+                    <p class="order-label">Pedido #{{ order.id }}</p>
+                    <h2 class="order-title">{{ order.total_sats }} sats</h2>
+                  </div>
+                  <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
+                </div>
+                <p class="muted">Criado em {{ order.created_at }}</p>
+                {% if order.shipping_tracking %}
+                  <p class="muted">Tracking: {{ order.shipping_tracking }}</p>
+                {% endif %}
+                <a class="btn btn-ghost" href="{{ url_for('account.order_detail', order_id=order.id) }}">Ver detalhes</a>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="card glass orders-empty">
+            <h2>Nenhum pedido ainda</h2>
+            <p class="muted">Quando voce finalizar uma compra, ela aparecera aqui.</p>
+            <a class="btn btn-accent" href="{{ url_for('public.produtos') }}">Explorar produtos</a>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+{% endblock %}

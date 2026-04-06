@@ -1,5 +1,6 @@
 """Shared fixtures for all tests."""
 
+import os as pyos
 import os
 import sys
 import tempfile
@@ -54,6 +55,16 @@ def app(tmp_db):
     importlib.reload(rc)
     import routes.routes_checkout as rco
     importlib.reload(rco)
+    import models.model_users as mu
+    importlib.reload(mu)
+    import models.model_orders as mo
+    importlib.reload(mo)
+    import routes.routes_auth as ra
+    importlib.reload(ra)
+    import routes.routes_account as racc
+    importlib.reload(racc)
+    import routes.routes_admin as radm
+    importlib.reload(radm)
 
     from flask import Flask
     test_app = Flask(
@@ -64,9 +75,37 @@ def app(tmp_db):
     )
     test_app.secret_key = "test-secret-key"
     test_app.config["TESTING"] = True
+
+    @test_app.before_request
+    def generate_csrf_token():
+        from flask import session
+
+        if "csrf_token" not in session:
+            session["csrf_token"] = pyos.urandom(16).hex()
+
+    @test_app.before_request
+    def csrf_protect():
+        from flask import abort, request, session
+
+        if request.method == "POST":
+            token = session.get("csrf_token", "")
+            form_token = request.form.get("csrf_token", "") or request.headers.get("X-CSRFToken", "")
+            if not token or token != form_token:
+                abort(403)
+
+    @test_app.after_request
+    def set_security_headers(response):
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
+
     test_app.register_blueprint(rp.public)
     test_app.register_blueprint(rc.cart)
     test_app.register_blueprint(rco.checkout)
+    test_app.register_blueprint(ra.auth)
+    test_app.register_blueprint(racc.account)
+    test_app.register_blueprint(radm.admin)
 
     # Register legacy .html redirects (same as app.py)
     from flask import redirect, request as flask_request
@@ -78,6 +117,8 @@ def app(tmp_db):
         "termos.html": "public.termos",
         "suporte.html": "public.suporte",
         "config.html": "public.config_page",
+        "login.html": "auth.login",
+        "register.html": "auth.register",
     }
 
     @test_app.route("/<page>.html")
@@ -99,6 +140,20 @@ def app(tmp_db):
 def client(app):
     """Flask test client."""
     return app.test_client()
+
+
+@pytest.fixture()
+def csrf_token(client):
+    """Return the CSRF token for the current client session."""
+    client.get("/")
+    with client.session_transaction() as sess:
+        return sess["csrf_token"]
+
+
+@pytest.fixture()
+def csrf_headers(csrf_token):
+    """Return headers with the current CSRF token."""
+    return {"X-CSRFToken": csrf_token}
 
 
 @pytest.fixture()
