@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Carrinho{% endblock %}
+
+{% block content %}
+    <section class="section">
+      <div class="section-head">
+        <h1 class="section-title">Seu carrinho</h1>
+        <p class="section-sub">Revise os itens antes de seguir para o checkout.</p>
+      </div>
+
+      <div id="cart-page" class="cart-shell stack-lg">
+        {% if items %}
+          <div class="cart-list">
+            {% for item in items %}
+              <article class="card glass cart-item" data-item-id="{{ item.id }}" data-quantity="{{ item.quantity }}">
+                <div class="cart-item-main">
+                  <div>
+                    <p class="cart-item-kicker">{{ item.price_label }}</p>
+                    <h2 class="cart-item-title">{{ item.product_name }}</h2>
+                    {% if item.option_lines %}
+                      <ul class="cart-option-list">
+                        {% for line in item.option_lines %}
+                          <li>{{ line }}</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  </div>
+
+                  <div class="cart-item-meta">
+                    <p><strong>Unitário:</strong> {{ item.display_text }}</p>
+                    {% if item.has_amount_sats %}
+                      <p><strong>Subtotal:</strong> {{ item.line_total_sats }} sats</p>
+                    {% else %}
+                      <p><strong>Subtotal em sats:</strong> indisponível</p>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="cart-item-actions">
+                  <div class="cart-qty-controls">
+                    <button type="button" class="cart-qty-btn" data-action="qty" data-delta="-1" aria-label="Diminuir quantidade">-</button>
+                    <span class="cart-qty-value">{{ item.quantity }}</span>
+                    <button type="button" class="cart-qty-btn" data-action="qty" data-delta="1" aria-label="Aumentar quantidade">+</button>
+                  </div>
+
+                  <button type="button" class="btn btn-ghost cart-remove-btn" data-action="remove">Remover</button>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+
+          <aside class="card glass cart-summary">
+            <p class="cart-summary-label">Itens no carrinho: {{ count }}</p>
+            <h2 class="cart-summary-total">{{ total_sats }} sats</h2>
+            {% if has_pending_prices %}
+              <p class="muted">Alguns itens mantêm apenas o texto original em BRL; o total em sats depende do campo `amount_sats` cadastrado.</p>
+            {% endif %}
+            <div class="cart-actions">
+              <a class="btn btn-accent" href="/checkout">Finalizar compra</a>
+              <a class="btn btn-ghost" href="{{ url_for('public.produtos') }}">Continuar comprando</a>
+              <button type="button" class="btn btn-ghost" data-action="clear-cart">Limpar carrinho</button>
+            </div>
+          </aside>
+        {% else %}
+          <div class="card glass cart-empty">
+            <h2>Seu carrinho está vazio</h2>
+            <p class="muted">Adicione um produto para revisar itens e seguir para o checkout.</p>
+            <a class="btn btn-accent" href="{{ url_for('public.produtos') }}">Ver produtos</a>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+{% endblock %}

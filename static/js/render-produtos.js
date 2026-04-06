@@ -13,6 +13,178 @@
     return e;
   }
 
+  function findProductById(id) {
+    return (window.PRODUTOS || []).find((product) => product.id === id) || null;
+  }
+
+  function formDataToObject(form) {
+    const data = {};
+    const fd = new FormData(form);
+    for (const [key, value] of fd.entries()) {
+      data[key] = value;
+    }
+    form.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+      data[input.name] = input.checked;
+    });
+    return data;
+  }
+
+  function sanitize(value) {
+    return (value || '').toString().trim();
+  }
+
+  function normalizeLabel(text) {
+    return (text || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\([^)]*\)/g, ' ')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  }
+
+  function findMatchingPrice(prod, option, index) {
+    const prices = Array.isArray(prod.preco) ? prod.preco : [];
+    if (!prices.length) return null;
+
+    const optionLabel = normalizeLabel(option.title);
+    const matched = prices.find((price) => {
+      const priceLabel = normalizeLabel(price.label);
+      return optionLabel && priceLabel && (
+        optionLabel.includes(priceLabel)
+        || priceLabel.includes(optionLabel)
+        || (optionLabel.includes('box') && priceLabel.includes('box'))
+        || (optionLabel.includes('modcase') && priceLabel.includes('modcase'))
+      );
+    });
+
+    if (matched) return matched;
+    if (index === 0) return prices[0];
+    return prices[0];
+  }
+
+  function selectionPayload(option, inputs) {
+    return {
+      title: option.title || '',
+      inputs
+    };
+  }
+
+  function buildCartItems(prod, form) {
+    const prices = Array.isArray(prod.preco) ? prod.preco : [];
+    if (!prices.length || !prices[0].id) {
+      return { error: 'Este produto ainda não tem preço configurado para o carrinho.', items: [] };
+    }
+
+    const data = formDataToObject(form);
+
+    if (prod.id === 'sandseed') {
+      const mode = sanitize(data.seedPack) === 'single' ? 'single' : 'kit';
+      const selectedPrice = prices.find((price) => {
+        const label = normalizeLabel(price.label);
+        return mode === 'single' ? label.includes('placa avulsa') : label.includes('kit 5 un');
+      }) || prices[0];
+
+      return {
+        error: '',
+        items: [
+          {
+            productId: prod.id,
+            priceId: selectedPrice.id,
+            quantity: mode === 'single' ? Math.max(1, parseInt(data.seedQty || '1', 10) || 1) : 1,
+            options: { mode }
+          }
+        ]
+      };
+    }
+
+    const primaryPrice = prices[0];
+    const primarySelections = [];
+    const extraItems = [];
+
+    (prod.options || []).forEach((option, index) => {
+      if (option.type === 'seedPack') return;
+
+      if (option.type === 'colorPair') {
+        const first = option.inputs?.[0];
+        const second = option.inputs?.[1];
+        const firstValue = sanitize(data[first?.name]);
+        const secondValue = sanitize(data[second?.name]);
+
+        if ((firstValue && !secondValue) || (!firstValue && secondValue)) {
+          extraItems.length = 0;
+          primarySelections.length = 0;
+          throw new Error(`Selecione ambas as cores para “${option.title}” ou deixe ambas em branco.`);
+        }
+
+        if (!firstValue && !secondValue) return;
+
+        const payload = selectionPayload(option, [
+          { name: first?.name, label: first?.label || 'Cor 1', value: firstValue },
+          { name: second?.name, label: second?.label || 'Cor 2', value: secondValue }
+        ]);
+        const matchedPrice = findMatchingPrice(prod, option, index);
+        if (matchedPrice && matchedPrice.id !== primaryPrice.id) {
+          extraItems.push({
+            productId: prod.id,
+            priceId: matchedPrice.id,
+            quantity: 1,
+            options: { selections: [payload] }
+          });
+        } else {
+          primarySelections.push(payload);
+        }
+      }
+
+      if (option.type === 'colorSingle') {
+        const input = option.input;
+        const value = sanitize(data[input?.name]);
+        if (!value) return;
+
+        const payload = selectionPayload(option, [
+          { name: input?.name, label: input?.label || option.title || 'Cor', value }
+        ]);
+        const matchedPrice = findMatchingPrice(prod, option, index);
+        if (matchedPrice && matchedPrice.id !== primaryPrice.id) {
+          extraItems.push({
+            productId: prod.id,
+            priceId: matchedPrice.id,
+            quantity: 1,
+            options: { selections: [payload] }
+          });
+        } else {
+          primarySelections.push(payload);
+        }
+      }
+    });
+
+    const items = [
+      {
+        productId: prod.id,
+        priceId: primaryPrice.id,
+        quantity: 1,
+        options: primarySelections.length ? { selections: primarySelections } : {}
+      }
+    ];
+
+    extraItems.forEach((item) => items.push(item));
+
+    if (data.addSeedKit && prod.allowAddOnSeed) {
+      const seedProduct = findProductById('sandseed');
+      const seedPrice = (seedProduct?.preco || []).find((price) => normalizeLabel(price.label).includes('kit 5 un'));
+      if (seedProduct && seedPrice?.id) {
+        items.push({
+          productId: seedProduct.id,
+          priceId: seedPrice.id,
+          quantity: 1,
+          options: { mode: 'kit' }
+        });
+      }
+    }
+
+    return { error: '', items };
+  }
+
   /* Lista de preços HTML */
   function priceListHTML(precos) {
     if (!Array.isArray(precos)) return '';
@@ -208,14 +380,36 @@ function buildGallery(prod) {
 
     /* Ações finais */
     const actions = el('div', { class:'final-actions' });
+    const bCart   = el('button', { type:'button', class:'final-btn final-btn-accent' }, 'Adicionar ao Carrinho');
     const bWhats  = el('button', { type:'button', class:'final-btn' }, 'WhatsApp');
     const bTele   = el('button',  { type:'button', class:'final-btn' }, 'Telegram');
+    bCart.addEventListener('click', async () => {
+      try {
+        const { error, items } = buildCartItems(prod, form);
+        if (error) {
+          alert(error);
+          return;
+        }
+        if (typeof addCartBatch !== 'function') {
+          alert('Carrinho indisponível no momento.');
+          return;
+        }
+        await addCartBatch(items);
+        closePurchaseModal();
+        if (typeof showCartToast === 'function') {
+          showCartToast('Produto adicionado ao carrinho.');
+        }
+      } catch (error) {
+        alert(error.message || 'Não foi possível adicionar ao carrinho.');
+      }
+    });
     bWhats.addEventListener('click', () => {
       if (typeof finalizeCompra === 'function') finalizeCompra(form, prod.id, 'whats');
     });
     bTele .addEventListener('click', () => {
       if (typeof finalizeCompra === 'function') finalizeCompra(form, prod.id, 'tele');
     });
+    actions.appendChild(bCart);
     actions.appendChild(bWhats);
     actions.appendChild(bTele);
     form.appendChild(actions);

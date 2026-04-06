@@ -93,6 +93,23 @@ body.modal-open{
   color:var(--text); text-decoration:none; padding:.45rem .85rem;
   border-radius:10px; transition:background .2s, color .2s
 }
+.cart-link{position:relative}
+.cart-badge{
+  position:absolute;
+  top:-6px;
+  right:-10px;
+  background:var(--accent);
+  color:#fff;
+  font-size:.7rem;
+  font-weight:700;
+  padding:2px 6px;
+  border-radius:10px;
+  min-width:18px;
+  text-align:center;
+  align-items:center;
+  justify-content:center;
+  box-shadow:var(--shadow-sm);
+}
 .nav-link:hover{background:rgba(255,255,255,.06)}
 .nav-link.active{background:rgba(255,255,255,.1); color:#fff; border:1px solid var(--border)}
 
@@ -358,10 +375,12 @@ Editar
   width:100%; padding:10px; border-radius:10px; border:1px solid var(--border);
   background:#131317; color:#fff
 }
-.final-actions{display:flex; justify-content:center; gap:12px; margin-top:.25rem}
-.final-btn{width:48%; padding:.8rem 1rem; border-radius:12px; font-weight:800; border:none}
-.final-btn:first-child{background:linear-gradient(135deg, var(--accent), var(--accent-2))}
-.final-btn:last-child{background:#222; border:1px solid var(--border)}
+.final-actions{display:flex; justify-content:center; gap:12px; margin-top:.25rem; flex-wrap:wrap}
+.final-btn{
+  flex:1 1 180px; padding:.8rem 1rem; border-radius:12px; font-weight:800;
+  border:1px solid var(--border); background:#222; color:#fff
+}
+.final-btn-accent{background:linear-gradient(135deg, var(--accent), var(--accent-2)); border-color:transparent}
 
 /* ===================== */
 /*       LIGHTBOX        */
@@ -443,3 +462,56 @@ Editar
 .card-badge.promo{ background:linear-gradient(135deg, var(--accent), var(--accent-2)); border-color:transparent }
 .card-badge.new{ background:rgba(107,141,255,.9); border-color:transparent }
 .card-badge.neutral{ background:rgba(255,255,255,.15) }
+
+/* ===================== */
+/*        CARRINHO       */
+/* ===================== */
+.cart-shell{max-width:var(--maxw); margin:0 auto}
+.cart-list{display:grid; gap:var(--space-3)}
+.cart-item{padding:var(--space-3)}
+.cart-item-main{
+  display:flex; justify-content:space-between; gap:var(--space-3); align-items:flex-start;
+}
+.cart-item-kicker{
+  color:var(--muted); text-transform:uppercase; font-size:.8rem; letter-spacing:.4px; margin-bottom:.35rem
+}
+.cart-item-title{font-size:1.15rem; margin-bottom:.5rem}
+.cart-option-list{margin:.75rem 0 0 1rem; color:#d8d8d8}
+.cart-option-list li + li{margin-top:.35rem}
+.cart-item-meta{min-width:220px; text-align:right; color:#d8d8d8}
+.cart-item-meta p + p{margin-top:.4rem}
+.cart-item-actions{
+  display:flex; justify-content:space-between; align-items:center; gap:var(--space-2); margin-top:var(--space-3)
+}
+.cart-qty-controls{display:inline-flex; align-items:center; gap:.75rem}
+.cart-qty-btn{
+  width:38px; height:38px; border-radius:10px; border:1px solid var(--border);
+  background:#17171c; color:#fff; font-size:1.1rem; font-weight:800
+}
+.cart-qty-value{min-width:24px; text-align:center; font-weight:800}
+.cart-remove-btn{padding:.65rem 1rem}
+.cart-summary{padding:var(--space-4)}
+.cart-summary-label{color:var(--muted); margin-bottom:.4rem}
+.cart-summary-total{font-size:clamp(1.6rem, 4vw, 2.2rem); margin-bottom:var(--space-2)}
+.cart-actions{display:flex; gap:var(--space-2); flex-wrap:wrap; margin-top:var(--space-3)}
+.cart-empty{
+  max-width:720px; margin:0 auto; padding:var(--space-4); text-align:center
+}
+.cart-empty h2{margin-bottom:.75rem}
+.cart-empty .btn{margin-top:var(--space-3)}
+.cart-toast{
+  position:fixed; right:18px; bottom:18px; z-index:10100;
+  padding:.85rem 1rem; border-radius:12px; border:1px solid var(--border);
+  background:rgba(18,18,22,.96); color:#fff; box-shadow:var(--shadow);
+  transform:translateY(12px); opacity:0; pointer-events:none;
+  transition:transform .2s ease, opacity .2s ease;
+}
+.cart-toast.is-visible{transform:translateY(0); opacity:1}
+.cart-toast.is-error{border-color:rgba(255,56,56,.45)}
+
+@media (max-width: 720px){
+  .cart-item-main{flex-direction:column}
+  .cart-item-meta{min-width:0; text-align:left}
+  .cart-item-actions{flex-direction:column; align-items:stretch}
+  .cart-qty-controls{justify-content:center}
+}

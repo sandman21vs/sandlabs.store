@@ -369,7 +369,12 @@ def products_to_js_format(products):
                 ],
                 "resumo": product["summary"],
                 "preco": [
-                    {"label": price["label"], "valor": price["display_text"]}
+                    {
+                        "id": price["id"],
+                        "label": price["label"],
+                        "valor": price["display_text"],
+                        "amountSats": price["amount_sats"],
+                    }
                     for price in product.get("prices", [])
                 ],
                 "detalhesHTML": product["details_html"],
