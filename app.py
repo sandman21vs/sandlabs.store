@@ -24,6 +24,7 @@ app.secret_key = config.SECRET_KEY
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
 CSRF_EXEMPT = set()
+CSRF_EXEMPT.add("/checkout/webhook/coinos")
 
 
 @app.before_request

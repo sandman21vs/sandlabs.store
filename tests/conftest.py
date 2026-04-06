@@ -87,7 +87,10 @@ def app(tmp_db):
     def csrf_protect():
         from flask import abort, request, session
 
+        csrf_exempt = {"/checkout/webhook/coinos"}
         if request.method == "POST":
+            if request.path in csrf_exempt:
+                return
             token = session.get("csrf_token", "")
             form_token = request.form.get("csrf_token", "") or request.headers.get("X-CSRFToken", "")
             if not token or token != form_token:

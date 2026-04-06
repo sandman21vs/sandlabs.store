@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Pagamento{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="section-head">
+    <h1 class="section-title">Pagamento Lightning</h1>
+    <p class="section-sub">Escaneie o QR code ou copie a invoice BOLT11 para concluir o pedido.</p>
+  </div>
+
+  <div
+    id="payment-container"
+    class="invoice-shell"
+    data-check-url="{{ url_for('checkout.check_payment', order_id=order.id) }}"
+    data-success-url="{{ url_for('account.order_detail', order_id=order.id) }}"
+  >
+    <article class="card glass invoice-card invoice-qr-card">
+      <p class="order-label">Pedido #{{ order.id }}</p>
+      <h2 class="invoice-amount">{{ order.grand_total_sats }} sats</h2>
+      <p id="payment-status" class="invoice-status {{ 'invoice-paid' if order.payment_confirmed_at else '' }}">
+        {{ 'Pagamento confirmado!' if order.payment_confirmed_at else 'Aguardando pagamento...' }}
+      </p>
+      <img class="invoice-qr" src="{{ qr_url }}" alt="QR code da invoice Lightning">
+    </article>
+
+    <article class="card glass invoice-card">
+      <h2 class="order-section-title">BOLT11</h2>
+      <p class="muted">Use a invoice abaixo na sua wallet Lightning.</p>
+      <code id="bolt11-text" class="mono-block">{{ order.bolt11 }}</code>
+      <div class="invoice-actions">
+        <button type="button" id="copy-bolt11" class="btn btn-accent">Copiar</button>
+        <a class="btn btn-ghost" href="{{ url_for('account.order_detail', order_id=order.id) }}">Ver pedido</a>
+      </div>
+    </article>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/payment.js') }}"></script>
+{% endblock %}

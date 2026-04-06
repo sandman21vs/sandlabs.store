@@ -40,6 +40,7 @@ def get_cart(session_id, user_id=None):
                 ci.product_id,
                 ci.price_id,
                 p.name AS product_name,
+                p.weight_grams,
                 pp.label AS price_label,
                 pp.display_text,
                 pp.amount_sats,
@@ -59,7 +60,9 @@ def get_cart(session_id, user_id=None):
             item = dict(row)
             item["amount_sats"] = int(item["amount_sats"] or 0)
             item["quantity"] = int(item["quantity"] or 0)
+            item["weight_grams"] = int(item["weight_grams"] or 0)
             item["line_total_sats"] = item["amount_sats"] * item["quantity"]
+            item["line_weight_grams"] = item["weight_grams"] * item["quantity"]
             items.append(item)
         return items
     finally:
