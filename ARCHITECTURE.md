@@ -12,21 +12,27 @@ O sandlabs.store esta sendo convertido de um site estatico (HTML/CSS/JS puro ser
 
 ---
 
-## Estado Atual (Fase 4 Completa)
+## Estado Atual (Fase 7 Completa)
 
-As Fases 1, 2, 3 e 4 ja foram implementadas. O projeto ja possui:
+As Fases 1, 2, 3, 4, 5, 6 e 7 ja foram implementadas. O projeto ja possui:
 
 - Flask servindo as paginas publicas com rotas limpas e redirects `.html` legados
 - Produtos servidos do SQLite e injetados no frontend como `window.PRODUTOS`
 - Carrinho com sessao anonima, endpoints JSON, badge no header e pagina `/carrinho`
 - Autenticacao com registro/login/logout, CSRF global, headers de seguranca e area `/account/orders`
+- Checkout autenticado com criacao de pedidos, invoice Lightning via Coinos, QR code, polling e webhook de confirmacao
+- Calculo de frete Post.ch integrado ao checkout, com conversao CHF -> sats via `service_btc_price.py`
+- Painel admin para produtos, pedidos e configuracoes, com tracking/status de pedidos alinhados ao schema atual
 
 ### Registro de execucao
 
 - Fase 2 executada no commit `c9a024f` — banco SQLite, inicializacao, model de produtos e seed
 - Fase 3 executada no commit `62d7383` — carrinho, APIs `/api/cart`, badge no header e pagina `/carrinho`
 - Fase 4 executada no commit `e6a403d` — autenticacao, CSRF, bootstrap de admin e area de pedidos
-- Suite de testes apos Fase 4: `pytest tests/ -v` -> `135 passed`
+- Fase 5 executada no commit `2019500` — checkout, criacao de orders, invoice Coinos, QR, polling e webhook
+- Fase 6 executada no commit `ebcea21` e integrada ao checkout no commit `2019500` — calculo de frete Post.ch + conversao BTC/CHF
+- Fase 7 executada no commit `394588e` e corrigida no commit `5e069ee` — painel admin e alinhamento do tracking/status ao schema de pedidos
+- Suite de testes apos Fase 7: `pytest tests/ -q` -> `178 passed`
 
 ### Convencao de rastreabilidade
 
@@ -1361,9 +1367,9 @@ Fase 1 (Flask Skeleton) ........... COMPLETA
   v
 Fase 2 (Database + Produtos) ...... COMPLETA
   |
-  +---> Fase 3 (Carrinho) [COMPLETA] ---> Fase 4 (Auth) [COMPLETA] ---> Fase 5 (Pagamento) -------> Fase 6 (Frete)
+  +---> Fase 3 (Carrinho) [COMPLETA] ---> Fase 4 (Auth) [COMPLETA] ---> Fase 5 (Pagamento) [COMPLETA] ---> Fase 6 (Frete) [COMPLETA]
   |
-  +---> Fase 7 (Admin) [inicia apos Fase 2, completa apos Fase 5 para views de pagamento]
+  +---> Fase 7 (Admin) [COMPLETA]
   |
   +---> Fase 8 (Imagens) [independente, pode rodar em paralelo com qualquer fase apos Fase 2]
 
