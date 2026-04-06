@@ -33,6 +33,10 @@
     return (value || '').toString().trim();
   }
 
+  function toThumbSrc(src) {
+    return (src || '').replace(/^(images\/)(.+)\.\w+$/, '$1thumb/$2.webp');
+  }
+
   function normalizeLabel(text) {
     return (text || '')
       .toLowerCase()
@@ -196,13 +200,19 @@ function buildGallery(prod) {
   const g = el('div', { class:'galeria' });
   const fullPaths = prod.imagens.map(src => src);
   prod.imagens.forEach((src, i) => {
+    const thumbSrc = toThumbSrc(src);
     const img = el('img', {
-      src,
+      src: thumbSrc,
       alt: `${prod.nome} ${i + 1}`,
       loading: 'lazy',
       decoding: 'async',
       /* ajuda o browser a escolher o tamanho ideal da imagem em cada breakpoint */
       sizes: '(min-width:1200px) 300px, (min-width:768px) 33vw, 50vw'
+    });
+    img.addEventListener('error', () => {
+      if (img.getAttribute('src') !== src) {
+        img.setAttribute('src', src);
+      }
     });
     img.addEventListener('click', () => {
       if (window.lightbox && typeof lightbox.open === 'function') {

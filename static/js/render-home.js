@@ -10,6 +10,10 @@
     return e;
   }
 
+  function toThumbSrc(src){
+    return (src || '').replace(/^(images\/)(.+)\.\w+$/, '$1thumb/$2.webp');
+  }
+
   function buildCard(prod){
     const a = el('article','',null);
     a.className = 'card product soft-shadow hover-lift';
@@ -22,12 +26,20 @@
     }
 
     const media = el('div',{class:'card-media'});
-    media.appendChild(el('img',{
-      src: (prod.imagens && prod.imagens[0]) || '',
+    const fullSrc = (prod.imagens && prod.imagens[0]) || '';
+    const img = el('img',{
+      src: toThumbSrc(fullSrc),
       alt: prod.nome,
       loading:'lazy',
-      decoding:'async'
-    }));
+      decoding:'async',
+      sizes:'(min-width:1200px) 360px, (min-width:768px) 50vw, 100vw'
+    });
+    img.addEventListener('error', ()=> {
+      if (img.getAttribute('src') !== fullSrc) {
+        img.setAttribute('src', fullSrc);
+      }
+    });
+    media.appendChild(img);
     a.appendChild(media);
 
     const body = el('div',{class:'card-body'});

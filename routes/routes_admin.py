@@ -22,6 +22,7 @@ from models.model_orders import (
     update_order_status,
 )
 from routes.auth_utils import admin_required
+from services.service_images import ensure_thumbnail, get_images_base_dir
 
 logger = logging.getLogger(__name__)
 admin = Blueprint("admin", __name__, url_prefix="/admin")
@@ -182,7 +183,7 @@ def _parse_product_form(form):
 
 def _save_uploaded_images(files, existing_images=None):
     images = list(existing_images or [])
-    upload_dir = os.path.join(current_app.static_folder, "images")
+    upload_dir = get_images_base_dir(current_app)
     os.makedirs(upload_dir, exist_ok=True)
     for file in files:
         if not file or not file.filename:
@@ -192,8 +193,18 @@ def _save_uploaded_images(files, existing_images=None):
             continue
         filename = secure_filename(file.filename)
         file.save(os.path.join(upload_dir, filename))
+        ensure_thumbnail(upload_dir, f"images/{filename}")
         images.append({"filename": f"images/{filename}", "sort_order": len(images)})
     return images
+
+
+def _ensure_local_thumbnails(images):
+    upload_dir = get_images_base_dir(current_app)
+    for image in images or []:
+        filename = image.get("filename") if isinstance(image, dict) else image
+        if not filename or not str(filename).startswith("images/"):
+            continue
+        ensure_thumbnail(upload_dir, filename)
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
@@ -270,6 +281,7 @@ def product_new():
                 p = line.strip()
                 if p:
                     data["images"].append({"filename": p, "sort_order": len(data["images"])})
+            _ensure_local_thumbnails(data["images"])
             try:
                 create_product(data)
                 flash("Produto criado com sucesso.", "success")
@@ -305,6 +317,7 @@ def product_edit(product_id):
             p = line.strip()
             if p:
                 data["images"].append({"filename": p, "sort_order": len(data["images"])})
+        _ensure_local_thumbnails(data["images"])
 
         try:
             update_product(product_id, data)
