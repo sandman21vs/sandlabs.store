@@ -1,7 +1,10 @@
 """Tests for checkout routes — Phase 6: shipping calculation endpoint."""
 
+import json
+
 from db import get_db
 from models.model_cart import add_to_cart, get_cart_count
+from models.model_config import set_config
 from unittest.mock import patch
 
 
@@ -267,7 +270,7 @@ class TestCheckoutFlow:
         assert qr_resp.headers["Content-Type"] == "image/png"
 
     def test_coinos_webhook_confirms_order_without_csrf(self, client, seeded_product, monkeypatch):
-        monkeypatch.setattr("routes.routes_checkout.config.COINOS_WEBHOOK_SECRET", "secret", raising=False)
+        set_config("coinos_webhook_secret", "secret")
         order_id = _insert_order(
             None,
             seeded_product["prices"][0]["id"],
@@ -287,3 +290,42 @@ class TestCheckoutFlow:
         finally:
             conn.close()
         assert row["status"] == "paid"
+
+
+class TestCoinosRuntimeConfig:
+    def test_create_invoice_uses_db_backed_config(self, tmp_db, monkeypatch):
+        from services import service_coinos
+
+        set_config("coinos_api_key", "db-api-key")
+        set_config("coinos_webhook_secret", "db-webhook-secret")
+        set_config("coinos_enabled", "1")
+
+        captured = {}
+
+        class FakeResponse:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def read(self):
+                return b'{"hash":"invoice123","text":"lnbc1invoice"}'
+
+        def fake_urlopen(req, timeout=10):
+            captured["headers"] = dict(req.header_items())
+            captured["payload"] = json.loads(req.data.decode())
+            captured["timeout"] = timeout
+            return FakeResponse()
+
+        monkeypatch.setattr(service_coinos.urllib.request, "urlopen", fake_urlopen)
+
+        invoice = service_coinos.create_invoice(
+            1234,
+            webhook_url="https://example.com/checkout/webhook/coinos",
+        )
+
+        assert invoice["hash"] == "invoice123"
+        assert captured["headers"]["Authorization"] == "Bearer db-api-key"
+        assert captured["payload"]["invoice"]["secret"] == "db-webhook-secret"
+        assert captured["payload"]["invoice"]["webhook"] == "https://example.com/checkout/webhook/coinos"

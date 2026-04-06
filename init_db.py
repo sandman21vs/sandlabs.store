@@ -168,6 +168,12 @@ def init_db():
                         generate_password_hash(config.ADMIN_PASSWORD),
                     ),
                 )
+            conn.execute(
+                """
+                INSERT INTO config (key, value) VALUES ('setup_complete', '1')
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value
+                """
+            )
         conn.commit()
     finally:
         conn.close()

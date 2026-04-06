@@ -6,6 +6,7 @@
 <div class="admin-header">
   <h1>Configurações</h1>
 </div>
+<p class="form-hint" style="margin:-.75rem 0 var(--space-3)">Os valores salvos aqui ficam persistidos no SQLite e passam a ter prioridade sobre os defaults do arquivo <code>.env</code>.</p>
 
 <form method="post" action="{{ url_for('admin.settings') }}">
   <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">

@@ -6,8 +6,8 @@ import uuid
 
 from flask import Blueprint, abort, jsonify, redirect, render_template, request, session, url_for
 
-import config
 from models.model_cart import clear_cart, get_cart, get_cart_total
+from models.model_config import get_config
 from models.model_orders import (
     confirm_order_payment,
     create_order as create_order_record,
@@ -305,7 +305,7 @@ def invoice_qr():
 @checkout.route("/checkout/webhook/coinos", methods=["POST"])
 def coinos_webhook():
     data = request.get_json(silent=True) or {}
-    expected_secret = config.COINOS_WEBHOOK_SECRET
+    expected_secret = get_config("coinos_webhook_secret")
     if expected_secret and data.get("secret") != expected_secret:
         logger.warning("checkout_webhook_invalid_secret")
         return jsonify({"ok": False}), 403

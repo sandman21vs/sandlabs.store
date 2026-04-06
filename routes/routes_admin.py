@@ -6,13 +6,15 @@ Use /admin/setup to create the first admin account.
 import json
 import logging
 import os
+import secrets
 
 from flask import (Blueprint, current_app, flash, redirect, render_template,
                    request, session, url_for)
-from werkzeug.security import generate_password_hash
 from werkzeug.utils import secure_filename
 
 import db
+from models.model_config import admin_exists, get_all_config, get_config, set_config
+from models.model_users import create_user, get_user_by_email
 from models.model_products import (create_product, delete_product,
                                     get_product_by_id, update_product)
 from models.model_products import _PRODUCT_SELECT, _row_to_product, _load_related_records
@@ -37,35 +39,6 @@ _DEFAULT_SHIPPING_RATES = json.dumps({
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
-
-def _admin_exists():
-    conn = db.get_db()
-    try:
-        return conn.execute("SELECT 1 FROM users WHERE is_admin=1 LIMIT 1").fetchone() is not None
-    finally:
-        conn.close()
-
-
-def _get_config(key, default=""):
-    conn = db.get_db()
-    try:
-        row = conn.execute("SELECT value FROM config WHERE key=?", (key,)).fetchone()
-        return row["value"] if row else default
-    finally:
-        conn.close()
-
-
-def _set_config(key, value):
-    conn = db.get_db()
-    try:
-        with conn:
-            conn.execute(
-                "INSERT INTO config(key,value) VALUES(?,?) "
-                "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
-                (key, value),
-            )
-    finally:
-        conn.close()
 
 
 def _get_all_products_admin():
@@ -209,40 +182,83 @@ def _ensure_local_thumbnails(images):
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
+@admin.before_request
+def enforce_initial_setup():
+    if request.endpoint == "admin.setup":
+        if admin_exists():
+            if session.get("is_admin"):
+                return redirect(url_for("admin.dashboard"))
+            return redirect(url_for("auth.login", next=url_for("admin.dashboard")))
+        return None
+
+    if not admin_exists():
+        return redirect(url_for("admin.setup"))
+
 @admin.route("/setup", methods=["GET", "POST"])
 def setup():
-    """Create the first admin account. Disabled once any admin exists."""
-    if _admin_exists():
-        return redirect(url_for("auth.login"))
-
-    error = None
+    """First-run wizard for the initial admin account and Coinos bootstrap."""
+    default_email = f"{os.environ.get('ADMIN_USERNAME', 'admin')}@admin.local"
+    form_data = {
+        "name": "Admin",
+        "email": default_email,
+        "coinos_enabled": "0",
+    }
+    errors = []
     if request.method == "POST":
-        email = request.form.get("email", "").strip()
         name = request.form.get("name", "Admin").strip()
+        email = request.form.get("email", "").strip()
         password = request.form.get("password", "")
         confirm = request.form.get("confirm", "")
+        coinos_api_key = request.form.get("coinos_api_key", "").strip()
+        coinos_webhook_secret = request.form.get("coinos_webhook_secret", "").strip()
+        coinos_enabled = bool(request.form.get("coinos_enabled"))
+
+        form_data.update({
+            "name": name or "Admin",
+            "email": email,
+            "coinos_enabled": "1" if coinos_enabled else "0",
+        })
 
         if not email or not password:
-            error = "Email e senha são obrigatórios."
+            errors.append("Email e senha sao obrigatorios.")
         elif password != confirm:
-            error = "As senhas não coincidem."
+            errors.append("As senhas nao coincidem.")
         elif len(password) < 8:
-            error = "Senha deve ter pelo menos 8 caracteres."
-        else:
-            conn = db.get_db()
-            try:
-                with conn:
-                    conn.execute(
-                        "INSERT INTO users (email, display_name, password_hash, is_admin) "
-                        "VALUES (?,?,?,1)",
-                        (email, name, generate_password_hash(password)),
-                    )
-            finally:
-                conn.close()
-            flash("Conta admin criada. Faça login.", "success")
-            return redirect(url_for("auth.login"))
+            errors.append("Senha deve ter pelo menos 8 caracteres.")
 
-    return render_template("admin/setup.html", error=error)
+        if coinos_enabled and not coinos_api_key:
+            errors.append("Configure a Coinos API Key para habilitar pagamentos Lightning no setup inicial.")
+
+        if errors:
+            return render_template("admin/setup.html", errors=errors, form_data=form_data), 200
+
+        if coinos_enabled and not coinos_webhook_secret:
+            coinos_webhook_secret = secrets.token_urlsafe(24)
+
+        try:
+            create_user(email, password, name or "Admin", is_admin=True)
+        except ValueError as exc:
+            errors.append(str(exc))
+            return render_template("admin/setup.html", errors=errors, form_data=form_data), 200
+
+        if coinos_api_key:
+            set_config("coinos_api_key", coinos_api_key)
+        if coinos_webhook_secret:
+            set_config("coinos_webhook_secret", coinos_webhook_secret)
+        set_config("coinos_enabled", "1" if coinos_enabled else "0")
+        set_config("setup_complete", "1")
+
+        user = get_user_by_email(email)
+        session["user_id"] = user["id"]
+        session["is_admin"] = True
+        session["display_name"] = user.get("display_name", "")
+        logger.info("admin_setup_completed admin_user_id=%s email=%s", user["id"], email)
+        flash("Setup inicial concluido.", "success")
+        if coinos_enabled and request.form.get("coinos_webhook_secret", "").strip() == "":
+            flash("Webhook Secret do Coinos foi gerado automaticamente.", "success")
+        return redirect(url_for("admin.dashboard"))
+
+    return render_template("admin/setup.html", errors=errors, form_data=form_data)
 
 
 @admin.route("/")
@@ -402,32 +418,58 @@ def order_status(order_id):
 @admin.route("/settings", methods=["GET", "POST"])
 @admin_required
 def settings():
+    current_cfg = get_all_config()
     if request.method == "POST":
-        for key in ("coinos_api_key", "coinos_webhook_secret", "whatsapp", "telegram"):
+        for key in ("whatsapp", "telegram"):
             val = request.form.get(key, "").strip()
             if val:
-                _set_config(key, val)
+                set_config(key, val)
 
-        _set_config("coinos_enabled", "1" if request.form.get("coinos_enabled") else "0")
+        coinos_api_key_input = request.form.get("coinos_api_key", "").strip()
+        coinos_webhook_secret_input = request.form.get("coinos_webhook_secret", "").strip()
+        coinos_enabled_requested = bool(request.form.get("coinos_enabled"))
+
+        effective_api_key = coinos_api_key_input or current_cfg.get("coinos_api_key", "")
+        effective_webhook_secret = (
+            coinos_webhook_secret_input
+            or current_cfg.get("coinos_webhook_secret", "")
+        )
+
+        if coinos_api_key_input:
+            set_config("coinos_api_key", coinos_api_key_input)
+        if coinos_webhook_secret_input:
+            set_config("coinos_webhook_secret", coinos_webhook_secret_input)
+        elif coinos_enabled_requested and not effective_webhook_secret:
+            effective_webhook_secret = secrets.token_urlsafe(24)
+            set_config("coinos_webhook_secret", effective_webhook_secret)
+            flash("Webhook Secret do Coinos foi gerado automaticamente.", "success")
+
+        if coinos_enabled_requested and not effective_api_key:
+            set_config("coinos_enabled", "0")
+            logger.warning("admin_settings_missing_coinos_api_key admin_user_id=%s", session.get("user_id"))
+            flash("Configure a Coinos API Key antes de habilitar pagamentos Lightning.", "error")
+        else:
+            set_config("coinos_enabled", "1" if coinos_enabled_requested else "0")
 
         shipping_json = request.form.get("shipping_rates", "").strip()
+        settings_saved = False
         try:
             json.loads(shipping_json)
-            _set_config("shipping_rates", shipping_json)
-            logger.info("admin_settings_updated admin_user_id=%s", session.get("user_id"))
-            flash("Configurações salvas.", "success")
+            set_config("shipping_rates", shipping_json)
+            settings_saved = True
         except json.JSONDecodeError:
             logger.warning("admin_settings_invalid_shipping_json admin_user_id=%s", session.get("user_id"))
             flash("Tabela de frete com JSON inválido. Restante salvo.", "error")
 
+        logger.info(
+            "admin_settings_updated admin_user_id=%s coinos_enabled=%s",
+            session.get("user_id"),
+            "1" if coinos_enabled_requested and effective_api_key else "0",
+        )
+        if settings_saved:
+            flash("Configuracoes salvas.", "success")
         return redirect(url_for("admin.settings"))
 
-    cfg = {
-        "coinos_api_key":        _get_config("coinos_api_key"),
-        "coinos_webhook_secret": _get_config("coinos_webhook_secret"),
-        "coinos_enabled":        _get_config("coinos_enabled", "0"),
-        "whatsapp":              _get_config("whatsapp"),
-        "telegram":              _get_config("telegram"),
-        "shipping_rates":        _get_config("shipping_rates", _DEFAULT_SHIPPING_RATES),
-    }
+    cfg = current_cfg
+    cfg["shipping_rates"] = get_config("shipping_rates", _DEFAULT_SHIPPING_RATES)
     return render_template("admin/settings.html", cfg=cfg)

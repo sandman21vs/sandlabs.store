@@ -5,7 +5,7 @@ import logging
 import re
 import urllib.request
 
-import config
+from models.model_config import get_coinos_config
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ _COINOS_HASH_PATTERN = re.compile(r"^[a-zA-Z0-9]+$")
 
 
 def _coinos_request(method, path, body=None):
-    api_key = config.COINOS_API_KEY
+    api_key = get_coinos_config()["api_key"]
     if not api_key:
         return None
 
@@ -33,7 +33,8 @@ def _coinos_request(method, path, body=None):
 
 
 def create_invoice(amount_sats, invoice_type="lightning", webhook_url=None):
-    if not config.COINOS_ENABLED:
+    coinos_config = get_coinos_config()
+    if not coinos_config["enabled"]:
         return None
     if not amount_sats or int(amount_sats) < 1:
         return None
@@ -42,8 +43,8 @@ def create_invoice(amount_sats, invoice_type="lightning", webhook_url=None):
 
     invoice_data = {"amount": int(amount_sats), "type": invoice_type}
     if webhook_url:
-        if config.COINOS_WEBHOOK_SECRET:
-            invoice_data["secret"] = config.COINOS_WEBHOOK_SECRET
+        if coinos_config["webhook_secret"]:
+            invoice_data["secret"] = coinos_config["webhook_secret"]
         invoice_data["webhook"] = webhook_url
 
     return _coinos_request("POST", "/invoice", {"invoice": invoice_data})

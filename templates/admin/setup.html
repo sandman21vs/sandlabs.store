@@ -1,38 +1,80 @@
 {% extends "base.html" %}
-{% block title %}Setup Admin{% endblock %}
+{% block title %}Setup Inicial{% endblock %}
 
 {% block content %}
-<section class="section" style="max-width:480px;margin:0 auto">
+<section class="section" style="max-width:760px;margin:0 auto">
   <div class="section-head">
-    <h1 class="section-title">Criar conta admin</h1>
-    <p class="section-sub">Nenhum admin cadastrado. Configure a primeira conta para acessar o painel.</p>
+    <h1 class="section-title">Setup inicial</h1>
+    <p class="section-sub">Fluxo de primeira execucao inspirado no FREESANDMANN: crie o admin inicial, defina a senha e, se quiser, ja deixe o Coinos pronto pela interface.</p>
   </div>
-  {% if error %}
-  <div style="padding:.75rem 1rem;border-radius:8px;background:rgba(255,56,56,.1);border:1px solid rgba(255,56,56,.3);color:var(--accent);margin-bottom:1rem">{{ error }}</div>
+
+  {% if errors %}
+  <div style="padding:.9rem 1rem;border-radius:8px;background:rgba(255,56,56,.1);border:1px solid rgba(255,56,56,.3);color:var(--accent);margin-bottom:1rem">
+    {% for error in errors %}
+    <div>{{ error }}</div>
+    {% endfor %}
+  </div>
   {% endif %}
-  <form method="post" action="{{ url_for('admin.setup') }}" class="admin-card" style="background:var(--glass);border:1px solid var(--border);border-radius:var(--radius-sm);padding:2rem">
+
+  <form method="post" action="{{ url_for('admin.setup') }}" class="admin-card" style="background:var(--glass);border:1px solid var(--border);border-radius:var(--radius-sm);padding:2rem;display:grid;gap:1.25rem">
     <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
-    <div style="margin-bottom:1rem">
-      <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Nome</label>
-      <input type="text" name="name" value="Admin" required
-             style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
-    </div>
-    <div style="margin-bottom:1rem">
-      <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Email</label>
-      <input type="email" name="email" required
-             style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
-    </div>
-    <div style="margin-bottom:1rem">
-      <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Senha (mín. 8 caracteres)</label>
-      <input type="password" name="password" required minlength="8"
-             style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
-    </div>
-    <div style="margin-bottom:1.5rem">
-      <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Confirmar senha</label>
-      <input type="password" name="confirm" required
-             style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
-    </div>
-    <button type="submit" class="btn btn-accent" style="width:100%">Criar conta admin</button>
+
+    <fieldset style="border:1px solid var(--border);border-radius:12px;padding:1rem 1rem 1.2rem">
+      <legend style="padding:0 .5rem;color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:.08em">Conta admin</legend>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div>
+          <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Nome</label>
+          <input type="text" name="name" value="{{ form_data.name }}" required
+                 style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Email de login</label>
+          <input type="email" name="email" value="{{ form_data.email }}" required
+                 style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset style="border:1px solid var(--border);border-radius:12px;padding:1rem 1rem 1.2rem">
+      <legend style="padding:0 .5rem;color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:.08em">Senha inicial</legend>
+      <p style="margin:0 0 .9rem;color:var(--muted);font-size:.92rem">No primeiro setup a senha do usuario admin e definida aqui. Depois disso, o acesso ao painel usa o fluxo normal de login.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div>
+          <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Senha</label>
+          <input type="password" name="password" required minlength="8"
+                 style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Confirmar senha</label>
+          <input type="password" name="confirm" required
+                 style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset style="border:1px solid var(--border);border-radius:12px;padding:1rem 1rem 1.2rem">
+      <legend style="padding:0 .5rem;color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:.08em">Lightning / Coinos</legend>
+      <p style="margin:0 0 .9rem;color:var(--muted);font-size:.92rem">Opcional. Esses dados podem ser alterados depois em <strong>/admin/settings</strong>. O que for salvo na interface passa a valer em runtime para checkout e webhook.</p>
+      <div style="display:grid;gap:1rem">
+        <div>
+          <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Coinos API Key</label>
+          <input type="password" name="coinos_api_key" autocomplete="new-password"
+                 style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem">Webhook Secret</label>
+          <input type="password" name="coinos_webhook_secret" autocomplete="new-password"
+                 style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:#0f0f0f;color:var(--text)">
+          <div style="margin-top:.35rem;color:var(--muted);font-size:.82rem">Se voce deixar vazio e habilitar o Coinos, o sistema gera um secret automaticamente.</div>
+        </div>
+        <label style="display:flex;align-items:center;gap:.6rem;color:var(--text)">
+          <input type="checkbox" name="coinos_enabled" value="1" {{ 'checked' if form_data.coinos_enabled == '1' }}>
+          Habilitar pagamentos Lightning ja no setup
+        </label>
+      </div>
+    </fieldset>
+
+    <button type="submit" class="btn btn-accent" style="width:100%">Concluir setup inicial</button>
   </form>
 </section>
 {% endblock %}

@@ -18,14 +18,14 @@ class TestAdminSetup:
     def test_setup_page_accessible_when_no_admin(self, client):
         resp = client.get("/admin/setup")
         assert resp.status_code == 200
-        assert b"admin" in resp.data.lower()
+        assert b"setup" in resp.data.lower()
 
     def test_setup_redirects_when_admin_exists(self, client, admin_user):
         resp = client.get("/admin/setup")
         assert resp.status_code == 302
+        assert "/auth/login" in resp.headers["Location"]
 
     def test_setup_creates_admin(self, client, csrf_headers, tmp_db):
-        from werkzeug.security import generate_password_hash
         resp = _form(client, csrf_headers, "/admin/setup", {
             "name": "Admin",
             "email": "setup@test.com",
@@ -33,6 +33,7 @@ class TestAdminSetup:
             "confirm": "securepass1",
         })
         assert resp.status_code == 302
+        assert resp.headers["Location"].endswith("/admin/")
 
         import db as db_mod
         conn = db_mod.get_db()
@@ -44,6 +45,33 @@ class TestAdminSetup:
             conn.close()
         assert user is not None
         assert user["is_admin"] == 1
+        with client.session_transaction() as sess:
+            assert sess["user_id"] == user["id"]
+            assert sess["is_admin"] is True
+
+    def test_setup_can_store_coinos_config(self, client, csrf_headers, tmp_db):
+        resp = _form(client, csrf_headers, "/admin/setup", {
+            "name": "Admin",
+            "email": "setup@test.com",
+            "password": "securepass1",
+            "confirm": "securepass1",
+            "coinos_api_key": "coinos-key",
+            "coinos_enabled": "1",
+        })
+        assert resp.status_code == 302
+
+        import db as db_mod
+        conn = db_mod.get_db()
+        try:
+            rows = conn.execute(
+                "SELECT key, value FROM config WHERE key IN ('coinos_api_key', 'coinos_enabled', 'coinos_webhook_secret')"
+            ).fetchall()
+        finally:
+            conn.close()
+        cfg = {row["key"]: row["value"] for row in rows}
+        assert cfg["coinos_api_key"] == "coinos-key"
+        assert cfg["coinos_enabled"] == "1"
+        assert cfg["coinos_webhook_secret"]
 
     def test_setup_password_mismatch_returns_error(self, client, csrf_headers, tmp_db):
         resp = _form(client, csrf_headers, "/admin/setup", {
@@ -66,24 +94,29 @@ class TestAdminSetup:
 # ── Auth / access control ─────────────────────────────────────────────────────
 
 class TestAdminAccessControl:
-    def test_dashboard_requires_auth(self, client):
+    def test_admin_routes_redirect_to_setup_before_first_admin(self, client):
+        resp = client.get("/admin/")
+        assert resp.status_code == 302
+        assert resp.headers["Location"].endswith("/admin/setup")
+
+    def test_dashboard_requires_auth(self, client, admin_user):
         resp = client.get("/admin/")
         assert resp.status_code == 302
         assert "/auth/login" in resp.headers["Location"]
 
-    def test_products_requires_auth(self, client):
+    def test_products_requires_auth(self, client, admin_user):
         resp = client.get("/admin/products")
         assert resp.status_code == 302
 
-    def test_orders_requires_auth(self, client):
+    def test_orders_requires_auth(self, client, admin_user):
         resp = client.get("/admin/orders")
         assert resp.status_code == 302
 
-    def test_settings_requires_auth(self, client):
+    def test_settings_requires_auth(self, client, admin_user):
         resp = client.get("/admin/settings")
         assert resp.status_code == 302
 
-    def test_non_admin_gets_403(self, client, test_user):
+    def test_non_admin_gets_403(self, client, test_user, admin_user):
         """A logged-in non-admin user should get 403."""
         with client.session_transaction() as sess:
             sess["user_id"] = test_user
@@ -325,6 +358,7 @@ class TestAdminSettings:
 
     def test_coinos_enabled_toggle(self, admin_client, csrf_headers):
         resp = _form(admin_client, csrf_headers, "/admin/settings", {
+            "coinos_api_key": "db-key",
             "coinos_enabled": "on",
             "shipping_rates": '{"CH":{"2":7},"EU":{"2":20},"WORLD":{"2":30}}',
         })
@@ -337,3 +371,18 @@ class TestAdminSettings:
         finally:
             conn.close()
         assert row["value"] == "1"
+
+    def test_coinos_is_not_enabled_without_api_key(self, admin_client, csrf_headers):
+        resp = _form(admin_client, csrf_headers, "/admin/settings", {
+            "coinos_enabled": "on",
+            "shipping_rates": '{"CH":{"2":7},"EU":{"2":20},"WORLD":{"2":30}}',
+        })
+        assert resp.status_code == 302
+
+        import db as db_mod
+        conn = db_mod.get_db()
+        try:
+            row = conn.execute("SELECT value FROM config WHERE key='coinos_enabled'").fetchone()
+        finally:
+            conn.close()
+        assert row["value"] == "0"

@@ -45,6 +45,8 @@ def app(tmp_db):
     importlib.reload(config)
     import db as db_mod
     importlib.reload(db_mod)
+    import models.model_config as mcfg
+    importlib.reload(mcfg)
     import models.model_products as mp
     importlib.reload(mp)
     import models.model_cart as mc

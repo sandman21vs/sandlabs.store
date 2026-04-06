@@ -22,7 +22,7 @@ def _cleanup_old_attempts_conn(conn):
     )
 
 
-def create_user(email, password, display_name=""):
+def create_user(email, password, display_name="", is_admin=False):
     """Insere usuario. Hash da senha com generate_password_hash(). Retorna user_id."""
     normalized_email = _normalize_email(email)
     if not normalized_email or not password:
@@ -34,12 +34,13 @@ def create_user(email, password, display_name=""):
             cursor = conn.execute(
                 """
                 INSERT INTO users (email, display_name, password_hash, is_admin)
-                VALUES (?, ?, ?, 0)
+                VALUES (?, ?, ?, ?)
                 """,
                 (
                     normalized_email,
                     (display_name or "").strip(),
                     generate_password_hash(password),
+                    1 if is_admin else 0,
                 ),
             )
             return cursor.lastrowid
