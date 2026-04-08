@@ -1,0 +1,83 @@
+{
+  "commerce": {
+    "cart": {
+      "page_title": "Carrito",
+      "heading": "Tu Carrito",
+      "subtitle": "Revisa los artículos antes de finalizar.",
+      "unit_price": "Precio unitario",
+      "subtotal": "Subtotal",
+      "subtotal_sats": "Subtotal en sats",
+      "unavailable": "No disponible",
+      "decrease_qty_aria": "Disminuir cantidad",
+      "increase_qty_aria": "Aumentar cantidad",
+      "remove": "Eliminar",
+      "items_count": "{count} artículo(s)",
+      "pending_prices_notice": "Algunos artículos aún esperan confirmación de precio.",
+      "checkout": "Finalizar compra",
+      "continue_shopping": "Seguir comprando",
+      "clear_cart": "Vaciar carrito",
+      "option_mode_kit": "kit",
+      "option_mode_single": "individual",
+      "empty": {
+        "title": "Tu carrito está vacío",
+        "body": "Agrega productos para continuar.",
+        "cta": "Ver productos"
+      }
+    },
+    "checkout": {
+      "page_title": "Checkout",
+      "heading": "Finalizar Pedido",
+      "subtitle": "Completa tu dirección para calcular el envío.",
+      "shipping_heading": "Dirección de Envío",
+      "pay_button": "Generar pago",
+      "summary_heading": "Resumen del Pedido",
+      "quantity_short": "Cant.",
+      "fields": {
+        "full_name": "Nombre completo",
+        "country": "País (código ISO)",
+        "street": "Calle",
+        "house_number": "Número",
+        "city": "Ciudad",
+        "postal_code": "Código postal",
+        "address_extra": "Complemento",
+        "address_extra_placeholder": "Apto, piso, referencia..."
+      },
+      "totals": {
+        "products": "Productos",
+        "weight": "Peso total",
+        "zone": "Zona de envío",
+        "shipping": "Envío",
+        "total": "Total"
+      },
+      "errors": {
+        "unpriced_items": "Algunos artículos no tienen precio configurado. Elimínalos para continuar.",
+        "shipping_required": "Calcula el envío antes de continuar.",
+        "invoice_failed": "No se pudo generar la factura. Inténtalo de nuevo."
+      }
+    },
+    "payment": {
+      "page_title": "Pago",
+      "heading": "Pago",
+      "subtitle": "Escanea el código QR o copia la factura Lightning.",
+      "order_label": "Pedido #{id}",
+      "status_paid": "Pagado",
+      "status_pending": "Esperando pago",
+      "qr_alt": "Código QR de pago",
+      "bolt11_heading": "Factura Lightning (BOLT11)",
+      "bolt11_hint": "Copia la factura o escanea el código QR con tu billetera.",
+      "view_order": "Ver pedido"
+    },
+    "api": {
+      "errors": {
+        "product_and_price_required": "El producto y el precio son obligatorios.",
+        "invalid_product_or_price": "Producto o precio no válido.",
+        "quantity_required": "La cantidad es obligatoria.",
+        "item_not_found": "Artículo no encontrado.",
+        "country_required": "El país es obligatorio.",
+        "weight_required": "El peso es obligatorio.",
+        "weight_integer": "El peso debe ser un número entero.",
+        "weight_non_negative": "El peso no puede ser negativo."
+      }
+    }
+  }
+}

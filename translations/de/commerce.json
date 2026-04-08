@@ -1,0 +1,83 @@
+{
+  "commerce": {
+    "cart": {
+      "page_title": "Warenkorb",
+      "heading": "Dein Warenkorb",
+      "subtitle": "Überprüfe die Artikel vor dem Bezahlen.",
+      "unit_price": "Stückpreis",
+      "subtotal": "Zwischensumme",
+      "subtotal_sats": "Zwischensumme in Sats",
+      "unavailable": "Nicht verfügbar",
+      "decrease_qty_aria": "Menge verringern",
+      "increase_qty_aria": "Menge erhöhen",
+      "remove": "Entfernen",
+      "items_count": "{count} Artikel",
+      "pending_prices_notice": "Einige Artikel warten noch auf Preisbestätigung.",
+      "checkout": "Zur Kasse",
+      "continue_shopping": "Weiter einkaufen",
+      "clear_cart": "Warenkorb leeren",
+      "option_mode_kit": "Set",
+      "option_mode_single": "Einzeln",
+      "empty": {
+        "title": "Dein Warenkorb ist leer",
+        "body": "Füge Produkte hinzu, um fortzufahren.",
+        "cta": "Produkte ansehen"
+      }
+    },
+    "checkout": {
+      "page_title": "Kasse",
+      "heading": "Bestellung abschließen",
+      "subtitle": "Gib deine Adresse ein, um die Versandkosten zu berechnen.",
+      "shipping_heading": "Lieferadresse",
+      "pay_button": "Zahlung generieren",
+      "summary_heading": "Bestellübersicht",
+      "quantity_short": "Anz.",
+      "fields": {
+        "full_name": "Vollständiger Name",
+        "country": "Land (ISO-Code)",
+        "street": "Straße",
+        "house_number": "Hausnummer",
+        "city": "Stadt",
+        "postal_code": "Postleitzahl",
+        "address_extra": "Adresszusatz",
+        "address_extra_placeholder": "Wohnung, Etage, Hinweis..."
+      },
+      "totals": {
+        "products": "Produkte",
+        "weight": "Gesamtgewicht",
+        "zone": "Versandzone",
+        "shipping": "Versand",
+        "total": "Gesamt"
+      },
+      "errors": {
+        "unpriced_items": "Einige Artikel haben keinen konfigurierten Preis. Entferne sie, um fortzufahren.",
+        "shipping_required": "Bitte berechne den Versand, bevor du fortfährst.",
+        "invoice_failed": "Die Rechnung konnte nicht erstellt werden. Bitte erneut versuchen."
+      }
+    },
+    "payment": {
+      "page_title": "Zahlung",
+      "heading": "Zahlung",
+      "subtitle": "Scanne den QR-Code oder kopiere die Lightning-Rechnung.",
+      "order_label": "Bestellung #{id}",
+      "status_paid": "Bezahlt",
+      "status_pending": "Zahlung ausstehend",
+      "qr_alt": "Zahlungs-QR-Code",
+      "bolt11_heading": "Lightning-Rechnung (BOLT11)",
+      "bolt11_hint": "Kopiere die Rechnung oder scanne den QR-Code mit deiner Wallet.",
+      "view_order": "Bestellung ansehen"
+    },
+    "api": {
+      "errors": {
+        "product_and_price_required": "Produkt und Preis sind erforderlich.",
+        "invalid_product_or_price": "Ungültiges Produkt oder ungültiger Preis.",
+        "quantity_required": "Menge ist erforderlich.",
+        "item_not_found": "Artikel nicht gefunden.",
+        "country_required": "Land ist erforderlich.",
+        "weight_required": "Gewicht ist erforderlich.",
+        "weight_integer": "Gewicht muss eine ganze Zahl sein.",
+        "weight_non_negative": "Gewicht kann nicht negativ sein."
+      }
+    }
+  }
+}

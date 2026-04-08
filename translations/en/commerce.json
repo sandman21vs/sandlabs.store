@@ -1,0 +1,83 @@
+{
+  "commerce": {
+    "cart": {
+      "page_title": "Cart",
+      "heading": "Your Cart",
+      "subtitle": "Review your items before checking out.",
+      "unit_price": "Unit price",
+      "subtotal": "Subtotal",
+      "subtotal_sats": "Subtotal in sats",
+      "unavailable": "Unavailable",
+      "decrease_qty_aria": "Decrease quantity",
+      "increase_qty_aria": "Increase quantity",
+      "remove": "Remove",
+      "items_count": "{count} item(s)",
+      "pending_prices_notice": "Some items are still awaiting price confirmation.",
+      "checkout": "Checkout",
+      "continue_shopping": "Continue shopping",
+      "clear_cart": "Clear cart",
+      "option_mode_kit": "kit",
+      "option_mode_single": "single",
+      "empty": {
+        "title": "Your cart is empty",
+        "body": "Add products to continue.",
+        "cta": "View products"
+      }
+    },
+    "checkout": {
+      "page_title": "Checkout",
+      "heading": "Complete Order",
+      "subtitle": "Fill in your address to calculate shipping.",
+      "shipping_heading": "Shipping Address",
+      "pay_button": "Generate payment",
+      "summary_heading": "Order Summary",
+      "quantity_short": "Qty.",
+      "fields": {
+        "full_name": "Full name",
+        "country": "Country (ISO code)",
+        "street": "Street",
+        "house_number": "Number",
+        "city": "City",
+        "postal_code": "Postal code",
+        "address_extra": "Address extra",
+        "address_extra_placeholder": "Apt, unit, floor..."
+      },
+      "totals": {
+        "products": "Products",
+        "weight": "Total weight",
+        "zone": "Shipping zone",
+        "shipping": "Shipping",
+        "total": "Total"
+      },
+      "errors": {
+        "unpriced_items": "Some items have no configured price. Remove them to continue.",
+        "shipping_required": "Please calculate shipping before proceeding.",
+        "invoice_failed": "Could not generate the invoice. Please try again."
+      }
+    },
+    "payment": {
+      "page_title": "Payment",
+      "heading": "Payment",
+      "subtitle": "Scan the QR code or copy the Lightning invoice.",
+      "order_label": "Order #{id}",
+      "status_paid": "Paid",
+      "status_pending": "Awaiting payment",
+      "qr_alt": "Payment QR code",
+      "bolt11_heading": "Lightning Invoice (BOLT11)",
+      "bolt11_hint": "Copy the invoice below or scan the QR code with your wallet.",
+      "view_order": "View order"
+    },
+    "api": {
+      "errors": {
+        "product_and_price_required": "Product and price are required.",
+        "invalid_product_or_price": "Invalid product or price.",
+        "quantity_required": "Quantity is required.",
+        "item_not_found": "Item not found.",
+        "country_required": "Country is required.",
+        "weight_required": "Weight is required.",
+        "weight_integer": "Weight must be an integer.",
+        "weight_non_negative": "Weight cannot be negative."
+      }
+    }
+  }
+}

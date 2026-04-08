@@ -4,6 +4,7 @@ import uuid
 from flask import Blueprint, jsonify, render_template, request, session
 
 import db
+from i18n import translate
 from models.model_cart import (
     add_to_cart,
     clear_cart,
@@ -57,9 +58,9 @@ def _option_lines(item):
             lines.extend(values)
 
     if options.get("mode") == "kit":
-        lines.append("Formato: Kit 5 un")
+        lines.append(translate("commerce.cart.option_mode_kit"))
     elif options.get("mode") == "single":
-        lines.append("Formato: Placa avulsa")
+        lines.append(translate("commerce.cart.option_mode_single"))
 
     return lines
 
@@ -95,10 +96,10 @@ def add_cart_item():
     options = payload.get("options", {})
 
     if not product_id or price_id is None:
-        return jsonify({"ok": False, "error": "product_id and price_id are required"}), 400
+        return jsonify({"ok": False, "error": translate("commerce.api.errors.product_and_price_required")}), 400
 
     if not _price_exists_for_product(product_id, price_id):
-        return jsonify({"ok": False, "error": "Invalid product or price"}), 400
+        return jsonify({"ok": False, "error": translate("commerce.api.errors.invalid_product_or_price")}), 400
 
     session_id = _get_cart_session_id()
     user_id = _current_user_id()
@@ -124,11 +125,11 @@ def update_cart_api(item_id):
     payload = request.get_json(silent=True) or {}
     quantity = payload.get("quantity")
     if quantity is None:
-        return jsonify({"ok": False, "error": "quantity is required"}), 400
+        return jsonify({"ok": False, "error": translate("commerce.api.errors.quantity_required")}), 400
 
     session_id, user_id, items, _, _ = _get_cart_snapshot()
     if not _owns_item(item_id, items):
-        return jsonify({"ok": False, "error": "Item not found"}), 404
+        return jsonify({"ok": False, "error": translate("commerce.api.errors.item_not_found")}), 404
 
     update_cart_item(item_id, quantity)
     cart_count = get_cart_count(session_id, user_id)
@@ -139,7 +140,7 @@ def update_cart_api(item_id):
 def remove_cart_api(item_id):
     session_id, user_id, items, _, _ = _get_cart_snapshot()
     if not _owns_item(item_id, items):
-        return jsonify({"ok": False, "error": "Item not found"}), 404
+        return jsonify({"ok": False, "error": translate("commerce.api.errors.item_not_found")}), 404
 
     remove_cart_item(item_id)
     cart_count = get_cart_count(session_id, user_id)

@@ -6,6 +6,7 @@ import uuid
 
 from flask import Blueprint, abort, jsonify, redirect, render_template, request, session, url_for
 
+from i18n import translate
 from models.model_cart import clear_cart, get_cart, get_cart_total
 from models.model_config import get_config
 from models.model_orders import (
@@ -63,9 +64,9 @@ def _option_lines(item):
             lines.extend(values)
 
     if options.get("mode") == "kit":
-        lines.append("Formato: Kit 5 un")
+        lines.append(translate("commerce.cart.option_mode_kit"))
     elif options.get("mode") == "single":
-        lines.append("Formato: Placa avulsa")
+        lines.append(translate("commerce.cart.option_mode_single"))
 
     return lines
 
@@ -77,7 +78,10 @@ def _has_unpriced_items(items):
 def _normalize_shipping_form(form_data):
     return {
         "name": (form_data.get("name") or "").strip(),
-        "address": (form_data.get("address") or "").strip(),
+        "street": (form_data.get("street") or "").strip(),
+        "house_number": (form_data.get("house_number") or "").strip(),
+        "address_extra": (form_data.get("address_extra") or "").strip(),
+        "city": (form_data.get("city") or "").strip(),
         "postal_code": (form_data.get("postal_code") or "").strip(),
         "country": (form_data.get("country") or "CH").strip().upper(),
     }
@@ -151,18 +155,18 @@ def shipping_calculate():
     weight_grams = data.get("weight_grams")
 
     if not country:
-        return jsonify({"ok": False, "error": "country is required"}), 400
+        return jsonify({"ok": False, "error": translate("commerce.api.errors.country_required")}), 400
 
     if weight_grams is None:
-        return jsonify({"ok": False, "error": "weight_grams is required"}), 400
+        return jsonify({"ok": False, "error": translate("commerce.api.errors.weight_required")}), 400
 
     try:
         weight_grams = int(weight_grams)
     except (TypeError, ValueError):
-        return jsonify({"ok": False, "error": "weight_grams must be an integer"}), 400
+        return jsonify({"ok": False, "error": translate("commerce.api.errors.weight_integer")}), 400
 
     if weight_grams < 0:
-        return jsonify({"ok": False, "error": "weight_grams must be non-negative"}), 400
+        return jsonify({"ok": False, "error": translate("commerce.api.errors.weight_non_negative")}), 400
 
     shipping_chf = calculate_shipping_chf(weight_grams, country)
     shipping_sats = chf_to_sats(shipping_chf)
@@ -200,16 +204,17 @@ def create_order():
     if _has_unpriced_items(items):
         logger.warning("checkout_create_order_unpriced_items user_id=%s session_id=%s", user_id, session_id)
         return _render_checkout(
-            error="Existem itens sem conversao disponivel para sats. Ajuste os precos fiat ou aguarde a cotacao BTC voltar.",
+            error=translate("commerce.checkout.errors.unpriced_items"),
             form_data=request.form,
             status_code=400,
         )
 
     shipping_info = _normalize_shipping_form(request.form)
-    if not shipping_info["name"] or not shipping_info["address"] or not shipping_info["postal_code"]:
+    required_fields = ("name", "street", "house_number", "city", "postal_code")
+    if any(not shipping_info[field] for field in required_fields):
         logger.warning("checkout_create_order_invalid_shipping user_id=%s session_id=%s", user_id, session_id)
         return _render_checkout(
-            error="Preencha nome, endereco e codigo postal para continuar.",
+            error=translate("commerce.checkout.errors.shipping_required"),
             form_data=request.form,
             status_code=400,
         )
@@ -233,7 +238,7 @@ def create_order():
         delete_order(order_id)
         logger.warning("checkout_invoice_creation_failed order_id=%s user_id=%s", order_id, user_id)
         return _render_checkout(
-            error="Nao foi possivel criar a invoice Lightning agora. Verifique a configuracao do Coinos.",
+            error=translate("commerce.checkout.errors.invoice_failed"),
             form_data=request.form,
             status_code=502,
         )

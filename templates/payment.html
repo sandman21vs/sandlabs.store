@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Pagamento{% endblock %}
+{% block title %}{{ t('commerce.payment.page_title') }}{% endblock %}
 
 {% block content %}
 <section class="section">
   <div class="section-head">
-    <h1 class="section-title">Pagamento Lightning</h1>
-    <p class="section-sub">Escaneie o QR code ou copie a invoice BOLT11 para concluir o pedido.</p>
+    <h1 class="section-title">{{ t('commerce.payment.heading') }}</h1>
+    <p class="section-sub">{{ t('commerce.payment.subtitle') }}</p>
   </div>
 
   <div
@@ -15,21 +15,21 @@
     data-success-url="{{ url_for('account.order_detail', order_id=order.id) }}"
   >
     <article class="card glass invoice-card invoice-qr-card">
-      <p class="order-label">Pedido #{{ order.id }}</p>
+      <p class="order-label">{{ t('commerce.payment.order_label', id=order.id) }}</p>
       <h2 class="invoice-amount">{{ order.grand_total_sats }} sats</h2>
       <p id="payment-status" class="invoice-status {{ 'invoice-paid' if order.payment_confirmed_at else '' }}">
-        {{ 'Pagamento confirmado!' if order.payment_confirmed_at else 'Aguardando pagamento...' }}
+        {{ t('commerce.payment.status_paid') if order.payment_confirmed_at else t('commerce.payment.status_pending') }}
       </p>
-      <img class="invoice-qr" src="{{ qr_url }}" alt="QR code da invoice Lightning">
+      <img class="invoice-qr" src="{{ qr_url }}" alt="{{ t('commerce.payment.qr_alt') }}">
     </article>
 
     <article class="card glass invoice-card">
-      <h2 class="order-section-title">BOLT11</h2>
-      <p class="muted">Use a invoice abaixo na sua wallet Lightning.</p>
+      <h2 class="order-section-title">{{ t('commerce.payment.bolt11_heading') }}</h2>
+      <p class="muted">{{ t('commerce.payment.bolt11_hint') }}</p>
       <code id="bolt11-text" class="mono-block">{{ order.bolt11 }}</code>
       <div class="invoice-actions">
-        <button type="button" id="copy-bolt11" class="btn btn-accent">Copiar</button>
-        <a class="btn btn-ghost" href="{{ url_for('account.order_detail', order_id=order.id) }}">Ver pedido</a>
+        <button type="button" id="copy-bolt11" class="btn btn-accent">{{ t('common.actions.copy') }}</button>
+        <a class="btn btn-ghost" href="{{ url_for('account.order_detail', order_id=order.id) }}">{{ t('commerce.payment.view_order') }}</a>
       </div>
     </article>
   </div>

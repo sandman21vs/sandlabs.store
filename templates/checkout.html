@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Checkout{% endblock %}
+{% block title %}{{ t('commerce.checkout.page_title') }}{% endblock %}
 
 {% block content %}
 <section class="section">
   <div class="section-head">
-    <h1 class="section-title">Checkout</h1>
-    <p class="section-sub">Confirme o endereço de envio e gere a invoice Lightning.</p>
+    <h1 class="section-title">{{ t('commerce.checkout.heading') }}</h1>
+    <p class="section-sub">{{ t('commerce.checkout.subtitle') }}</p>
   </div>
 
   <div
@@ -18,19 +18,19 @@
     <form method="post" action="{{ url_for('checkout.create_order') }}" class="card glass checkout-form">
       <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
 
-      <h2 class="order-section-title">Dados de envio</h2>
+      <h2 class="order-section-title">{{ t('commerce.checkout.shipping_heading') }}</h2>
       {% if error %}
       <div class="checkout-error">{{ error }}</div>
       {% endif %}
       {% if has_unpriced_items %}
       <div class="checkout-error">
-        Existem itens no carrinho sem conversão disponível para sats. O checkout Lightning depende da cotação BTC atual para preços fiat.
+        {{ t('commerce.checkout.errors.unpriced_items') }}
       </div>
       {% endif %}
 
       <div class="field-grid">
         <div class="form-group">
-          <label for="shipping_name">Nome completo</label>
+          <label for="shipping_name">{{ t('commerce.checkout.fields.full_name') }}</label>
           <input
             id="shipping_name"
             class="form-input"
@@ -41,7 +41,7 @@
           >
         </div>
         <div class="form-group">
-          <label for="shipping_country">País (código ISO-2)</label>
+          <label for="shipping_country">{{ t('commerce.checkout.fields.country') }}</label>
           <input
             id="shipping_country"
             class="form-input"
@@ -55,36 +55,75 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="shipping_address">Endereço</label>
-        <textarea
-          id="shipping_address"
-          class="form-input"
-          name="address"
-          rows="4"
-          required
-        >{{ shipping_form.address }}</textarea>
+      <div class="field-grid">
+        <div class="form-group">
+          <label for="shipping_street">{{ t('commerce.checkout.fields.street') }}</label>
+          <input
+            id="shipping_street"
+            class="form-input"
+            type="text"
+            name="street"
+            value="{{ shipping_form.street }}"
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="shipping_house_number">{{ t('commerce.checkout.fields.house_number') }}</label>
+          <input
+            id="shipping_house_number"
+            class="form-input"
+            type="text"
+            name="house_number"
+            value="{{ shipping_form.house_number }}"
+            required
+          >
+        </div>
+      </div>
+
+      <div class="field-grid">
+        <div class="form-group">
+          <label for="shipping_city">{{ t('commerce.checkout.fields.city') }}</label>
+          <input
+            id="shipping_city"
+            class="form-input"
+            type="text"
+            name="city"
+            value="{{ shipping_form.city }}"
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="shipping_postal_code">{{ t('commerce.checkout.fields.postal_code') }}</label>
+          <input
+            id="shipping_postal_code"
+            class="form-input"
+            type="text"
+            name="postal_code"
+            value="{{ shipping_form.postal_code }}"
+            required
+          >
+        </div>
       </div>
 
       <div class="form-group">
-        <label for="shipping_postal_code">Código postal</label>
+        <label for="shipping_address_extra">{{ t('commerce.checkout.fields.address_extra') }}</label>
         <input
-          id="shipping_postal_code"
+          id="shipping_address_extra"
           class="form-input"
           type="text"
-          name="postal_code"
-          value="{{ shipping_form.postal_code }}"
-          required
+          name="address_extra"
+          value="{{ shipping_form.address_extra }}"
+          placeholder="{{ t('commerce.checkout.fields.address_extra_placeholder') }}"
         >
       </div>
 
       <button type="submit" class="btn btn-accent" {% if has_unpriced_items %}disabled{% endif %}>
-        Pagar com Lightning
+        {{ t('commerce.checkout.pay_button') }}
       </button>
     </form>
 
     <aside class="card glass checkout-summary">
-      <h2 class="order-section-title">Resumo do pedido</h2>
+      <h2 class="order-section-title">{{ t('commerce.checkout.summary_heading') }}</h2>
       <div class="checkout-items">
         {% for item in items %}
         <article class="checkout-item">
@@ -100,7 +139,7 @@
             {% endif %}
           </div>
           <div class="checkout-item-meta">
-            <p>Qtd: {{ item.quantity }}</p>
+            <p>{{ t('commerce.checkout.quantity_short') }} {{ item.quantity }}</p>
             <p>{{ item.line_total_sats }} sats</p>
           </div>
         </article>
@@ -109,26 +148,26 @@
 
       <dl class="checkout-totals">
         <div>
-          <dt>Produtos</dt>
+          <dt>{{ t('commerce.checkout.totals.products') }}</dt>
           <dd id="checkout-products-total">{{ total_sats }} sats</dd>
         </div>
         <div>
-          <dt>Peso total</dt>
+          <dt>{{ t('commerce.checkout.totals.weight') }}</dt>
           <dd>{{ total_weight_grams }} g</dd>
         </div>
         <div>
-          <dt>Zona</dt>
+          <dt>{{ t('commerce.checkout.totals.zone') }}</dt>
           <dd id="checkout-zone">{{ shipping_zone }}</dd>
         </div>
         <div>
-          <dt>Frete</dt>
+          <dt>{{ t('commerce.checkout.totals.shipping') }}</dt>
           <dd>
             <span id="checkout-shipping-sats">{{ shipping_sats }}</span> sats
             <span class="muted">(<span id="checkout-shipping-chf">{{ '%.2f'|format(shipping_chf) }}</span> CHF)</span>
           </dd>
         </div>
         <div class="checkout-grand-total">
-          <dt>Total</dt>
+          <dt>{{ t('commerce.checkout.totals.total') }}</dt>
           <dd><span id="checkout-grand-total">{{ grand_total_sats }}</span> sats</dd>
         </div>
       </dl>

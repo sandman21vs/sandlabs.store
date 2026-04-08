@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Carrinho{% endblock %}
+{% block title %}{{ t('commerce.cart.page_title') }}{% endblock %}
 
 {% block content %}
     <section class="section">
       <div class="section-head">
-        <h1 class="section-title">Seu carrinho</h1>
-        <p class="section-sub">Revise os itens antes de seguir para o checkout.</p>
+        <h1 class="section-title">{{ t('commerce.cart.heading') }}</h1>
+        <p class="section-sub">{{ t('commerce.cart.subtitle') }}</p>
       </div>
 
       <div id="cart-page" class="cart-shell stack-lg">
@@ -27,45 +27,45 @@
                   </div>
 
                   <div class="cart-item-meta">
-                    <p><strong>Unitário:</strong> {{ item.display_text }}</p>
+                    <p><strong>{{ t('commerce.cart.unit_price') }}:</strong> {{ item.display_text }}</p>
                     {% if item.has_amount_sats %}
-                      <p><strong>Subtotal:</strong> {{ item.line_total_sats }} sats</p>
+                      <p><strong>{{ t('commerce.cart.subtotal') }}:</strong> {{ item.line_total_sats }} sats</p>
                     {% else %}
-                      <p><strong>Subtotal em sats:</strong> indisponível no momento</p>
+                      <p><strong>{{ t('commerce.cart.subtotal_sats') }}:</strong> {{ t('commerce.cart.unavailable') }}</p>
                     {% endif %}
                   </div>
                 </div>
 
                 <div class="cart-item-actions">
                   <div class="cart-qty-controls">
-                    <button type="button" class="cart-qty-btn" data-action="qty" data-delta="-1" aria-label="Diminuir quantidade">-</button>
+                    <button type="button" class="cart-qty-btn" data-action="qty" data-delta="-1" aria-label="{{ t('commerce.cart.decrease_qty_aria') }}">-</button>
                     <span class="cart-qty-value">{{ item.quantity }}</span>
-                    <button type="button" class="cart-qty-btn" data-action="qty" data-delta="1" aria-label="Aumentar quantidade">+</button>
+                    <button type="button" class="cart-qty-btn" data-action="qty" data-delta="1" aria-label="{{ t('commerce.cart.increase_qty_aria') }}">+</button>
                   </div>
 
-                  <button type="button" class="btn btn-ghost cart-remove-btn" data-action="remove">Remover</button>
+                  <button type="button" class="btn btn-ghost cart-remove-btn" data-action="remove">{{ t('commerce.cart.remove') }}</button>
                 </div>
               </article>
             {% endfor %}
           </div>
 
           <aside class="card glass cart-summary">
-            <p class="cart-summary-label">Itens no carrinho: {{ count }}</p>
+            <p class="cart-summary-label">{{ t('commerce.cart.items_count', count=count) }}</p>
             <h2 class="cart-summary-total">{{ total_sats }} sats</h2>
             {% if has_pending_prices %}
-              <p class="muted">Alguns itens não puderam ser convertidos para sats agora. Verifique a cotação BTC/fiat ou ajuste a moeda do preço no admin.</p>
+              <p class="muted">{{ t('commerce.cart.pending_prices_notice') }}</p>
             {% endif %}
             <div class="cart-actions">
-              <a class="btn btn-accent" href="/checkout">Finalizar compra</a>
-              <a class="btn btn-ghost" href="{{ url_for('public.produtos') }}">Continuar comprando</a>
-              <button type="button" class="btn btn-ghost" data-action="clear-cart">Limpar carrinho</button>
+              <a class="btn btn-accent" href="/checkout">{{ t('commerce.cart.checkout') }}</a>
+              <a class="btn btn-ghost" href="{{ url_for('public.produtos') }}">{{ t('commerce.cart.continue_shopping') }}</a>
+              <button type="button" class="btn btn-ghost" data-action="clear-cart">{{ t('commerce.cart.clear_cart') }}</button>
             </div>
           </aside>
         {% else %}
           <div class="card glass cart-empty">
-            <h2>Seu carrinho está vazio</h2>
-            <p class="muted">Adicione um produto para revisar itens e seguir para o checkout.</p>
-            <a class="btn btn-accent" href="{{ url_for('public.produtos') }}">Ver produtos</a>
+            <h2>{{ t('commerce.cart.empty.title') }}</h2>
+            <p class="muted">{{ t('commerce.cart.empty.body') }}</p>
+            <a class="btn btn-accent" href="{{ url_for('public.produtos') }}">{{ t('commerce.cart.empty.cta') }}</a>
           </div>
         {% endif %}
       </div>
