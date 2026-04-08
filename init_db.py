@@ -2,6 +2,7 @@ import os
 
 import config
 import db
+from services.service_security import encrypt_value
 from werkzeug.security import generate_password_hash
 
 
@@ -146,6 +147,82 @@ def _ensure_column(conn, table_name, column_name, column_sql):
         conn.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_sql}")
 
 
+def _migrate_legacy_shipping_data(conn):
+    rows = conn.execute(
+        """
+        SELECT
+            id,
+            shipping_name,
+            shipping_address,
+            shipping_postal_code,
+            shipping_country,
+            shipping_name_enc,
+            shipping_street_enc,
+            shipping_house_number_enc,
+            shipping_address_extra_enc,
+            shipping_city_enc,
+            shipping_postal_code_enc,
+            shipping_country_enc
+        FROM orders
+        """
+    ).fetchall()
+
+    for row in rows:
+        has_legacy = any(
+            (row[column] or "").strip()
+            for column in (
+                "shipping_name",
+                "shipping_address",
+                "shipping_postal_code",
+                "shipping_country",
+            )
+        )
+        has_encrypted = any(
+            (row[column] or "").strip()
+            for column in (
+                "shipping_name_enc",
+                "shipping_street_enc",
+                "shipping_house_number_enc",
+                "shipping_address_extra_enc",
+                "shipping_city_enc",
+                "shipping_postal_code_enc",
+                "shipping_country_enc",
+            )
+        )
+        if not has_legacy or has_encrypted:
+            continue
+
+        conn.execute(
+            """
+            UPDATE orders
+            SET
+                shipping_name_enc = ?,
+                shipping_street_enc = ?,
+                shipping_house_number_enc = ?,
+                shipping_address_extra_enc = ?,
+                shipping_city_enc = ?,
+                shipping_postal_code_enc = ?,
+                shipping_country_enc = ?,
+                shipping_name = NULL,
+                shipping_address = NULL,
+                shipping_postal_code = NULL,
+                shipping_country = NULL,
+                updated_at = datetime('now')
+            WHERE id = ?
+            """,
+            (
+                encrypt_value(row["shipping_name"]),
+                encrypt_value(row["shipping_address"]),
+                "",
+                "",
+                "",
+                encrypt_value(row["shipping_postal_code"]),
+                encrypt_value(row["shipping_country"] or "CH"),
+                row["id"],
+            ),
+        )
+
+
 def init_db():
     db_dir = os.path.dirname(config.DATABASE_PATH)
     if db_dir:
@@ -157,6 +234,14 @@ def init_db():
         _ensure_column(conn, "product_prices", "pricing_mode", "pricing_mode TEXT")
         _ensure_column(conn, "product_prices", "currency_code", "currency_code TEXT")
         _ensure_column(conn, "product_prices", "amount_fiat", "amount_fiat TEXT")
+        _ensure_column(conn, "orders", "shipping_name_enc", "shipping_name_enc TEXT")
+        _ensure_column(conn, "orders", "shipping_street_enc", "shipping_street_enc TEXT")
+        _ensure_column(conn, "orders", "shipping_house_number_enc", "shipping_house_number_enc TEXT")
+        _ensure_column(conn, "orders", "shipping_address_extra_enc", "shipping_address_extra_enc TEXT")
+        _ensure_column(conn, "orders", "shipping_city_enc", "shipping_city_enc TEXT")
+        _ensure_column(conn, "orders", "shipping_postal_code_enc", "shipping_postal_code_enc TEXT")
+        _ensure_column(conn, "orders", "shipping_country_enc", "shipping_country_enc TEXT")
+        _migrate_legacy_shipping_data(conn)
         conn.executemany(
             """
             INSERT INTO colors (id, name)

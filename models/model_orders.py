@@ -1,6 +1,7 @@
 import json
 
 import db
+from services.service_security import decrypt_value, encrypt_value
 
 
 _ORDER_SELECT = """
@@ -14,6 +15,13 @@ SELECT
     o.invoice_hash,
     o.bolt11,
     o.payment_confirmed_at,
+    o.shipping_name_enc,
+    o.shipping_street_enc,
+    o.shipping_house_number_enc,
+    o.shipping_address_extra_enc,
+    o.shipping_city_enc,
+    o.shipping_postal_code_enc,
+    o.shipping_country_enc,
     o.shipping_name,
     o.shipping_address,
     o.shipping_postal_code,
@@ -41,6 +49,37 @@ def _normalize_order(order):
     normalized["total_sats"] = int(normalized.get("total_sats") or 0)
     normalized["shipping_sats"] = int(normalized.get("shipping_sats") or 0)
     normalized["grand_total_sats"] = normalized["total_sats"] + normalized["shipping_sats"]
+    normalized["shipping_name"] = decrypt_value(normalized.get("shipping_name_enc")) or (normalized.get("shipping_name") or "").strip()
+    normalized["shipping_street"] = decrypt_value(normalized.get("shipping_street_enc")) or (normalized.get("shipping_address") or "").strip()
+    normalized["shipping_house_number"] = decrypt_value(normalized.get("shipping_house_number_enc"))
+    normalized["shipping_address_extra"] = decrypt_value(normalized.get("shipping_address_extra_enc"))
+    normalized["shipping_city"] = decrypt_value(normalized.get("shipping_city_enc"))
+    normalized["shipping_postal_code"] = decrypt_value(normalized.get("shipping_postal_code_enc")) or (normalized.get("shipping_postal_code") or "").strip()
+    normalized["shipping_country"] = (
+        decrypt_value(normalized.get("shipping_country_enc"))
+        or (normalized.get("shipping_country") or "CH").strip().upper()
+    )
+    street_line = " ".join(
+        part for part in (
+            normalized["shipping_street"],
+            normalized["shipping_house_number"],
+        ) if part
+    ).strip()
+    locality_line = " ".join(
+        part for part in (
+            normalized["shipping_postal_code"],
+            normalized["shipping_city"],
+        ) if part
+    ).strip()
+    normalized["shipping_address_lines"] = [
+        line for line in (
+            normalized["shipping_name"],
+            street_line,
+            normalized["shipping_address_extra"],
+            locality_line,
+            normalized["shipping_country"],
+        ) if line
+    ]
     return normalized
 
 
@@ -81,7 +120,10 @@ def _normalize_shipping_info(shipping_info):
     info = shipping_info or {}
     return {
         "name": (info.get("name") or "").strip(),
-        "address": (info.get("address") or "").strip(),
+        "street": (info.get("street") or "").strip(),
+        "house_number": (info.get("house_number") or "").strip(),
+        "address_extra": (info.get("address_extra") or "").strip(),
+        "city": (info.get("city") or "").strip(),
         "postal_code": (info.get("postal_code") or "").strip(),
         "country": (info.get("country") or "CH").strip().upper(),
     }
@@ -104,22 +146,36 @@ def create_order(user_id, session_id, items, shipping_info, total_sats, shipping
                     status,
                     total_sats,
                     shipping_sats,
+                    shipping_name_enc,
+                    shipping_street_enc,
+                    shipping_house_number_enc,
+                    shipping_address_extra_enc,
+                    shipping_city_enc,
+                    shipping_postal_code_enc,
+                    shipping_country_enc,
                     shipping_name,
                     shipping_address,
                     shipping_postal_code,
                     shipping_country,
                     coupon_code
-                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     user_id,
                     session_id,
                     int(total_sats or 0),
                     int(shipping_sats or 0),
-                    shipping["name"],
-                    shipping["address"],
-                    shipping["postal_code"],
-                    shipping["country"] or "CH",
+                    encrypt_value(shipping["name"]),
+                    encrypt_value(shipping["street"]),
+                    encrypt_value(shipping["house_number"]),
+                    encrypt_value(shipping["address_extra"]),
+                    encrypt_value(shipping["city"]),
+                    encrypt_value(shipping["postal_code"]),
+                    encrypt_value(shipping["country"] or "CH"),
+                    None,
+                    None,
+                    None,
+                    None,
                     coupon_code,
                 ),
             )

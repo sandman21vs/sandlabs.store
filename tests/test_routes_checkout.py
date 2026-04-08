@@ -160,7 +160,10 @@ class TestCheckoutFlow:
                 "/checkout/create-order",
                 data={
                     "name": "Buyer",
-                    "address": "Street 1",
+                    "street": "Bahnhofstrasse",
+                    "house_number": "12A",
+                    "address_extra": "Campainha azul",
+                    "city": "Zurich",
                     "postal_code": "8000",
                     "country": "CH",
                 },
@@ -182,6 +185,19 @@ class TestCheckoutFlow:
         assert order["invoice_hash"] == "hash123"
         assert order["bolt11"] == "lnbc1paid"
         assert int(order["shipping_sats"]) == 8500
+        assert order["shipping_name"] is None
+        assert order["shipping_address"] is None
+        assert order["shipping_postal_code"] is None
+        assert order["shipping_country"] is None
+        assert order["shipping_name_enc"]
+        assert order["shipping_street_enc"]
+        assert order["shipping_house_number_enc"]
+        assert order["shipping_address_extra_enc"]
+        assert order["shipping_city_enc"]
+        assert order["shipping_postal_code_enc"]
+        assert order["shipping_country_enc"]
+        assert "Bahnhofstrasse" not in order["shipping_street_enc"]
+        assert "Campainha azul" not in order["shipping_address_extra_enc"]
         assert len(items) == 1
         assert get_cart_count("test-session", test_user) == 0
 
@@ -217,7 +233,9 @@ class TestCheckoutFlow:
                 "/checkout/create-order",
                 data={
                     "name": "Buyer",
-                    "address": "Street 1",
+                    "street": "Street",
+                    "house_number": "1",
+                    "city": "Zurich",
                     "postal_code": "8000",
                     "country": "CH",
                 },
@@ -259,7 +277,9 @@ class TestCheckoutFlow:
                 "/checkout/create-order",
                 data={
                     "name": "Buyer",
-                    "address": "Street 1",
+                    "street": "Street",
+                    "house_number": "1",
+                    "city": "Zurich",
                     "postal_code": "8000",
                     "country": "CH",
                 },
