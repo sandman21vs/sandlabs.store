@@ -1,6 +1,7 @@
 import os
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-in-production-please")
+SHIPPING_DATA_KEY = os.environ.get("SHIPPING_DATA_KEY", "")
 DATABASE_PATH = os.environ.get(
     "DATABASE_PATH",
     os.path.join(os.path.dirname(__file__), "data", "sandlabs.db"),

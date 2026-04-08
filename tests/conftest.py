@@ -17,6 +17,7 @@ def tmp_db(tmp_path):
     db_path = str(tmp_path / "test.db")
     os.environ["DATABASE_PATH"] = db_path
     os.environ["SECRET_KEY"] = "test-secret-key"
+    os.environ["SHIPPING_DATA_KEY"] = "test-shipping-data-key"
 
     # Reload config so it picks up the env var
     import config
@@ -32,6 +33,7 @@ def tmp_db(tmp_path):
 
     # Cleanup: remove override
     os.environ.pop("DATABASE_PATH", None)
+    os.environ.pop("SHIPPING_DATA_KEY", None)
     importlib.reload(config)
 
 
@@ -43,6 +45,8 @@ def app(tmp_db):
     # Reload modules that cache config at import time
     import config
     importlib.reload(config)
+    import i18n as i18n_mod
+    importlib.reload(i18n_mod)
     import db as db_mod
     importlib.reload(db_mod)
     import models.model_config as mcfg
@@ -69,6 +73,7 @@ def app(tmp_db):
     importlib.reload(radm)
 
     from flask import Flask
+    from i18n import init_app as init_i18n
     test_app = Flask(
         __name__,
         static_url_path="",
@@ -77,6 +82,7 @@ def app(tmp_db):
     )
     test_app.secret_key = "test-secret-key"
     test_app.config["TESTING"] = True
+    init_i18n(test_app)
 
     @test_app.before_request
     def generate_csrf_token():
@@ -111,6 +117,8 @@ def app(tmp_db):
     test_app.register_blueprint(ra.auth)
     test_app.register_blueprint(racc.account)
     test_app.register_blueprint(radm.admin)
+
+    rp.register_error_handlers(test_app)
 
     @test_app.route("/health")
     def health():

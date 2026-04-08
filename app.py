@@ -4,13 +4,14 @@ import os
 from flask import Flask, abort, redirect, request, session
 
 import config
+from i18n import init_app as init_i18n
 from init_db import init_db
 from routes.routes_account import account
 from routes.routes_admin import admin
 from routes.routes_auth import auth
 from routes.routes_cart import cart
 from routes.routes_checkout import checkout
-from routes.routes_public import public
+from routes.routes_public import public, register_error_handlers
 
 if not logging.getLogger().handlers:
     logging.basicConfig(
@@ -22,6 +23,7 @@ if not logging.getLogger().handlers:
 app = Flask(__name__, static_url_path="")
 app.secret_key = config.SECRET_KEY
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
+init_i18n(app)
 
 CSRF_EXEMPT = set()
 CSRF_EXEMPT.add("/checkout/webhook/coinos")
@@ -61,6 +63,7 @@ app.register_blueprint(auth)
 app.register_blueprint(account)
 app.register_blueprint(checkout)
 app.register_blueprint(admin)
+register_error_handlers(app)
 
 
 @app.route("/health")
