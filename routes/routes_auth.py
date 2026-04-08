@@ -2,6 +2,7 @@ from urllib.parse import urlsplit
 
 from flask import Blueprint, redirect, render_template, request, session, url_for
 
+from i18n import translate
 from models.model_cart import merge_cart
 from models.model_users import (
     cleanup_old_attempts,
@@ -73,7 +74,7 @@ def login():
             render_template(
                 "auth/login.html",
                 active="login",
-                error="Muitas tentativas. Tente novamente em 15 minutos.",
+                error=translate("auth.login.errors.rate_limited"),
                 next_url=next_url,
                 form_data={"email": email},
             ),
@@ -89,9 +90,9 @@ def login():
                 "auth/login.html",
                 active="login",
                 error=(
-                    "Muitas tentativas. Tente novamente em 15 minutos."
+                    translate("auth.login.errors.rate_limited")
                     if limited_now
-                    else "Email ou senha incorretos."
+                    else translate("auth.login.errors.invalid_credentials")
                 ),
                 next_url=next_url,
                 form_data={"email": email},
@@ -121,7 +122,7 @@ def register():
             render_template(
                 "auth/register.html",
                 active="register",
-                error="Preencha email e senha.",
+                error=translate("auth.register.errors.email_password_required"),
                 form_data=form_data,
             ),
             400,
@@ -132,7 +133,7 @@ def register():
             render_template(
                 "auth/register.html",
                 active="register",
-                error="A confirmacao de senha nao confere.",
+                error=translate("auth.register.errors.password_mismatch"),
                 form_data=form_data,
             ),
             400,
@@ -143,7 +144,7 @@ def register():
             render_template(
                 "auth/register.html",
                 active="register",
-                error="Ja existe uma conta com esse email.",
+                error=translate("auth.register.errors.email_exists"),
                 form_data=form_data,
             ),
             400,
@@ -156,7 +157,7 @@ def register():
             render_template(
                 "auth/register.html",
                 active="register",
-                error="Nao foi possivel criar a conta.",
+                error=translate("auth.register.errors.create_failed"),
                 form_data=form_data,
             ),
             500,

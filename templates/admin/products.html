@@ -1,11 +1,11 @@
 {% extends "admin/base_admin.html" %}
 {% set admin_section = "products" %}
-{% block title %}Produtos — Admin{% endblock %}
+{% block title %}{{ t('admin.products.title') }}{% endblock %}
 
 {% block admin_content %}
 <div class="admin-header">
-  <h1>Produtos</h1>
-  <a href="{{ url_for('admin.product_new') }}" class="btn btn-accent btn-sm">+ Novo produto</a>
+  <h1>{{ t('admin.products.heading') }}</h1>
+  <a href="{{ url_for('admin.product_new') }}" class="btn btn-accent btn-sm">{{ t('admin.products.new_product') }}</a>
 </div>
 
 {% if products %}
@@ -14,11 +14,11 @@
     <thead>
       <tr>
         <th>ID</th>
-        <th>Nome</th>
-        <th>Preço principal</th>
-        <th>Badge</th>
-        <th>Ordem</th>
-        <th>Status</th>
+        <th>{{ t('admin.products.table.name') }}</th>
+        <th>{{ t('admin.products.table.main_price') }}</th>
+        <th>{{ t('admin.products.table.badge') }}</th>
+        <th>{{ t('admin.products.table.sort_order') }}</th>
+        <th>{{ t('admin.products.table.status') }}</th>
         <th></th>
       </tr>
     </thead>
@@ -38,16 +38,16 @@
         <td class="muted">{{ p.sort_order }}</td>
         <td>
           <span class="badge {{ 'badge-active' if p.active else 'badge-inactive' }}">
-            {{ 'Ativo' if p.active else 'Inativo' }}
+            {{ t('admin.products.status.active') if p.active else t('admin.products.status.inactive') }}
           </span>
         </td>
         <td>
           <div class="actions-row">
-            <a href="{{ url_for('admin.product_edit', product_id=p.id) }}" class="btn btn-ghost btn-sm">Editar</a>
+            <a href="{{ url_for('admin.product_edit', product_id=p.id) }}" class="btn btn-ghost btn-sm">{{ t('admin.products.edit') }}</a>
             <form method="post" action="{{ url_for('admin.product_delete', product_id=p.id) }}"
-                  onsubmit="return confirm('Remover produto \'{{ p.name }}\'?')">
+                  onsubmit="return confirm('{{ t('admin.products.confirm_delete', name=p.name) }}')">
               <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
-              <button type="submit" class="btn btn-danger btn-sm">Remover</button>
+              <button type="submit" class="btn btn-danger btn-sm">{{ t('admin.products.remove') }}</button>
             </form>
           </div>
         </td>
@@ -58,8 +58,8 @@
 </div>
 {% else %}
 <div class="admin-card" style="text-align:center;padding:var(--space-5)">
-  <p class="muted">Nenhum produto cadastrado.</p>
-  <a href="{{ url_for('admin.product_new') }}" class="btn btn-accent" style="margin-top:1rem">Criar primeiro produto</a>
+  <p class="muted">{{ t('admin.products.empty') }}</p>
+  <a href="{{ url_for('admin.product_new') }}" class="btn btn-accent" style="margin-top:1rem">{{ t('admin.products.create_first') }}</a>
 </div>
 {% endif %}
 {% endblock %}

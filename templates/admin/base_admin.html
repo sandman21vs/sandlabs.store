@@ -52,19 +52,19 @@
 {% block content %}
 <div class="admin-layout">
   <aside class="admin-sidebar">
-    <span class="sidebar-title">Admin</span>
+    <span class="sidebar-title">{{ t('admin.sidebar.admin') }}</span>
     <nav>
       <a href="{{ url_for('admin.dashboard') }}"
-         class="{{ 'active' if admin_section == 'dashboard' }}">Dashboard</a>
-      <span class="sidebar-title">Catalogo</span>
+         class="{{ 'active' if admin_section == 'dashboard' }}">{{ t('admin.sidebar.dashboard') }}</a>
+      <span class="sidebar-title">{{ t('admin.sidebar.catalog') }}</span>
       <a href="{{ url_for('admin.products') }}"
-         class="{{ 'active' if admin_section == 'products' }}">Produtos</a>
-      <span class="sidebar-title">Pedidos</span>
+         class="{{ 'active' if admin_section == 'products' }}">{{ t('admin.sidebar.products') }}</a>
+      <span class="sidebar-title">{{ t('admin.sidebar.orders') }}</span>
       <a href="{{ url_for('admin.orders') }}"
-         class="{{ 'active' if admin_section == 'orders' }}">Todos os pedidos</a>
-      <span class="sidebar-title">Sistema</span>
+         class="{{ 'active' if admin_section == 'orders' }}">{{ t('admin.sidebar.all_orders') }}</a>
+      <span class="sidebar-title">{{ t('admin.sidebar.system') }}</span>
       <a href="{{ url_for('admin.settings') }}"
-         class="{{ 'active' if admin_section == 'settings' }}">Configurações</a>
+         class="{{ 'active' if admin_section == 'settings' }}">{{ t('admin.sidebar.settings') }}</a>
     </nav>
   </aside>
 

@@ -1,35 +1,35 @@
 {% extends "admin/base_admin.html" %}
 {% set admin_section = "dashboard" %}
-{% block title %}Dashboard Admin{% endblock %}
+{% block title %}{{ t('admin.dashboard.title') }}{% endblock %}
 
 {% block admin_content %}
 <div class="admin-header">
-  <h1>Dashboard</h1>
-  <a href="{{ url_for('admin.product_new') }}" class="btn btn-accent btn-sm">+ Novo produto</a>
+  <h1>{{ t('admin.dashboard.heading') }}</h1>
+  <a href="{{ url_for('admin.product_new') }}" class="btn btn-accent btn-sm">{{ t('admin.dashboard.new_product') }}</a>
 </div>
 
 <div class="admin-stats">
   <div class="stat-card">
     <div class="stat-val">{{ stats.total_orders }}</div>
-    <div class="stat-label">Total de pedidos</div>
+    <div class="stat-label">{{ t('admin.dashboard.stats.total_orders') }}</div>
   </div>
   <div class="stat-card">
     <div class="stat-val">{{ "{:,}".format(stats.total_revenue_sats) }}</div>
-    <div class="stat-label">Receita (sats)</div>
+    <div class="stat-label">{{ t('admin.dashboard.stats.revenue') }}</div>
   </div>
   <div class="stat-card">
     <div class="stat-val">{{ stats.pending_shipments }}</div>
-    <div class="stat-label">Aguardando envio</div>
+    <div class="stat-label">{{ t('admin.dashboard.stats.pending_shipments') }}</div>
   </div>
   <div class="stat-card">
     <div class="stat-val">{{ product_count }}</div>
-    <div class="stat-label">Produtos</div>
+    <div class="stat-label">{{ t('admin.dashboard.stats.products') }}</div>
   </div>
 </div>
 
 {% if stats.by_status %}
 <div class="admin-card" style="margin-bottom:var(--space-3)">
-  <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Pedidos por status</h3>
+  <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">{{ t('admin.dashboard.status_breakdown') }}</h3>
   <div style="display:flex;flex-wrap:wrap;gap:.75rem">
     {% for status, data in stats.by_status.items() %}
     <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:.5rem 1rem;text-align:center;min-width:100px">
@@ -42,15 +42,16 @@
 {% endif %}
 
 <div class="admin-card">
-  <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Últimos pedidos</h3>
+  <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">{{ t('admin.dashboard.recent_orders') }}</h3>
   {% if recent_orders %}
   <table class="admin-table">
     <thead>
       <tr>
         <th>#</th>
         <th>Data</th>
-        <th>Total (sats)</th>
-        <th>Status</th>
+        <th>{{ t('admin.dashboard.table.date') }}</th>
+        <th>{{ t('admin.dashboard.table.total_sats') }}</th>
+        <th>{{ t('admin.dashboard.table.status') }}</th>
         <th></th>
       </tr>
     </thead>
@@ -67,7 +68,7 @@
     </tbody>
   </table>
   {% else %}
-  <p class="muted">Nenhum pedido ainda.</p>
+  <p class="muted">{{ t('admin.dashboard.empty_orders') }}</p>
   {% endif %}
 </div>
 {% endblock %}

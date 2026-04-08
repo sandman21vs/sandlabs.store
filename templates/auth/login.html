@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Entrar{% endblock %}
+{% block title %}{{ t('auth.login.page_title') }}{% endblock %}
 
 {% block content %}
     <section class="section">
       <div class="auth-shell">
         <article class="card glass auth-card">
           <div class="section-head auth-head">
-            <h1 class="section-title">Entrar</h1>
-            <p class="section-sub">Acesse sua conta para acompanhar pedidos e manter o carrinho vinculado.</p>
+            <h1 class="section-title">{{ t('auth.login.heading') }}</h1>
+            <p class="section-sub">{{ t('auth.login.subtitle') }}</p>
           </div>
 
           {% if error %}
@@ -19,19 +19,19 @@
             <input type="hidden" name="next" value="{{ next_url or '' }}">
 
             <label class="field">
-              <span>Email</span>
+              <span>{{ t('auth.login.fields.email') }}</span>
               <input type="email" name="email" value="{{ (form_data or {}).get('email', '') }}" required>
             </label>
 
             <label class="field">
-              <span>Senha</span>
+              <span>{{ t('auth.login.fields.password') }}</span>
               <input type="password" name="password" required>
             </label>
 
-            <button type="submit" class="btn btn-accent auth-submit">Entrar</button>
+            <button type="submit" class="btn btn-accent auth-submit">{{ t('auth.login.submit') }}</button>
           </form>
 
-          <p class="auth-helper">Ainda nao tem conta? <a href="{{ url_for('auth.register') }}">Crie seu cadastro</a>.</p>
+          <p class="auth-helper">{{ t('auth.login.no_account_prefix') }} <a href="{{ url_for('auth.register') }}">{{ t('auth.login.register_link') }}</a>.</p>
         </article>
       </div>
     </section>

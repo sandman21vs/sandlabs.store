@@ -38,14 +38,13 @@
       </dl>
     </div>
 
-    {% if order.shipping_name or order.shipping_address %}
+    {% if order.shipping_address_lines %}
     <div class="admin-card" style="margin-bottom:var(--space-2)">
       <h3 style="margin-bottom:.75rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Endereço de envio</h3>
       <address style="font-style:normal;font-size:.9rem;line-height:1.7">
-        {% if order.shipping_name %}<strong>{{ order.shipping_name }}</strong><br>{% endif %}
-        {% if order.shipping_address %}{{ order.shipping_address }}<br>{% endif %}
-        {% if order.shipping_postal_code %}{{ order.shipping_postal_code }}<br>{% endif %}
-        {% if order.shipping_country %}<span class="muted">{{ order.shipping_country }}</span>{% endif %}
+        {% for line in order.shipping_address_lines %}
+        {% if loop.first %}<strong>{{ line }}</strong>{% else %}{{ line }}{% endif %}{% if not loop.last %}<br>{% endif %}
+        {% endfor %}
       </address>
     </div>
     {% endif %}

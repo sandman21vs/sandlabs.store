@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Pedidos{% endblock %}
+{% block title %}{{ t('account.orders.page_title') }}{% endblock %}
 
 {% block content %}
     <section class="section">
       <div class="section-head">
-        <h1 class="section-title">Seus pedidos</h1>
-        <p class="section-sub">Acompanhe status, pagamento confirmado e codigo de rastreio.</p>
+        <h1 class="section-title">{{ t('account.orders.heading') }}</h1>
+        <p class="section-sub">{{ t('account.orders.subtitle') }}</p>
       </div>
 
       <div class="orders-shell">
@@ -15,24 +15,24 @@
               <article class="card glass order-card">
                 <div class="order-card-head">
                   <div>
-                    <p class="order-label">Pedido #{{ order.id }}</p>
+                    <p class="order-label">{{ t('account.orders.order_label', id=order.id) }}</p>
                     <h2 class="order-title">{{ order.total_sats }} sats</h2>
                   </div>
                   <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
                 </div>
-                <p class="muted">Criado em {{ order.created_at }}</p>
+                <p class="muted">{{ t('account.orders.created_at', value=order.created_at) }}</p>
                 {% if order.shipping_tracking %}
-                  <p class="muted">Tracking: {{ order.shipping_tracking }}</p>
+                  <p class="muted">{{ t('account.orders.tracking', value=order.shipping_tracking) }}</p>
                 {% endif %}
-                <a class="btn btn-ghost" href="{{ url_for('account.order_detail', order_id=order.id) }}">Ver detalhes</a>
+                <a class="btn btn-ghost" href="{{ url_for('account.order_detail', order_id=order.id) }}">{{ t('account.orders.view_details') }}</a>
               </article>
             {% endfor %}
           </div>
         {% else %}
           <div class="card glass orders-empty">
-            <h2>Nenhum pedido ainda</h2>
-            <p class="muted">Quando voce finalizar uma compra, ela aparecera aqui.</p>
-            <a class="btn btn-accent" href="{{ url_for('public.produtos') }}">Explorar produtos</a>
+            <h2>{{ t('account.orders.empty.title') }}</h2>
+            <p class="muted">{{ t('account.orders.empty.body') }}</p>
+            <a class="btn btn-accent" href="{{ url_for('public.produtos') }}">{{ t('account.orders.empty.cta') }}</a>
           </div>
         {% endif %}
       </div>

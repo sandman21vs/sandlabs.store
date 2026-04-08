@@ -1,42 +1,53 @@
 {% extends "base.html" %}
-{% block title %}Pedido #{{ order.id }}{% endblock %}
+{% block title %}{{ t('account.order_detail.page_title', id=order.id) }}{% endblock %}
 
 {% block content %}
     <section class="section">
       <div class="section-head">
-        <h1 class="section-title">Pedido #{{ order.id }}</h1>
-        <p class="section-sub">Detalhes do pedido, itens, envio e status atual.</p>
+        <h1 class="section-title">{{ t('account.order_detail.heading', id=order.id) }}</h1>
+        <p class="section-sub">{{ t('account.order_detail.subtitle') }}</p>
       </div>
 
       <div class="order-detail-shell stack-lg">
         <article class="card glass order-detail-card">
           <div class="order-card-head">
             <div>
-              <p class="order-label">Status atual</p>
+              <p class="order-label">{{ t('account.order_detail.current_status') }}</p>
               <h2 class="order-title">{{ order.total_sats }} sats</h2>
             </div>
             <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
           </div>
-          <p class="muted">Criado em {{ order.created_at }}</p>
-          <p class="muted">Frete: {{ order.shipping_sats }} sats</p>
-          <p class="muted">Pais: {{ order.shipping_country or 'CH' }}</p>
+          <p class="muted">{{ t('account.order_detail.created_at', value=order.created_at) }}</p>
+          <p class="muted">{{ t('account.order_detail.shipping_cost', sats=order.shipping_sats) }}</p>
+          <p class="muted">{{ t('account.order_detail.country', value=order.shipping_country or 'CH') }}</p>
           {% if order.shipping_tracking %}
-            <p><strong>Tracking:</strong> {{ order.shipping_tracking }}</p>
+            <p><strong>{{ t('account.order_detail.tracking') }}:</strong> {{ order.shipping_tracking }}</p>
           {% endif %}
           {% if order.payment_confirmed_at %}
-            <p><strong>Pagamento confirmado em:</strong> {{ order.payment_confirmed_at }}</p>
+            <p><strong>{{ t('account.order_detail.payment_confirmed_at') }}:</strong> {{ order.payment_confirmed_at }}</p>
           {% endif %}
         </article>
 
+        {% if order.shipping_address_lines %}
         <article class="card glass order-detail-card">
-          <h2 class="order-section-title">Itens</h2>
+          <h2 class="order-section-title">{{ t('account.order_detail.shipping_heading') }}</h2>
+          <address style="font-style:normal;line-height:1.7">
+            {% for line in order.shipping_address_lines %}
+              {% if loop.first %}<strong>{{ line }}</strong>{% else %}{{ line }}{% endif %}{% if not loop.last %}<br>{% endif %}
+            {% endfor %}
+          </address>
+        </article>
+        {% endif %}
+
+        <article class="card glass order-detail-card">
+          <h2 class="order-section-title">{{ t('account.order_detail.items_heading') }}</h2>
           {% if order["items"] %}
             <div class="order-items">
               {% for item in order["items"] %}
                 <div class="order-item-row">
                   <div>
                     <p class="order-item-title">{{ item.product_name or item.product_id }}</p>
-                    <p class="muted">{{ item.price_label or 'Preco' }}</p>
+                    <p class="muted">{{ item.price_label or t('account.order_detail.price_label_fallback') }}</p>
                     {% if item["options"].get('selections') %}
                       <ul class="cart-option-list">
                         {% for selection in item["options"].get('selections', []) %}
@@ -49,18 +60,18 @@
                         {% endfor %}
                       </ul>
                     {% elif item["options"].get('mode') %}
-                      <p class="muted">Formato: {{ item["options"].get('mode') }}</p>
+                      <p class="muted">{{ t('account.order_detail.format') }}: {{ item["options"].get('mode') }}</p>
                     {% endif %}
                   </div>
                   <div class="order-item-meta">
-                    <p>Qtd: {{ item.quantity }}</p>
+                    <p>{{ t('account.order_detail.quantity_short') }} {{ item.quantity }}</p>
                     <p>{{ item.line_total_sats }} sats</p>
                   </div>
                 </div>
               {% endfor %}
             </div>
           {% else %}
-            <p class="muted">Este pedido ainda nao possui itens registrados.</p>
+            <p class="muted">{{ t('account.order_detail.empty_items') }}</p>
           {% endif %}
         </article>
       </div>

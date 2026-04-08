@@ -13,6 +13,7 @@ from flask import (Blueprint, current_app, flash, redirect, render_template,
 from werkzeug.utils import secure_filename
 
 import db
+from i18n import t as translate
 from models.model_config import admin_exists, get_all_config, get_config, set_config
 from models.model_users import create_user, get_user_by_email
 from models.model_products import (create_product, delete_product,
@@ -220,14 +221,14 @@ def setup():
         })
 
         if not email or not password:
-            errors.append("Email e senha sao obrigatorios.")
+            errors.append(translate("admin.setup.errors.email_password_required"))
         elif password != confirm:
-            errors.append("As senhas nao coincidem.")
+            errors.append(translate("admin.setup.errors.password_mismatch"))
         elif len(password) < 8:
-            errors.append("Senha deve ter pelo menos 8 caracteres.")
+            errors.append(translate("admin.setup.errors.password_min_length"))
 
         if coinos_enabled and not coinos_api_key:
-            errors.append("Configure a Coinos API Key para habilitar pagamentos Lightning no setup inicial.")
+            errors.append(translate("admin.setup.errors.coinos_api_key_required"))
 
         if errors:
             return render_template("admin/setup.html", errors=errors, form_data=form_data), 200
@@ -253,9 +254,9 @@ def setup():
         session["is_admin"] = True
         session["display_name"] = user.get("display_name", "")
         logger.info("admin_setup_completed admin_user_id=%s email=%s", user["id"], email)
-        flash("Setup inicial concluido.", "success")
+        flash(translate("admin.setup.flash.completed"), "success")
         if coinos_enabled and request.form.get("coinos_webhook_secret", "").strip() == "":
-            flash("Webhook Secret do Coinos foi gerado automaticamente.", "success")
+            flash(translate("admin.setup.flash.webhook_generated"), "success")
         return redirect(url_for("admin.dashboard"))
 
     return render_template("admin/setup.html", errors=errors, form_data=form_data)
@@ -287,7 +288,7 @@ def product_new():
     if request.method == "POST":
         product_id = request.form.get("id", "").strip()
         if not product_id:
-            error = "ID do produto é obrigatório."
+            error = translate("admin.products.errors.id_required")
         else:
             data = _parse_product_form(request.form)
             data["id"] = product_id
@@ -301,7 +302,7 @@ def product_new():
             try:
                 create_product(data)
                 logger.info("admin_product_created product_id=%s admin_user_id=%s", product_id, session.get("user_id"))
-                flash("Produto criado com sucesso.", "success")
+                flash(translate("admin.products.flash.created"), "success")
                 return redirect(url_for("admin.products"))
             except Exception as exc:
                 logger.exception("admin_product_create_failed product_id=%s", product_id)
@@ -315,7 +316,7 @@ def product_new():
 def product_edit(product_id):
     product = get_product_by_id(product_id)
     if not product:
-        flash("Produto não encontrado.", "error")
+        flash(translate("admin.products.flash.not_found"), "error")
         return redirect(url_for("admin.products"))
 
     error = None
@@ -340,7 +341,7 @@ def product_edit(product_id):
         try:
             update_product(product_id, data)
             logger.info("admin_product_updated product_id=%s admin_user_id=%s", product_id, session.get("user_id"))
-            flash("Produto atualizado.", "success")
+            flash(translate("admin.products.flash.updated"), "success")
             return redirect(url_for("admin.products"))
         except Exception as exc:
             logger.exception("admin_product_update_failed product_id=%s", product_id)
@@ -355,10 +356,10 @@ def product_edit(product_id):
 def product_delete(product_id):
     if delete_product(product_id):
         logger.info("admin_product_deleted product_id=%s admin_user_id=%s", product_id, session.get("user_id"))
-        flash("Produto removido.", "success")
+        flash(translate("admin.products.flash.deleted"), "success")
     else:
         logger.warning("admin_product_delete_not_found product_id=%s", product_id)
-        flash("Produto não encontrado.", "error")
+        flash(translate("admin.products.flash.not_found"), "error")
     return redirect(url_for("admin.products"))
 
 
@@ -381,7 +382,7 @@ def orders():
 def order_detail(order_id):
     order = get_order_record(order_id)
     if not order:
-        flash("Pedido não encontrado.", "error")
+        flash(translate("admin.orders.flash.not_found"), "error")
         return redirect(url_for("admin.orders"))
     items = order.get("items", [])
     return render_template("admin/order_detail.html",
@@ -397,7 +398,7 @@ def order_status(order_id):
     tracking = request.form.get("tracking", "").strip()
 
     if new_status not in VALID_STATUSES:
-        flash("Status inválido.", "error")
+        flash(translate("admin.orders.flash.invalid_status"), "error")
         return redirect(url_for("admin.order_detail", order_id=order_id))
 
     update_order_status(order_id, new_status)
@@ -411,7 +412,7 @@ def order_status(order_id):
         session.get("user_id"),
     )
 
-    flash(f"Status atualizado para '{new_status}'.", "success")
+    flash(translate("admin.orders.flash.status_updated", status=new_status), "success")
     return redirect(url_for("admin.order_detail", order_id=order_id))
 
 
@@ -442,12 +443,12 @@ def settings():
         elif coinos_enabled_requested and not effective_webhook_secret:
             effective_webhook_secret = secrets.token_urlsafe(24)
             set_config("coinos_webhook_secret", effective_webhook_secret)
-            flash("Webhook Secret do Coinos foi gerado automaticamente.", "success")
+            flash(translate("admin.settings.flash.webhook_generated"), "success")
 
         if coinos_enabled_requested and not effective_api_key:
             set_config("coinos_enabled", "0")
             logger.warning("admin_settings_missing_coinos_api_key admin_user_id=%s", session.get("user_id"))
-            flash("Configure a Coinos API Key antes de habilitar pagamentos Lightning.", "error")
+            flash(translate("admin.settings.errors.coinos_api_key_required"), "error")
         else:
             set_config("coinos_enabled", "1" if coinos_enabled_requested else "0")
 
@@ -459,7 +460,7 @@ def settings():
             settings_saved = True
         except json.JSONDecodeError:
             logger.warning("admin_settings_invalid_shipping_json admin_user_id=%s", session.get("user_id"))
-            flash("Tabela de frete com JSON inválido. Restante salvo.", "error")
+            flash(translate("admin.settings.errors.invalid_shipping_json"), "error")
 
         logger.info(
             "admin_settings_updated admin_user_id=%s coinos_enabled=%s",
@@ -467,7 +468,7 @@ def settings():
             "1" if coinos_enabled_requested and effective_api_key else "0",
         )
         if settings_saved:
-            flash("Configuracoes salvas.", "success")
+            flash(translate("admin.settings.flash.saved"), "success")
         return redirect(url_for("admin.settings"))
 
     cfg = current_cfg
