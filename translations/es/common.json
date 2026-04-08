@@ -1,0 +1,48 @@
+{
+  "common": {
+    "brand_logo_alt": "Logo de Sandlabs",
+    "site_title": "Sandlabs",
+    "meta_description": "Carteras de hardware Bitcoin de código abierto",
+    "meta_og_description": "Carteras de hardware y accesorios Bitcoin",
+    "nav": {
+      "home": "Inicio",
+      "about": "Sobre",
+      "products": "Productos",
+      "cart": "Carrito",
+      "orders": "Pedidos",
+      "login": "Entrar",
+      "logout": "Salir",
+      "terms": "Términos",
+      "support": "Soporte",
+      "config": "Config"
+    },
+    "footer": {
+      "tagline": "Código abierto de punta a punta."
+    },
+    "language": {
+      "label": "Idioma",
+      "pt": "Portugués",
+      "en": "Inglés",
+      "es": "Español",
+      "de": "Alemán"
+    },
+    "actions": {
+      "learn_more": "Saber más",
+      "view_products": "Ver productos",
+      "start_now": "Empezar ahora",
+      "close": "Cerrar",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "info": "Información",
+      "buy": "Comprar",
+      "copy": "Copiar"
+    },
+    "errors": {
+      "internal_title": "Error interno",
+      "internal_body": "Algo salió mal. Inténtalo de nuevo más tarde.",
+      "back_home": "Volver al inicio",
+      "not_found_title": "Página no encontrada",
+      "not_found_body": "El enlace puede estar roto o la página fue movida."
+    }
+  }
+}

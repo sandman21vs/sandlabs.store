@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="{{ lang }}">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   {% set page_title = self.title()|striptags|trim %}
-  <title>Sandlabs{% if page_title %} — {{ page_title }}{% endif %}</title>
-  <meta name="description" content="{% block meta_description %}Hardware wallets Bitcoin open source{% endblock %}"/>
-  <meta property="og:title" content="Sandlabs{% if page_title %} — {{ page_title }}{% endif %}"/>
-  <meta property="og:description" content="Hardware wallets e acessórios Bitcoin"/>
+  <title>{{ t('common.site_title') }}{% if page_title %} — {{ page_title }}{% endif %}</title>
+  <meta name="description" content="{% block meta_description %}{{ t('common.meta_description') }}{% endblock %}"/>
+  <meta property="og:title" content="{{ t('common.site_title') }}{% if page_title %} — {{ page_title }}{% endif %}"/>
+  <meta property="og:description" content="{{ t('common.meta_og_description') }}"/>
   <meta property="og:image" content="{{ url_for('static', filename='images/logo.png', _external=True) }}"/>
   <meta name="csrf-token" content="{{ session.get('csrf_token', '') }}"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
@@ -20,31 +20,36 @@
 
   <header class="site-header glass">
     <a class="brand" href="{{ url_for('public.index') }}">
-      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Sandlabs" class="brand-logo"/>
-      <span class="brand-name">Sandlabs</span>
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="{{ t('common.brand_logo_alt') }}" class="brand-logo"/>
+      <span class="brand-name">{{ t('common.site_title') }}</span>
     </a>
     <nav class="site-nav">
-      <a class="nav-link{{ ' active' if active == 'inicio' }}" href="{{ url_for('public.index') }}">In&iacute;cio</a>
-      <a class="nav-link{{ ' active' if active == 'sobre' }}" href="{{ url_for('public.sobre') }}">Sobre</a>
-      <a class="nav-link{{ ' active' if active == 'produtos' }}" href="{{ url_for('public.produtos') }}">Produtos</a>
+      <a class="nav-link{{ ' active' if active == 'inicio' }}" href="{{ url_for('public.index') }}">{{ t('common.nav.home') }}</a>
+      <a class="nav-link{{ ' active' if active == 'sobre' }}" href="{{ url_for('public.sobre') }}">{{ t('common.nav.about') }}</a>
+      <a class="nav-link{{ ' active' if active == 'produtos' }}" href="{{ url_for('public.produtos') }}">{{ t('common.nav.products') }}</a>
       <a class="nav-link cart-link{{ ' active' if active == 'cart' }}" href="{{ url_for('cart.cart_page') }}">
-        Carrinho
+        {{ t('common.nav.cart') }}
         <span id="cart-badge" class="cart-badge" style="display:none">0</span>
       </a>
       {% if session.get('user_id') %}
-      <a class="nav-link{{ ' active' if active == 'orders' }}" href="{{ url_for('account.orders') }}">Pedidos</a>
+      <a class="nav-link{{ ' active' if active == 'orders' }}" href="{{ url_for('account.orders') }}">{{ t('common.nav.orders') }}</a>
       <form method="post" action="{{ url_for('auth.logout') }}" class="nav-form">
         <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
-        <button type="submit" class="nav-link nav-button">Sair</button>
+        <button type="submit" class="nav-link nav-button">{{ t('common.nav.logout') }}</button>
       </form>
       {% else %}
-      <a class="nav-link{{ ' active' if active in ['login', 'register'] }}" href="{{ url_for('auth.login') }}">Entrar</a>
+      <a class="nav-link{{ ' active' if active in ['login', 'register'] }}" href="{{ url_for('auth.login') }}">{{ t('common.nav.login') }}</a>
       {% endif %}
-      <a class="nav-link{{ ' active' if active == 'termos' }}" href="{{ url_for('public.termos') }}">Termos</a>
-      <a class="nav-link{{ ' active' if active == 'suporte' }}" href="{{ url_for('public.suporte') }}">Suporte</a>
+      <a class="nav-link{{ ' active' if active == 'termos' }}" href="{{ url_for('public.termos') }}">{{ t('common.nav.terms') }}</a>
+      <a class="nav-link{{ ' active' if active == 'suporte' }}" href="{{ url_for('public.suporte') }}">{{ t('common.nav.support') }}</a>
       {% if active == 'config' %}
-      <a class="nav-link active" href="{{ url_for('public.config_page') }}">Config</a>
+      <a class="nav-link active" href="{{ url_for('public.config_page') }}">{{ t('common.nav.config') }}</a>
       {% endif %}
+      <div class="lang-switcher" aria-label="{{ t('common.language.label') }}">
+        {% for code in supported_langs %}
+        <a class="nav-link{{ ' active' if lang == code }}" href="{{ url_for('set_lang', lang=code) }}">{{ code|upper }}</a>
+        {% endfor %}
+      </div>
     </nav>
   </header>
 
@@ -64,10 +69,24 @@
 
   <footer class="site-footer">
     {% block footer %}
-    <p class="muted">&copy; Sandlabs &bull; Open source de ponta a ponta.</p>
+    <p class="muted">&copy; {{ t('common.site_title') }} &bull; {{ t('common.footer.tagline') }}</p>
     {% endblock %}
   </footer>
 
+  <script>window.I18N = {{ js_i18n|tojson }};</script>
+  <script>
+    window.t = function(key, fallback) {
+      var current = window.I18N || {};
+      var parts = String(key || '').split('.');
+      for (var i = 0; i < parts.length; i += 1) {
+        if (!current || typeof current !== 'object' || !(parts[i] in current)) {
+          return fallback || key;
+        }
+        current = current[parts[i]];
+      }
+      return typeof current === 'string' ? current : (fallback || key);
+    };
+  </script>
   <script src="{{ url_for('static', filename='js/config.js') }}"></script>
   <script>window.CSRF_TOKEN = {{ session.get('csrf_token', '')|tojson }};</script>
   <script src="{{ url_for('static', filename='js/cart.js') }}"></script>

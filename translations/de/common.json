@@ -1,0 +1,48 @@
+{
+  "common": {
+    "brand_logo_alt": "Sandlabs-Logo",
+    "site_title": "Sandlabs",
+    "meta_description": "Open-Source-Bitcoin-Hardware-Wallets",
+    "meta_og_description": "Bitcoin-Hardware-Wallets und Zubehör",
+    "nav": {
+      "home": "Start",
+      "about": "Über uns",
+      "products": "Produkte",
+      "cart": "Warenkorb",
+      "orders": "Bestellungen",
+      "login": "Anmelden",
+      "logout": "Abmelden",
+      "terms": "Bedingungen",
+      "support": "Support",
+      "config": "Konfig"
+    },
+    "footer": {
+      "tagline": "Durchgängig Open Source."
+    },
+    "language": {
+      "label": "Sprache",
+      "pt": "Portugiesisch",
+      "en": "Englisch",
+      "es": "Spanisch",
+      "de": "Deutsch"
+    },
+    "actions": {
+      "learn_more": "Mehr erfahren",
+      "view_products": "Produkte ansehen",
+      "start_now": "Jetzt starten",
+      "close": "Schließen",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "info": "Informationen",
+      "buy": "Kaufen",
+      "copy": "Kopieren"
+    },
+    "errors": {
+      "internal_title": "Interner Fehler",
+      "internal_body": "Etwas ist schiefgelaufen. Bitte später erneut versuchen.",
+      "back_home": "Zur Startseite",
+      "not_found_title": "Seite nicht gefunden",
+      "not_found_body": "Der Link ist möglicherweise defekt oder die Seite wurde verschoben."
+    }
+  }
+}
