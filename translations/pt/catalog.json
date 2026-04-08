@@ -1,0 +1,174 @@
+{
+  "catalog": {
+    "products": {
+      "jade": {
+        "name": "Jade DIY",
+        "summary": "Carteira de hardware open-source, segura e flexível.",
+        "details_html": "<h4>Documentação do Dispositivo JADE DIY</h4>\n<p><strong>Introdução:</strong> dispositivo seguro e transparente.</p>\n<p><strong>Por que hardware open source?</strong> <a href=\"https://plebs.substack.com/p/hard-wallets-seguras\" target=\"_blank\">Artigo</a></p>\n<p><strong>Conectividade:</strong> GreenWallet • SideSwap • Sparrow • Electrum</p>\n<p><strong>Atualizações:</strong> via navegador / binários Sandmann / compilação GitHub</p>\n<p><strong>Bateria:</strong> interna (indicação limitada)</p>\n<p><strong>Segurança:</strong> Secure-element virtual Oracle</p>\n<p>Tutorial: <a href=\"https://www.youtube.com/watch?v=k-maFZiKSw4\" target=\"_blank\">YouTube</a></p>\n<p><a href=\"https://docs.google.com/document/d/1Bf8O-R478woq8z7Z8DnN9XlfGf9B3GT8rn0qgJiAUHM/edit?usp=sharing\" target=\"_blank\">Documentação completa</a></p>",
+        "buy_button_text": "Comprar Jade DIY",
+        "badge_text": "Promo",
+        "prices": {
+          "Jade DIY": { "label": "Jade DIY" },
+          "Box de Proteção": { "label": "Box de Proteção" }
+        },
+        "options": {
+          "Jade DIY": {
+            "title": "Jade DIY",
+            "inputs": [{ "label": "Case" }, { "label": "Botões" }]
+          },
+          "Box de Proteção": {
+            "title": "Box de Proteção",
+            "inputs": [{ "label": "Box" }, { "label": "Alças" }]
+          }
+        }
+      },
+      "pico": {
+        "name": "PicoFido / PicoKey (RP2040 • FIDO2)",
+        "summary": "Chave de segurança FIDO-U2F / FIDO2 baseada no RP2040 (USB-C).",
+        "details_html": "<h4>Detalhes Técnicos</h4>\n<p>• Projeto 100% open-source — código, esquemas e guias em <a href=\"https://github.com/polhenarejos/pico-fido\" target=\"_blank\">github.com/polhenarejos/pico-fido</a>.</p>\n<p>• Compatível: Google, Proton Mail, Microsoft Outlook, GitHub, X/Twitter…</p>\n<p>• FIDO2 dispensa SMS/app 2FA; chaves ficam no dispositivo.</p>\n<p>• USB-C fêmea; alimentação do host (cabo não incluído).</p>\n<p>• Conectividade: Android • Linux • Windows (iOS/macOS não testados).</p>\n<p>• <a href=\"https://docs.google.com/document/d/1JIE_6lNlFsk-TwPceDngePEg8G9fe3FKINjHCGeSUgg/edit?usp=drive_link\" target=\"_blank\">Documentação completa</a>.</p>",
+        "buy_button_text": "Comprar PicoFido",
+        "badge_text": "Novo",
+        "prices": {
+          "PicoFido / PicoKey": { "label": "PicoFido / PicoKey" }
+        },
+        "options": {
+          "Cores": {
+            "title": "Cores",
+            "inputs": [{ "label": "Corpo" }, { "label": "Anel" }]
+          }
+        }
+      },
+      "nerd": {
+        "name": "NerdMiner — CASE (sem bateria)",
+        "summary": "CASE para NerdMiner (TTGO T-Display). *Não inclui bateria nem placa.",
+        "details_html": "<p>• ~55 KH/s (info do projeto) • Stratum / pools self-custody.<br>\n• Firmware: <a href=\"https://github.com/BitMaker-hub/NerdMiner_v2\" target=\"_blank\">GitHub</a>.<br>\n• USB-C 5 V • Tutorial: <a href=\"https://www.youtube.com/watch?v=Cq0y1034oq8\" target=\"_blank\">YouTube</a>.</p>\n<p><strong>TTGO T-Display:</strong> <a href=\"https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner\" target=\"_blank\">Comprar no AliExpress</a></p>\n<p><em>APENAS CASE — sem bateria.</em></p>",
+        "buy_button_text": "Comprar NerdMiner",
+        "badge_text": "Case",
+        "prices": {
+          "Case TTGO T-Display": { "label": "Case TTGO T-Display" }
+        },
+        "options": {
+          "Cores do Case": {
+            "title": "Cores do Case",
+            "inputs": [{ "label": "Case" }, { "label": "Botões" }]
+          }
+        }
+      },
+      "sandseed": {
+        "name": "SandSeed – placas para backup de seed",
+        "summary": "Kit Stakbit 1248 – 5 placas (3 lisas + 2 perfuradas) padrão BIP-39.",
+        "details_html": "<p><strong>Como usar:</strong> sobre base firme, perfure cada letra (estilete, agulha grossa ou punção).</p>\n<p><strong>Utilidade:</strong> gravação física, offline e resistente ao fogo/água das 24 palavras da seed BIP-39.</p>\n<p>Tutorial: <a href=\"https://stackbit.me/tutorial-stackbit-1248/\" target=\"_blank\">Vídeo oficial (Stackbit)</a></p>\n<p style=\"font-size:.9rem;color:#ccc\">\n  Design original por <a href=\"https://twitter.com/valandro\" target=\"_blank\">@Valandro</a>.\n  Versão em aço inox na <a href=\"https://stackbit.me/tutorial-stackbit-1248/#loja\" target=\"_blank\">loja do autor</a>.\n</p>",
+        "buy_button_text": "Comprar SandSeed",
+        "badge_text": "Sats",
+        "prices": {
+          "Placa avulsa": { "label": "Placa avulsa" },
+          "Kit 5 un": { "label": "Kit 5 un" }
+        },
+        "options": {}
+      },
+      "krux": {
+        "name": "Krux Yahboom Modcase (c/ bateria)",
+        "summary": "Modcase com bateria; placa eletrônica não inclusa.",
+        "details_html": "<h4>Detalhes Técnicos</h4>\n<p>Inclui bateria e box de proteção (placa não inclusa).</p>\n<p>Tutorial: <a href=\"https://www.youtube.com/watch?v=V48RpmuZEwI\" target=\"_blank\">YouTube</a></p>\n<p>Placa referência Yahboom: <a href=\"https://de.aliexpress.com/item/1005005585064305.html\" target=\"_blank\">AliExpress</a></p>\n<p>Documentação: <a href=\"https://docs.google.com/document/d/1s70HUmdX3XX08GbINxEAay5eK_D3c4RLReKuautZYB4/edit?usp=sharing\" target=\"_blank\">Google Docs</a></p>\n<p>Encomenda completa: ~25 dias • R$ 775 + R$ 89 (box)</p>",
+        "buy_button_text": "Comprar Modcase",
+        "prices": {
+          "Modcase": { "label": "Modcase" },
+          "Box de Proteção": { "label": "Box de Proteção" }
+        },
+        "options": {
+          "Modcase (opcional)": {
+            "title": "Modcase (opcional)",
+            "input": { "label": "Modcase" }
+          },
+          "Box de Proteção (opcional)": {
+            "title": "Box de Proteção (opcional)",
+            "inputs": [{ "label": "Box" }, { "label": "Alças" }]
+          }
+        }
+      },
+      "kruxcase": {
+        "name": "Krux Yahboom Case (impressão 3D)",
+        "summary": "Somente impressão 3D do case. Compatível com placas Krux Yahboom.",
+        "details_html": "<p>Impressão 3D em PLA/ASA sob encomenda. Não inclui eletrônica.</p>",
+        "buy_button_text": "Comprar Case",
+        "badge_text": "3D",
+        "prices": {
+          "Case": { "label": "Case" }
+        },
+        "options": {
+          "Case": {
+            "title": "Case",
+            "input": { "label": "Case" }
+          },
+          "Box de Proteção (opcional)": {
+            "title": "Box de Proteção (opcional)",
+            "inputs": [{ "label": "Box" }, { "label": "Alças" }]
+          }
+        }
+      },
+      "ttgo-case-bateria": {
+        "name": "Case TTGO T-Display (com bateria)",
+        "summary": "Case para TTGO T-Display com bateria integrada. *Não inclui a placa.",
+        "details_html": "<p><strong>Compatibilidade:</strong> TTGO T-Display.</p>\n<p><strong>Observação:</strong> produto se refere apenas ao <em>case</em>; a placa TTGO não está inclusa.</p>\n<p><strong>TTGO T-Display (referência):</strong> <a href=\"https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner\" target=\"_blank\">AliExpress</a></p>\n<p><strong>Montagem (vídeo):</strong> <a href=\"https://youtu.be/S5LI_bG9f1U\" target=\"_blank\">YouTube</a></p>",
+        "buy_button_text": "Comprar Case (c/ bateria)",
+        "badge_text": "Novo",
+        "prices": {
+          "Case c/ bateria": { "label": "Case c/ bateria" },
+          "Box de Proteção": { "label": "Box de Proteção" }
+        },
+        "options": {
+          "Cores do Case": {
+            "title": "Cores do Case",
+            "inputs": [{ "label": "Case" }, { "label": "Botões" }]
+          },
+          "Box de Proteção (opcional)": {
+            "title": "Box de Proteção (opcional)",
+            "inputs": [{ "label": "Box" }, { "label": "Alças" }]
+          }
+        }
+      },
+      "jade-diy-sem-bateria": {
+        "name": "Jade DIY (TTGO T-Display, sem bateria)",
+        "summary": "Case para Jade DIY sem bateria integrada. *Não inclui a placa.",
+        "details_html": "<p><strong>Compatibilidade:</strong> TTGO T-Display (Jade DIY).</p>\n<p><strong>Observação:</strong> produto se refere apenas ao <em>case</em> sem bateria; a placa TTGO não está inclusa.</p>\n<p><strong>TTGO T-Display (referência):</strong> <a href=\"https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner\" target=\"_blank\">AliExpress</a></p>\n<p><strong>Documentação Jade DIY:</strong> <a href=\"https://docs.google.com/document/d/1Bf8O-R478woq8z7Z8DnN9XlfGf9B3GT8rn0qgJiAUHM/edit?usp=sharing\" target=\"_blank\">Google Docs</a></p>\n<p><strong>Montagem (vídeo):</strong> <a href=\"https://youtu.be/S5LI_bG9f1U\" target=\"_blank\">YouTube</a></p>",
+        "buy_button_text": "Comprar Jade DIY (sem bateria)",
+        "badge_text": "Econômico",
+        "prices": {
+          "Jade DIY (sem bateria)": { "label": "Jade DIY (sem bateria)" },
+          "Box de Proteção": { "label": "Box de Proteção" }
+        },
+        "options": {
+          "Cores do Case": {
+            "title": "Cores do Case",
+            "inputs": [{ "label": "Case" }, { "label": "Botões" }]
+          },
+          "Box de Proteção (opcional)": {
+            "title": "Box de Proteção (opcional)",
+            "inputs": [{ "label": "Box" }, { "label": "Alças" }]
+          }
+        }
+      },
+      "ttgo-case-sem-bateria": {
+        "name": "TTGO T-Display — Case (sem bateria)",
+        "summary": "Case para TTGO T-Display SEM bateria integrada. *Não inclui a placa.",
+        "details_html": "<p><strong>Compatibilidade:</strong> TTGO T-Display.</p>\n<p><strong>Observação:</strong> produto refere-se apenas ao <em>case</em> sem bateria; a placa TTGO não está inclusa.</p>\n<p><strong>TTGO T-Display (referência de compra):</strong> <a href=\"https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner\" target=\"_blank\">AliExpress</a></p>\n<p><strong>Montagem (vídeo):</strong> <a href=\"https://youtu.be/S5LI_bG9f1U\" target=\"_blank\">YouTube</a></p>",
+        "buy_button_text": "Comprar Case (sem bateria)",
+        "badge_text": "Sem bateria",
+        "prices": {
+          "Case sem bateria": { "label": "Case sem bateria" },
+          "Box de Proteção": { "label": "Box de Proteção" }
+        },
+        "options": {
+          "Cores do Case": {
+            "title": "Cores do Case",
+            "inputs": [{ "label": "Case" }, { "label": "Botões" }]
+          },
+          "Box de Proteção (opcional)": {
+            "title": "Box de Proteção (opcional)",
+            "inputs": [{ "label": "Box" }, { "label": "Alças" }]
+          }
+        }
+      }
+    }
+  }
+}

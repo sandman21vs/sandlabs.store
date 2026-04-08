@@ -1,0 +1,174 @@
+{
+  "catalog": {
+    "products": {
+      "jade": {
+        "name": "Jade DIY",
+        "summary": "Open-Source-Hardware-Wallet, sicher und flexibel.",
+        "details_html": "<h4>JADE DIY Gerätedokumentation</h4>\n<p><strong>Einführung:</strong> sicheres und transparentes Gerät.</p>\n<p><strong>Warum Open-Source-Hardware?</strong> <a href=\"https://plebs.substack.com/p/hard-wallets-seguras\" target=\"_blank\">Artikel</a></p>\n<p><strong>Konnektivität:</strong> GreenWallet • SideSwap • Sparrow • Electrum</p>\n<p><strong>Updates:</strong> über Browser / Sandmann-Binaries / GitHub-Build</p>\n<p><strong>Akku:</strong> intern (eingeschränkte Anzeige)</p>\n<p><strong>Sicherheit:</strong> virtuelles Oracle Secure-Element</p>\n<p>Tutorial: <a href=\"https://www.youtube.com/watch?v=k-maFZiKSw4\" target=\"_blank\">YouTube</a></p>\n<p><a href=\"https://docs.google.com/document/d/1Bf8O-R478woq8z7Z8DnN9XlfGf9B3GT8rn0qgJiAUHM/edit?usp=sharing\" target=\"_blank\">Vollständige Dokumentation</a></p>",
+        "buy_button_text": "Jade DIY kaufen",
+        "badge_text": "Promo",
+        "prices": {
+          "Jade DIY": { "label": "Jade DIY" },
+          "Box de Proteção": { "label": "Schutzbox" }
+        },
+        "options": {
+          "Jade DIY": {
+            "title": "Jade DIY",
+            "inputs": [{ "label": "Gehäuse" }, { "label": "Tasten" }]
+          },
+          "Box de Proteção": {
+            "title": "Schutzbox",
+            "inputs": [{ "label": "Box" }, { "label": "Griffe" }]
+          }
+        }
+      },
+      "pico": {
+        "name": "PicoFido / PicoKey (RP2040 • FIDO2)",
+        "summary": "FIDO-U2F / FIDO2 Sicherheitsschlüssel auf RP2040-Basis (USB-C).",
+        "details_html": "<h4>Technische Details</h4>\n<p>• 100% Open-Source-Projekt — Code, Schaltpläne und Anleitungen unter <a href=\"https://github.com/polhenarejos/pico-fido\" target=\"_blank\">github.com/polhenarejos/pico-fido</a>.</p>\n<p>• Kompatibel: Google, Proton Mail, Microsoft Outlook, GitHub, X/Twitter…</p>\n<p>• FIDO2 ersetzt SMS/App-2FA; Schlüssel bleiben auf dem Gerät.</p>\n<p>• USB-C Buchse; Host-gespeist (Kabel nicht enthalten).</p>\n<p>• Konnektivität: Android • Linux • Windows (iOS/macOS nicht getestet).</p>\n<p>• <a href=\"https://docs.google.com/document/d/1JIE_6lNlFsk-TwPceDngePEg8G9fe3FKINjHCGeSUgg/edit?usp=drive_link\" target=\"_blank\">Vollständige Dokumentation</a>.</p>",
+        "buy_button_text": "PicoFido kaufen",
+        "badge_text": "Neu",
+        "prices": {
+          "PicoFido / PicoKey": { "label": "PicoFido / PicoKey" }
+        },
+        "options": {
+          "Cores": {
+            "title": "Farben",
+            "inputs": [{ "label": "Gehäuse" }, { "label": "Ring" }]
+          }
+        }
+      },
+      "nerd": {
+        "name": "NerdMiner — GEHÄUSE (ohne Akku)",
+        "summary": "Gehäuse für NerdMiner (TTGO T-Display). *Kein Akku, keine Platine.",
+        "details_html": "<p>• ~55 KH/s (Projektangabe) • Stratum / Self-Custody-Pools.<br>\n• Firmware: <a href=\"https://github.com/BitMaker-hub/NerdMiner_v2\" target=\"_blank\">GitHub</a>.<br>\n• USB-C 5 V • Tutorial: <a href=\"https://www.youtube.com/watch?v=Cq0y1034oq8\" target=\"_blank\">YouTube</a>.</p>\n<p><strong>TTGO T-Display:</strong> <a href=\"https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner\" target=\"_blank\">Bei AliExpress kaufen</a></p>\n<p><em>NUR GEHÄUSE — ohne Akku.</em></p>",
+        "buy_button_text": "NerdMiner kaufen",
+        "badge_text": "Gehäuse",
+        "prices": {
+          "Case TTGO T-Display": { "label": "TTGO T-Display Gehäuse" }
+        },
+        "options": {
+          "Cores do Case": {
+            "title": "Gehäusefarben",
+            "inputs": [{ "label": "Gehäuse" }, { "label": "Tasten" }]
+          }
+        }
+      },
+      "sandseed": {
+        "name": "SandSeed – Seed-Backup-Platten",
+        "summary": "Stakbit 1248 Kit – 5 Platten (3 glatt + 2 gelocht) BIP-39-Standard.",
+        "details_html": "<p><strong>Anwendung:</strong> auf festem Untergrund jeden Buchstaben stanzen (Messer, dicke Nadel oder Lochstempel).</p>\n<p><strong>Zweck:</strong> physisches, offline-fähiges, feuer- und wasserresistentes Backup der 24 BIP-39-Seed-Wörter.</p>\n<p>Tutorial: <a href=\"https://stackbit.me/tutorial-stackbit-1248/\" target=\"_blank\">Offizielles Video (Stackbit)</a></p>\n<p style=\"font-size:.9rem;color:#ccc\">\n  Originaldesign von <a href=\"https://twitter.com/valandro\" target=\"_blank\">@Valandro</a>.\n  Edelstahlversion im <a href=\"https://stackbit.me/tutorial-stackbit-1248/#loja\" target=\"_blank\">Shop des Autors</a>.\n</p>",
+        "buy_button_text": "SandSeed kaufen",
+        "badge_text": "Sats",
+        "prices": {
+          "Placa avulsa": { "label": "Einzelplatte" },
+          "Kit 5 un": { "label": "5er-Kit" }
+        },
+        "options": {}
+      },
+      "krux": {
+        "name": "Krux Yahboom Modcase (mit Akku)",
+        "summary": "Modcase mit Akku; Elektronikplatine nicht enthalten.",
+        "details_html": "<h4>Technische Details</h4>\n<p>Enthält Akku und Schutzbox (Platine nicht enthalten).</p>\n<p>Tutorial: <a href=\"https://www.youtube.com/watch?v=V48RpmuZEwI\" target=\"_blank\">YouTube</a></p>\n<p>Yahboom Referenzplatine: <a href=\"https://de.aliexpress.com/item/1005005585064305.html\" target=\"_blank\">AliExpress</a></p>\n<p>Dokumentation: <a href=\"https://docs.google.com/document/d/1s70HUmdX3XX08GbINxEAay5eK_D3c4RLReKuautZYB4/edit?usp=sharing\" target=\"_blank\">Google Docs</a></p>\n<p>Vollbestellung: ~25 Tage</p>",
+        "buy_button_text": "Modcase kaufen",
+        "prices": {
+          "Modcase": { "label": "Modcase" },
+          "Box de Proteção": { "label": "Schutzbox" }
+        },
+        "options": {
+          "Modcase (opcional)": {
+            "title": "Modcase (optional)",
+            "input": { "label": "Modcase" }
+          },
+          "Box de Proteção (opcional)": {
+            "title": "Schutzbox (optional)",
+            "inputs": [{ "label": "Box" }, { "label": "Griffe" }]
+          }
+        }
+      },
+      "kruxcase": {
+        "name": "Krux Yahboom Case (3D-Druck)",
+        "summary": "Nur 3D-Druck des Gehäuses. Kompatibel mit Krux Yahboom Platinen.",
+        "details_html": "<p>3D-Druck in PLA/ASA auf Bestellung. Elektronik nicht enthalten.</p>",
+        "buy_button_text": "Gehäuse kaufen",
+        "badge_text": "3D",
+        "prices": {
+          "Case": { "label": "Gehäuse" }
+        },
+        "options": {
+          "Case": {
+            "title": "Gehäuse",
+            "input": { "label": "Gehäuse" }
+          },
+          "Box de Proteção (opcional)": {
+            "title": "Schutzbox (optional)",
+            "inputs": [{ "label": "Box" }, { "label": "Griffe" }]
+          }
+        }
+      },
+      "ttgo-case-bateria": {
+        "name": "TTGO T-Display Gehäuse (mit Akku)",
+        "summary": "Gehäuse für TTGO T-Display mit integriertem Akku. *Platine nicht enthalten.",
+        "details_html": "<p><strong>Kompatibilität:</strong> TTGO T-Display.</p>\n<p><strong>Hinweis:</strong> dieses Produkt bezieht sich nur auf das <em>Gehäuse</em>; die TTGO-Platine ist nicht enthalten.</p>\n<p><strong>TTGO T-Display (Referenz):</strong> <a href=\"https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner\" target=\"_blank\">AliExpress</a></p>\n<p><strong>Montage (Video):</strong> <a href=\"https://youtu.be/S5LI_bG9f1U\" target=\"_blank\">YouTube</a></p>",
+        "buy_button_text": "Gehäuse kaufen (mit Akku)",
+        "badge_text": "Neu",
+        "prices": {
+          "Case c/ bateria": { "label": "Gehäuse mit Akku" },
+          "Box de Proteção": { "label": "Schutzbox" }
+        },
+        "options": {
+          "Cores do Case": {
+            "title": "Gehäusefarben",
+            "inputs": [{ "label": "Gehäuse" }, { "label": "Tasten" }]
+          },
+          "Box de Proteção (opcional)": {
+            "title": "Schutzbox (optional)",
+            "inputs": [{ "label": "Box" }, { "label": "Griffe" }]
+          }
+        }
+      },
+      "jade-diy-sem-bateria": {
+        "name": "Jade DIY (TTGO T-Display, ohne Akku)",
+        "summary": "Jade DIY Gehäuse ohne integrierten Akku. *Platine nicht enthalten.",
+        "details_html": "<p><strong>Kompatibilität:</strong> TTGO T-Display (Jade DIY).</p>\n<p><strong>Hinweis:</strong> dieses Produkt bezieht sich nur auf das <em>Gehäuse</em> ohne Akku; die TTGO-Platine ist nicht enthalten.</p>\n<p><strong>TTGO T-Display (Referenz):</strong> <a href=\"https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner\" target=\"_blank\">AliExpress</a></p>\n<p><strong>Jade DIY Dokumentation:</strong> <a href=\"https://docs.google.com/document/d/1Bf8O-R478woq8z7Z8DnN9XlfGf9B3GT8rn0qgJiAUHM/edit?usp=sharing\" target=\"_blank\">Google Docs</a></p>\n<p><strong>Montage (Video):</strong> <a href=\"https://youtu.be/S5LI_bG9f1U\" target=\"_blank\">YouTube</a></p>",
+        "buy_button_text": "Jade DIY kaufen (ohne Akku)",
+        "badge_text": "Günstig",
+        "prices": {
+          "Jade DIY (sem bateria)": { "label": "Jade DIY (ohne Akku)" },
+          "Box de Proteção": { "label": "Schutzbox" }
+        },
+        "options": {
+          "Cores do Case": {
+            "title": "Gehäusefarben",
+            "inputs": [{ "label": "Gehäuse" }, { "label": "Tasten" }]
+          },
+          "Box de Proteção (opcional)": {
+            "title": "Schutzbox (optional)",
+            "inputs": [{ "label": "Box" }, { "label": "Griffe" }]
+          }
+        }
+      },
+      "ttgo-case-sem-bateria": {
+        "name": "TTGO T-Display — Gehäuse (ohne Akku)",
+        "summary": "Gehäuse für TTGO T-Display OHNE integrierten Akku. *Platine nicht enthalten.",
+        "details_html": "<p><strong>Kompatibilität:</strong> TTGO T-Display.</p>\n<p><strong>Hinweis:</strong> dieses Produkt bezieht sich nur auf das <em>Gehäuse</em> ohne Akku; die TTGO-Platine ist nicht enthalten.</p>\n<p><strong>TTGO T-Display (Kaufreferenz):</strong> <a href=\"https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner\" target=\"_blank\">AliExpress</a></p>\n<p><strong>Montage (Video):</strong> <a href=\"https://youtu.be/S5LI_bG9f1U\" target=\"_blank\">YouTube</a></p>",
+        "buy_button_text": "Gehäuse kaufen (ohne Akku)",
+        "badge_text": "Ohne Akku",
+        "prices": {
+          "Case sem bateria": { "label": "Gehäuse ohne Akku" },
+          "Box de Proteção": { "label": "Schutzbox" }
+        },
+        "options": {
+          "Cores do Case": {
+            "title": "Gehäusefarben",
+            "inputs": [{ "label": "Gehäuse" }, { "label": "Tasten" }]
+          },
+          "Box de Proteção (opcional)": {
+            "title": "Schutzbox (optional)",
+            "inputs": [{ "label": "Box" }, { "label": "Griffe" }]
+          }
+        }
+      }
+    }
+  }
+}

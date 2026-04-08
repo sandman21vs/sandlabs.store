@@ -2,6 +2,7 @@ import json
 
 from flask import Blueprint, render_template
 
+from i18n import current_lang, localize_products
 from models.model_products import get_all_products, products_to_js_format
 
 public = Blueprint("public", __name__)
@@ -10,14 +11,20 @@ public = Blueprint("public", __name__)
 @public.route("/")
 def index():
     products = get_all_products()
-    products_json = json.dumps(products_to_js_format(products), ensure_ascii=False)
+    products_json = json.dumps(
+        localize_products(products_to_js_format(products), current_lang()),
+        ensure_ascii=False,
+    )
     return render_template("index.html", active="inicio", products_json=products_json)
 
 
 @public.route("/produtos")
 def produtos():
     products = get_all_products()
-    products_json = json.dumps(products_to_js_format(products), ensure_ascii=False)
+    products_json = json.dumps(
+        localize_products(products_to_js_format(products), current_lang()),
+        ensure_ascii=False,
+    )
     return render_template("produtos.html", active="produtos", products_json=products_json)
 
 
