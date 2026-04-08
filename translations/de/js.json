@@ -1,0 +1,26 @@
+{
+  "public": {
+    "products": {
+      "color_default_1": "Farbe 1",
+      "color_default_2": "Farbe 2",
+      "color_default": "Farbe"
+    }
+  },
+  "commerce": {
+    "js": {
+      "errors": {
+        "http": "Serverfehler.",
+        "cart_update_failed": "Warenkorb konnte nicht aktualisiert werden.",
+        "product_not_found": "Produkt nicht gefunden."
+      },
+      "message": {
+        "intro": "Ich habe sandlabs.store gefunden und möchte bestellen",
+        "shipping_postal_code": "können Sie die Versandkosten für die Postleitzahl berechnen:",
+        "coupon_prefix": "Gutschein:",
+        "sandseed_kit": "- SandSeed: 5er-Kit (3 glatt + 2 gelocht)",
+        "sandseed_single": "- SandSeed: {qty} Einzelplatte(n)",
+        "addon_seed": "- Zusatz: SandSeed-Kit (5 Platten)"
+      }
+    }
+  }
+}

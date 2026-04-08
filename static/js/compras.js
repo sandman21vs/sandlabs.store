@@ -57,7 +57,9 @@
         const va = sanitize(d[a?.name]);
         const vb = sanitize(d[b?.name]);
         if ((va && !vb) || (!va && vb)){
-          error = `Selecione ambas as cores para “${opt.title}” ou deixe ambas em branco.`;
+          error = (window.t
+            ? window.t('public.products.errors.select_both_colors', `Selecione ambas as cores para “{title}” ou deixe ambas em branco.`).replace('{title}', opt.title || '')
+            : `Selecione ambas as cores para “${opt.title}” ou deixe ambas em branco.`);
           return;
         }
         if (va && vb){
@@ -76,10 +78,10 @@
       if (opt.type === 'seedPack'){
         const pack = sanitize(d.seedPack);
         if (pack === 'kit'){
-          lines.push(`- SandSeed: kit 5 un (3 lisas + 2 perfuradas)`);
+          lines.push(window.t ? window.t('commerce.js.message.sandseed_kit', '- SandSeed: kit 5 un (3 lisas + 2 perfuradas)') : '- SandSeed: kit 5 un (3 lisas + 2 perfuradas)');
         } else if (pack === 'single'){
           const q = Math.max(1, parseInt(d.seedQty || '1', 10) || 1);
-          lines.push(`- SandSeed: ${q} placa(s) avulsas`);
+          lines.push((window.t ? window.t('commerce.js.message.sandseed_single', '- SandSeed: {qty} placa(s) avulsa(s)') : `- SandSeed: ${q} placa(s) avulsas`).replace('{qty}', q));
         }
       }
     });
@@ -91,7 +93,7 @@
     const { lines, error } = buildOptionLines(prod, d);
     if (error) return { error, msg:'' };
 
-    let msg = 'vim pelo site sandlabs.store e gostaria de pedir\n';
+    let msg = (window.t ? window.t('commerce.js.message.intro') : 'vim pelo site sandlabs.store e gostaria de pedir') + '\n';
     msg += `-${prod.nome}\n`;
     if (lines.length){
       msg += lines.join('\n') + '\n';
@@ -100,14 +102,14 @@
     // add-on SandSeed (se disponível no produto)
     const addSeed = !!d.addSeedKit;
     if (addSeed && prod.allowAddOnSeed){
-      msg += '- Adicionar: Kit SandSeed (5 placas)\n';
+      msg += (window.t ? window.t('commerce.js.message.addon_seed', '- Adicionar: Kit SandSeed (5 placas)') : '- Adicionar: Kit SandSeed (5 placas)') + '\n';
     }
 
     // CEP e cupom
     const cep   = sanitize(pickField(d,'cep'));
     const cupom = sanitize(pickField(d,'cupom'));
-    if (cep)   msg += `\npode calcular o frete para o cep: ${cep}`;
-    if (cupom) msg += `\nvim pelo (${cupom})`;
+    if (cep)   msg += `\n${(window.t ? window.t('commerce.js.message.shipping_postal_code') : 'pode calcular o frete para o cep:')} ${cep}`;
+    if (cupom) msg += `\n${(window.t ? window.t('commerce.js.message.coupon_prefix') : 'vim pelo')} (${cupom})`;
 
     return { error:'', msg };
   }
@@ -116,7 +118,7 @@
   window.finalizeCompra = function(form, produtoId, plataforma){
     const prod = findProductById(produtoId);
     if (!prod){
-      alert('Produto não encontrado.');
+      alert(window.t ? window.t('commerce.js.errors.product_not_found') : 'Produto não encontrado.');
       return;
     }
 

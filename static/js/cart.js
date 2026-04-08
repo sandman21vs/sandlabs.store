@@ -17,7 +17,7 @@
     const response = await fetch(url, requestOptions);
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      const message = data.error || `HTTP ${response.status}`;
+      const message = data.error || (window.t ? window.t('commerce.js.errors.http', `HTTP ${response.status}`) : `HTTP ${response.status}`);
       throw new Error(message);
     }
     return data;
@@ -140,7 +140,7 @@
         await handleCartPageAction(button);
       } catch (error) {
         button.disabled = false;
-        showToast(error.message || 'Não foi possível atualizar o carrinho.', true);
+        showToast(error.message || (window.t ? window.t('commerce.js.errors.cart_update_failed') : 'Não foi possível atualizar o carrinho.'), true);
       }
     });
   }

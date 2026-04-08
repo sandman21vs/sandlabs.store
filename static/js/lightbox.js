@@ -1,5 +1,10 @@
 // /js/lightbox.js — ARQUIVO COMPLETO
 (function(){
+  function t(key, fallback) {
+    if (typeof window.t === 'function') return window.t(key, fallback);
+    return fallback || key;
+  }
+
   let imagens = [];
   let indice = 0;
   let mounted = false;
@@ -15,12 +20,12 @@
     }
     lb.innerHTML = `
       <div class="lightbox-inner" role="dialog" aria-modal="true">
-        <button class="close-btn" data-action="close" aria-label="Fechar">×</button>
+        <button class="close-btn" data-action="close" aria-label="${t('public.products.lightbox.close', 'Close')}">×</button>
         <figure class="lightbox-figure">
-          <img id="imagemModal" alt="Imagem ampliada" decoding="async" loading="eager"/>
+          <img id="imagemModal" alt="${t('public.products.lightbox.image_alt', 'Expanded image')}" decoding="async" loading="eager"/>
         </figure>
-        <button class="nav-btn prev-btn" data-action="prev" aria-label="Anterior">&#10094;</button>
-        <button class="nav-btn next-btn" data-action="next" aria-label="Próxima">&#10095;</button>
+        <button class="nav-btn prev-btn" data-action="prev" aria-label="${t('public.products.lightbox.previous', 'Previous')}">&#10094;</button>
+        <button class="nav-btn next-btn" data-action="next" aria-label="${t('public.products.lightbox.next', 'Next')}">&#10095;</button>
       </div>
     `;
 

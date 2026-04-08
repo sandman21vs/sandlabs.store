@@ -1,5 +1,10 @@
 // /js/render-produtos.js — ARQUIVO COMPLETO
 (function(){
+  function t(key, fallback) {
+    if (typeof window.t === 'function') return window.t(key, fallback);
+    return fallback || key;
+  }
+
   /* Utilitário para criar elementos */
   function el(tag, attrs = {}, html) {
     const e = document.createElement(tag);
@@ -77,7 +82,7 @@
   function buildCartItems(prod, form) {
     const prices = Array.isArray(prod.preco) ? prod.preco : [];
     if (!prices.length || !prices[0].id) {
-      return { error: 'Este produto ainda não tem preço configurado para o carrinho.', items: [] };
+      return { error: t('public.products.errors.no_cart_price', 'This product does not have a cart price configured yet.'), items: [] };
     }
 
     const data = formDataToObject(form);
@@ -85,8 +90,7 @@
     if (prod.id === 'sandseed') {
       const mode = sanitize(data.seedPack) === 'single' ? 'single' : 'kit';
       const selectedPrice = prices.find((price) => {
-        const label = normalizeLabel(price.label);
-        return mode === 'single' ? label.includes('placa avulsa') : label.includes('kit 5 un');
+        return mode === 'single' ? price.amountSats === 2000 : price.amountSats === 5000;
       }) || prices[0];
 
       return {
@@ -118,14 +122,14 @@
         if ((firstValue && !secondValue) || (!firstValue && secondValue)) {
           extraItems.length = 0;
           primarySelections.length = 0;
-          throw new Error(`Selecione ambas as cores para “${option.title}” ou deixe ambas em branco.`);
+          throw new Error(t('public.products.errors.select_both_colors', 'Select both colors for “{title}” or leave both blank.').replace('{title}', option.title || ''));
         }
 
         if (!firstValue && !secondValue) return;
 
         const payload = selectionPayload(option, [
-          { name: first?.name, label: first?.label || 'Cor 1', value: firstValue },
-          { name: second?.name, label: second?.label || 'Cor 2', value: secondValue }
+          { name: first?.name, label: first?.label || t('public.products.color_default_1', 'Color 1'), value: firstValue },
+          { name: second?.name, label: second?.label || t('public.products.color_default_2', 'Color 2'), value: secondValue }
         ]);
         const matchedPrice = findMatchingPrice(prod, option, index);
         if (matchedPrice && matchedPrice.id !== primaryPrice.id) {
@@ -146,7 +150,7 @@
         if (!value) return;
 
         const payload = selectionPayload(option, [
-          { name: input?.name, label: input?.label || option.title || 'Cor', value }
+          { name: input?.name, label: input?.label || option.title || t('public.products.color_default', 'Color'), value }
         ]);
         const matchedPrice = findMatchingPrice(prod, option, index);
         if (matchedPrice && matchedPrice.id !== primaryPrice.id) {
@@ -175,7 +179,7 @@
 
     if (data.addSeedKit && prod.allowAddOnSeed) {
       const seedProduct = findProductById('sandseed');
-      const seedPrice = (seedProduct?.preco || []).find((price) => normalizeLabel(price.label).includes('kit 5 un'));
+      const seedPrice = (seedProduct?.preco || []).find((price) => price.amountSats === 5000);
       if (seedProduct && seedPrice?.id) {
         items.push({
           productId: seedProduct.id,
@@ -230,17 +234,17 @@ function buildGallery(prod) {
   /* Caixa de descrição + botão comprar */
   function buildDescBox(prod) {
     const box = el('div', { class:'desc-box' });
-    box.appendChild(el('h3', {}, `Informações sobre ${prod.nome}`));
+    box.appendChild(el('h3', {}, t('public.products.info_about', 'Information about {name}').replace('{name}', prod.nome)));
     box.appendChild(el('p', {}, prod.resumo));
     box.insertAdjacentHTML('beforeend', priceListHTML(prod.preco));
 
-    const infoBtn = el('button', { class:'info-btn' }, '+ Informações');
+    const infoBtn = el('button', { class:'info-btn' }, t('public.products.info_button', '+ Details'));
     const infoArea = el('div', { style:'display:none;margin-top:1rem' }, prod.detalhesHTML || '');
     infoBtn.addEventListener('click', () => {
       infoArea.style.display = (infoArea.style.display === 'none') ? 'block' : 'none';
     });
 
-    const buyBtn = el('button', { class:'buy-btn' }, prod.buyButtonText || `Comprar ${prod.nome}`);
+    const buyBtn = el('button', { class:'buy-btn' }, prod.buyButtonText || t('public.products.buy_product', 'Buy {name}').replace('{name}', prod.nome));
     buyBtn.addEventListener('click', () => openPurchaseModal(prod));
 
     box.appendChild(infoBtn);
@@ -266,8 +270,8 @@ function buildGallery(prod) {
     modal = el('div', { id:'modal-compra', class:'modal', role:'dialog', 'aria-modal':'true' });
     modal.innerHTML = `
       <div class="modal-content">
-        <button class="close" data-close aria-label="Fechar">&times;</button>
-        <img src="images/cor_exemplo.png" class="demo" alt="Demonstração">
+        <button class="close" data-close aria-label="${t('public.products.lightbox.close', 'Close')}">&times;</button>
+        <img src="images/cor_exemplo.png" class="demo" alt="${t('public.products.modal.demo_alt', 'Demo')}">
         <h3 id="mc-title"></h3>
         <form id="mc-form"></form>
       </div>
@@ -306,7 +310,7 @@ function buildGallery(prod) {
     const modal = ensureModal();
     const title = modal.querySelector('#mc-title');
     const form  = modal.querySelector('#mc-form');
-    title.textContent = `Opções para ${prod.nome}`;
+    title.textContent = t('public.products.modal.options_for', 'Options for {name}').replace('{name}', prod.nome);
     form.innerHTML = '';
 
     /* Monta os grupos de opções conforme definição do produto */
@@ -338,13 +342,13 @@ function buildGallery(prod) {
 
       if (opt.type === 'seedPack') {
         const group = el('div', { class:'group' });
-        group.appendChild(el('p', {}, `<strong>Selecione:</strong>`));
+        group.appendChild(el('p', {}, `<strong>${t('public.products.seed.select', 'Select:')}</strong>`));
 
         const labelKit = el('label', {}, `
-          <input type="radio" name="seedPack" value="kit" checked> Kit 5 un – 5 000 sats
+          <input type="radio" name="seedPack" value="kit" checked> ${t('public.products.seed.kit_label', '5-unit kit – 5,000 sats')}
         `);
         const labelSingle = el('label', {}, `
-          <input type="radio" name="seedPack" value="single"> Placa avulsa – 2 000 sats
+          <input type="radio" name="seedPack" value="single"> ${t('public.products.seed.single_label', 'Single plate – 2,000 sats')}
         `);
         group.appendChild(labelKit);
         group.appendChild(el('br'));
@@ -352,7 +356,7 @@ function buildGallery(prod) {
 
         const qtyBox = el('div', { id:'seedQtyBox', style:'display:none;margin-top:8px' });
         qtyBox.innerHTML = `
-          <p>Quantidade de placas:</p>
+          <p>${t('public.products.seed.qty_label', 'Number of plates:')}</p>
           <input type="number" name="seedQty" min="1" max="10" value="1">
         `;
         group.appendChild(qtyBox);
@@ -373,7 +377,7 @@ function buildGallery(prod) {
       groupAddon.innerHTML = `
         <label>
           <input type="checkbox" name="addSeedKit">
-          Adicionar <strong>Kit SandSeed (5 placas)</strong>
+          ${t('public.products.add_seed_kit', 'Add <strong>SandSeed kit (5 plates)</strong>')}
         </label>
       `;
       form.appendChild(groupAddon);
@@ -381,21 +385,21 @@ function buildGallery(prod) {
 
     /* CEP */
     const cepGroup = el('div', { class:'group' });
-    cepGroup.appendChild(el('p', {}, 'CEP:'));
-    cepGroup.appendChild(el('input', { type:'text', name:'cep', placeholder:'Seu CEP', required:true }));
+    cepGroup.appendChild(el('p', {}, t('public.products.shipping_code_label', 'Postal code:')));
+    cepGroup.appendChild(el('input', { type:'text', name:'cep', placeholder:t('public.products.shipping_code_placeholder', 'Your postal code'), required:true }));
     form.appendChild(cepGroup);
 
     /* Cupom */
     const cupomGroup = el('div', { class:'group' });
-    cupomGroup.appendChild(el('p', { style:'font-style:italic;color:#ccc' }, 'Cupom (opcional):'));
-    cupomGroup.appendChild(el('input', { type:'text', name:'cupom', placeholder:'Cupom' }));
+    cupomGroup.appendChild(el('p', { style:'font-style:italic;color:#ccc' }, t('public.products.coupon_label', 'Coupon (optional):')));
+    cupomGroup.appendChild(el('input', { type:'text', name:'cupom', placeholder:t('public.products.coupon_placeholder', 'Coupon') }));
     form.appendChild(cupomGroup);
 
     /* Ações finais */
     const actions = el('div', { class:'final-actions' });
-    const bCart   = el('button', { type:'button', class:'final-btn final-btn-accent' }, 'Adicionar ao Carrinho');
-    const bWhats  = el('button', { type:'button', class:'final-btn' }, 'WhatsApp');
-    const bTele   = el('button',  { type:'button', class:'final-btn' }, 'Telegram');
+    const bCart   = el('button', { type:'button', class:'final-btn final-btn-accent' }, t('public.products.actions.add_to_cart', 'Add to cart'));
+    const bWhats  = el('button', { type:'button', class:'final-btn' }, t('public.products.actions.whatsapp', 'WhatsApp'));
+    const bTele   = el('button',  { type:'button', class:'final-btn' }, t('public.products.actions.telegram', 'Telegram'));
     bCart.addEventListener('click', async () => {
       try {
         const { error, items } = buildCartItems(prod, form);
@@ -404,16 +408,16 @@ function buildGallery(prod) {
           return;
         }
         if (typeof addCartBatch !== 'function') {
-          alert('Carrinho indisponível no momento.');
+          alert(t('public.products.errors.cart_unavailable', 'Cart unavailable right now.'));
           return;
         }
         await addCartBatch(items);
         closePurchaseModal();
         if (typeof showCartToast === 'function') {
-          showCartToast('Produto adicionado ao carrinho.');
+          showCartToast(t('public.products.toast.added_to_cart', 'Product added to cart.'));
         }
       } catch (error) {
-        alert(error.message || 'Não foi possível adicionar ao carrinho.');
+        alert(error.message || t('public.products.errors.add_to_cart_failed', 'Could not add the product to the cart.'));
       }
     });
     bWhats.addEventListener('click', () => {

@@ -1,0 +1,26 @@
+{
+  "public": {
+    "products": {
+      "color_default_1": "Color 1",
+      "color_default_2": "Color 2",
+      "color_default": "Color"
+    }
+  },
+  "commerce": {
+    "js": {
+      "errors": {
+        "http": "Error del servidor.",
+        "cart_update_failed": "No se pudo actualizar el carrito.",
+        "product_not_found": "Producto no encontrado."
+      },
+      "message": {
+        "intro": "llegué a sandlabs.store y me gustaría pedir",
+        "shipping_postal_code": "¿puede calcular el envío para el código postal:",
+        "coupon_prefix": "cupón:",
+        "sandseed_kit": "- SandSeed: kit 5 unidades (3 lisas + 2 perforadas)",
+        "sandseed_single": "- SandSeed: {qty} placa(s) individual(es)",
+        "addon_seed": "- Agregar: Kit SandSeed (5 placas)"
+      }
+    }
+  }
+}
