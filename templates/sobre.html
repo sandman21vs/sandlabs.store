@@ -1,34 +1,25 @@
 {% extends "base.html" %}
-{% block title %}Sobre{% endblock %}
+{% block title %}{{ t('public.about.page_title') }}{% endblock %}
 
 {% block content %}
     <section class="section">
       <div class="section-head">
-        <h1 class="section-title">Sobre a Sandlabs</h1>
-        <p class="section-sub">Open source, autocust&oacute;dia e acessibilidade para o p&uacute;blico brasileiro.</p>
+        <h1 class="section-title">{{ t('public.about.title') }}</h1>
+        <p class="section-sub">{{ t('public.about.subtitle') }}</p>
       </div>
       <div class="grid" style="max-width:var(--maxw);margin:0 auto;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4)">
         <article class="card soft-shadow" style="padding:var(--space-4);">
-          <h3 style="font-size:1.3rem;margin-bottom:.75rem">Manifesto</h3>
-          <p style="color:#d6d6d6;margin-bottom:.75rem">
-            Sou um engenheiro de hardware focado em levar soberania aos usu&aacute;rios via Bitcoin. Meus
-            projetos priorizam transpar&ecirc;ncia, portabilidade e pre&ccedil;o justo, para que mais pessoas
-            possam construir sua pr&oacute;pria seguran&ccedil;a digital.
-          </p>
-          <p style="color:#d6d6d6">
-            O objetivo &eacute; claro: hardware aberto de ponta a ponta &mdash; da fabrica&ccedil;&atilde;o ao firmware &mdash;
-            com documenta&ccedil;&atilde;o simples e uma experi&ecirc;ncia pr&aacute;tica para quem quer come&ccedil;ar hoje.
-          </p>
+          <h3 style="font-size:1.3rem;margin-bottom:.75rem">{{ t('public.about.manifesto.title') }}</h3>
+          <p style="color:#d6d6d6;margin-bottom:.75rem">{{ t('public.about.manifesto.paragraph_1') }}</p>
+          <p style="color:#d6d6d6">{{ t('public.about.manifesto.paragraph_2') }}</p>
         </article>
 
         <article class="card soft-shadow" style="padding:var(--space-4);">
-          <h3 style="font-size:1.3rem;margin-bottom:.75rem">O que eu fa&ccedil;o</h3>
+          <h3 style="font-size:1.3rem;margin-bottom:.75rem">{{ t('public.about.what.title') }}</h3>
           <ul style="color:#d6d6d6;line-height:1.6">
-            <li><strong>Jade DIY</strong> &mdash; carteira de hardware open source produzida no Brasil.</li>
-            <li><strong>Impress&atilde;o 3D</strong> &mdash; cases, boxes e pe&ccedil;as sob medida.</li>
-            <li><strong>Krux / K210</strong> &mdash; integra&ccedil;&atilde;o e otimiza&ccedil;&otilde;es para usabilidade.</li>
-            <li><strong>NerdMiner &amp; afins</strong> &mdash; apoio em produ&ccedil;&atilde;o e manuten&ccedil;&atilde;o.</li>
-            <li><strong>Tutoriais</strong> &mdash; guias passo a passo para montar sua pr&oacute;pria solu&ccedil;&atilde;o.</li>
+            {% for item in t('public.about.what.items') %}
+            <li>{{ item|safe }}</li>
+            {% endfor %}
           </ul>
         </article>
       </div>
@@ -36,31 +27,31 @@
 
     <section class="section">
       <div class="section-head">
-        <h2 class="section-title">Canais</h2>
-        <p class="section-sub">Acompanhe novidades e tutoriais.</p>
+        <h2 class="section-title">{{ t('public.about.channels.title') }}</h2>
+        <p class="section-sub">{{ t('public.about.channels.subtitle') }}</p>
       </div>
       <div class="grid cards-3">
         <article class="card soft-shadow hover-lift">
           <div class="card-body">
-            <h3 class="card-title">Twitter / X</h3>
-            <p class="card-text">Bastidores, updates e dicas r&aacute;pidas.</p>
-            <a class="btn btn-accent" href="https://x.com/SandLabs_21" target="_blank" rel="noopener">Abrir</a>
+            <h3 class="card-title">{{ t('public.about.channels.x.title') }}</h3>
+            <p class="card-text">{{ t('public.about.channels.x.text') }}</p>
+            <a class="btn btn-accent" href="https://x.com/SandLabs_21" target="_blank" rel="noopener">{{ t('public.about.channels.open') }}</a>
           </div>
         </article>
 
         <article class="card soft-shadow hover-lift">
           <div class="card-body">
-            <h3 class="card-title">YouTube</h3>
-            <p class="card-text">Tutoriais e demonstra&ccedil;&otilde;es passo a passo.</p>
-            <a class="btn btn-accent" href="https://www.youtube.com/@Sandmann_21" target="_blank" rel="noopener">Abrir</a>
+            <h3 class="card-title">{{ t('public.about.channels.youtube.title') }}</h3>
+            <p class="card-text">{{ t('public.about.channels.youtube.text') }}</p>
+            <a class="btn btn-accent" href="https://www.youtube.com/@Sandmann_21" target="_blank" rel="noopener">{{ t('public.about.channels.open') }}</a>
           </div>
         </article>
 
         <article class="card soft-shadow hover-lift">
           <div class="card-body">
-            <h3 class="card-title">Telegram</h3>
-            <p class="card-text">Contato direto e suporte r&aacute;pido.</p>
-            <a class="btn btn-accent" href="https://t.me/SandLabs_21" target="_blank" rel="noopener">Abrir</a>
+            <h3 class="card-title">{{ t('public.about.channels.telegram.title') }}</h3>
+            <p class="card-text">{{ t('public.about.channels.telegram.text') }}</p>
+            <a class="btn btn-accent" href="https://t.me/SandLabs_21" target="_blank" rel="noopener">{{ t('public.about.channels.open') }}</a>
           </div>
         </article>
       </div>

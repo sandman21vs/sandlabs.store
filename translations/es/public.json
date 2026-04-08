@@ -1,0 +1,158 @@
+{
+  "public": {
+    "index": {
+      "page_title": "Inicio",
+      "hero": {
+        "badge": "open source • self-custody • seguridad",
+        "title": "Dinero seguro, soberanía real.",
+        "subtitle": "Carteras de hardware y accesorios con transparencia, cuidado estético y foco en tu libertad.",
+        "cta_products": "Ver productos",
+        "cta_about": "Saber más"
+      },
+      "featured": {
+        "title": "Destacados",
+        "subtitle": "Elige tu camino hacia la autocustodia."
+      },
+      "cta": {
+        "title": "¿Listo para tomar el control?",
+        "subtitle": "Arma tu pedido, elige colores y finaliza por WhatsApp o Telegram.",
+        "button": "Empezar ahora"
+      }
+    },
+    "products": {
+      "page_title": "Productos",
+      "title": "Arma el tuyo",
+      "subtitle": "Elige colores, accesorios y completa tu pedido por WhatsApp o Telegram.",
+      "footer": {
+        "question": "¿Dudas?",
+        "contact": "Habla con nosotros"
+      },
+      "lightbox": {
+        "close": "Cerrar",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "image_alt": "Imagen ampliada"
+      },
+      "info_about": "Información sobre {name}",
+      "info_button": "+ Información",
+      "buy_product": "Comprar {name}",
+      "modal": {
+        "demo_alt": "Demostración",
+        "options_for": "Opciones para {name}"
+      },
+      "seed": {
+        "select": "Selecciona:",
+        "kit_label": "Kit de 5 unidades – 5.000 sats",
+        "single_label": "Placa individual – 2.000 sats",
+        "qty_label": "Cantidad de placas:"
+      },
+      "add_seed_kit": "Agregar <strong>kit SandSeed (5 placas)</strong>",
+      "shipping_code_label": "Código postal:",
+      "shipping_code_placeholder": "Tu código postal",
+      "coupon_label": "Cupón (opcional):",
+      "coupon_placeholder": "Cupón",
+      "actions": {
+        "add_to_cart": "Agregar al carrito",
+        "whatsapp": "WhatsApp",
+        "telegram": "Telegram"
+      },
+      "toast": {
+        "added_to_cart": "Producto agregado al carrito."
+      },
+      "errors": {
+        "select_both_colors": "Selecciona ambos colores para “{title}” o deja ambos en blanco.",
+        "no_cart_price": "Este producto todavía no tiene un precio configurado para el carrito.",
+        "cart_unavailable": "Carrito no disponible en este momento.",
+        "add_to_cart_failed": "No fue posible agregar el producto al carrito."
+      }
+    },
+    "about": {
+      "page_title": "Sobre",
+      "title": "Sobre Sandlabs",
+      "subtitle": "Open source, autocustodia y accesibilidad para usuarios de Bitcoin.",
+      "manifesto": {
+        "title": "Manifiesto",
+        "paragraph_1": "Soy un ingeniero de hardware enfocado en llevar soberanía a los usuarios a través de Bitcoin. Mis proyectos priorizan transparencia, portabilidad y precio justo para que más personas puedan construir su propia seguridad digital.",
+        "paragraph_2": "El objetivo es claro: hardware abierto de punta a punta, desde la fabricación hasta el firmware, con documentación simple y una experiencia práctica para quien quiere empezar hoy."
+      },
+      "what": {
+        "title": "Lo que hago",
+        "items": [
+          "<strong>Jade DIY</strong> — cartera de hardware open source producida en Brasil.",
+          "<strong>Impresión 3D</strong> — cases, cajas y piezas a medida.",
+          "<strong>Krux / K210</strong> — integración y mejoras de usabilidad.",
+          "<strong>NerdMiner y afines</strong> — apoyo en producción y mantenimiento.",
+          "<strong>Tutoriales</strong> — guías paso a paso para montar tu propia solución."
+        ]
+      },
+      "channels": {
+        "title": "Canales",
+        "subtitle": "Sigue novedades y tutoriales.",
+        "open": "Abrir",
+        "x": {
+          "title": "Twitter / X",
+          "text": "Detrás de escena, novedades y consejos rápidos."
+        },
+        "youtube": {
+          "title": "YouTube",
+          "text": "Tutoriales y demostraciones paso a paso."
+        },
+        "telegram": {
+          "title": "Telegram",
+          "text": "Contacto directo y soporte rápido."
+        }
+      }
+    },
+    "terms": {
+      "page_title": "Términos",
+      "title": "Términos",
+      "subtitle": "Resumen breve de las condiciones de pago, envío y privacidad.",
+      "payments": {
+        "title": "Pagos",
+        "items": [
+          "Los pagos Lightning se generan bajo demanda durante el checkout.",
+          "Los pedidos solo pasan a procesamiento después de la confirmación del pago.",
+          "Los precios en fiat pueden variar en sats según la cotización actual de BTC."
+        ]
+      },
+      "shipping": {
+        "title": "Envío y privacidad",
+        "items": [
+          "El envío se calcula según el país y el peso total del pedido.",
+          "Los datos de envío se almacenan con cifrado en reposo.",
+          "Solo recopilamos los datos necesarios para entregar el pedido y brindar soporte."
+        ]
+      },
+      "footer": "¿Dudas sobre pago o envío?"
+    },
+    "support": {
+      "page_title": "Soporte",
+      "title": "Soporte",
+      "subtitle": "Elige el canal más directo para hacer preguntas, armar un pedido o seguir las novedades.",
+      "cards": {
+        "whatsapp": {
+          "title": "WhatsApp",
+          "text": "Canal rápido para presupuesto, envío y dudas de compra.",
+          "button": "Abrir WhatsApp"
+        },
+        "telegram": {
+          "title": "Telegram",
+          "text": "Contacto directo para preguntas técnicas y seguimiento.",
+          "button": "Abrir Telegram"
+        },
+        "x": {
+          "title": "Twitter / X",
+          "text": "Actualizaciones cortas, detrás de escena y anuncios.",
+          "button": "Abrir perfil"
+        }
+      }
+    },
+    "errors": {
+      "not_found_title": "Página no encontrada",
+      "not_found_body": "El enlace puede estar roto o la página fue movida.",
+      "back_home": "Volver al inicio",
+      "internal_title": "Error interno",
+      "internal_body": "Algo salió mal. Inténtalo de nuevo más tarde."
+    }
+  }
+}

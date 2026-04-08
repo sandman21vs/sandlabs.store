@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Erro{% endblock %}
+{% block title %}{{ t('public.errors.internal_title') }}{% endblock %}
 
 {% block content %}
     <section class="section" style="text-align:center;padding-top:6rem">
-      <h1 class="section-title">Erro interno</h1>
-      <p class="section-sub">Algo deu errado. Tente novamente mais tarde.</p>
-      <a href="{{ url_for('public.index') }}" class="btn btn-accent" style="margin-top:2rem">Voltar ao in&iacute;cio</a>
+      <h1 class="section-title">{{ t('public.errors.internal_title') }}</h1>
+      <p class="section-sub">{{ t('public.errors.internal_body') }}</p>
+      <a href="{{ url_for('public.index') }}" class="btn btn-accent" style="margin-top:2rem">{{ t('public.errors.back_home') }}</a>
     </section>
 {% endblock %}

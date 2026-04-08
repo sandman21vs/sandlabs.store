@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}404{% endblock %}
+{% block title %}{{ t('public.errors.not_found_title') }}{% endblock %}
 
 {% block content %}
     <section class="section" style="text-align:center;padding-top:6rem">
       <h1 class="section-title">404</h1>
-      <p class="section-sub">P&aacute;gina n&atilde;o encontrada.</p>
-      <a href="{{ url_for('public.index') }}" class="btn btn-accent" style="margin-top:2rem">Voltar ao in&iacute;cio</a>
+      <p class="section-sub">{{ t('public.errors.not_found_body') }}</p>
+      <a href="{{ url_for('public.index') }}" class="btn btn-accent" style="margin-top:2rem">{{ t('public.errors.back_home') }}</a>
     </section>
 {% endblock %}

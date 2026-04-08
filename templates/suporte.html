@@ -1,35 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Suporte{% endblock %}
+{% block title %}{{ t('public.support.page_title') }}{% endblock %}
 
 {% block content %}
     <section class="section">
       <div class="section-head">
-        <h1 class="section-title">Suporte</h1>
-        <p class="section-sub">Escolha um canal e fale diretamente comigo.</p>
+        <h1 class="section-title">{{ t('public.support.title') }}</h1>
+        <p class="section-sub">{{ t('public.support.subtitle') }}</p>
       </div>
 
       <div class="grid cards-3">
         <article class="card soft-shadow hover-lift">
           <div class="card-body">
-            <h3 class="card-title">WhatsApp</h3>
-            <p class="card-text">Conversa r&aacute;pida e direta.</p>
-            <a class="btn btn-accent" href="https://wa.me/41779786651" data-contact="whats" target="_blank" rel="noopener">Abrir WhatsApp</a>
+            <h3 class="card-title">{{ t('public.support.cards.whatsapp.title') }}</h3>
+            <p class="card-text">{{ t('public.support.cards.whatsapp.text') }}</p>
+            <a class="btn btn-accent" href="https://wa.me/41779786651" data-contact="whats" target="_blank" rel="noopener">{{ t('public.support.cards.whatsapp.button') }}</a>
           </div>
         </article>
 
         <article class="card soft-shadow hover-lift">
           <div class="card-body">
-            <h3 class="card-title">Telegram</h3>
-            <p class="card-text">Atendimento e atualiza&ccedil;&otilde;es.</p>
-            <a class="btn btn-accent" href="https://t.me/SandLabs_21" data-contact="tele" target="_blank" rel="noopener">Abrir Telegram</a>
+            <h3 class="card-title">{{ t('public.support.cards.telegram.title') }}</h3>
+            <p class="card-text">{{ t('public.support.cards.telegram.text') }}</p>
+            <a class="btn btn-accent" href="https://t.me/SandLabs_21" data-contact="tele" target="_blank" rel="noopener">{{ t('public.support.cards.telegram.button') }}</a>
           </div>
         </article>
 
         <article class="card soft-shadow hover-lift">
           <div class="card-body">
-            <h3 class="card-title">Twitter / X</h3>
-            <p class="card-text">Novidades, bastidores e dicas.</p>
-            <a class="btn btn-accent" href="https://x.com/SandLabs_21" target="_blank" rel="noopener">Abrir Twitter</a>
+            <h3 class="card-title">{{ t('public.support.cards.x.title') }}</h3>
+            <p class="card-text">{{ t('public.support.cards.x.text') }}</p>
+            <a class="btn btn-accent" href="https://x.com/SandLabs_21" target="_blank" rel="noopener">{{ t('public.support.cards.x.button') }}</a>
           </div>
         </article>
       </div>

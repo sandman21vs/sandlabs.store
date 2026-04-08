@@ -1,0 +1,158 @@
+{
+  "public": {
+    "index": {
+      "page_title": "Home",
+      "hero": {
+        "badge": "open source • self-custody • security",
+        "title": "Secure money, real sovereignty.",
+        "subtitle": "Hardware wallets and accessories with transparency, aesthetic care, and a focus on your freedom.",
+        "cta_products": "View products",
+        "cta_about": "Learn more"
+      },
+      "featured": {
+        "title": "Highlights",
+        "subtitle": "Choose your path to self-custody."
+      },
+      "cta": {
+        "title": "Ready to take control?",
+        "subtitle": "Build your order, choose colors, and finish through WhatsApp or Telegram.",
+        "button": "Start now"
+      }
+    },
+    "products": {
+      "page_title": "Products",
+      "title": "Build yours",
+      "subtitle": "Choose colors, accessories, and complete your order through WhatsApp or Telegram.",
+      "footer": {
+        "question": "Questions?",
+        "contact": "Contact us"
+      },
+      "lightbox": {
+        "close": "Close",
+        "previous": "Previous",
+        "next": "Next",
+        "image_alt": "Expanded image"
+      },
+      "info_about": "Information about {name}",
+      "info_button": "+ Details",
+      "buy_product": "Buy {name}",
+      "modal": {
+        "demo_alt": "Demo",
+        "options_for": "Options for {name}"
+      },
+      "seed": {
+        "select": "Select:",
+        "kit_label": "5-unit kit – 5,000 sats",
+        "single_label": "Single plate – 2,000 sats",
+        "qty_label": "Number of plates:"
+      },
+      "add_seed_kit": "Add <strong>SandSeed kit (5 plates)</strong>",
+      "shipping_code_label": "Postal code:",
+      "shipping_code_placeholder": "Your postal code",
+      "coupon_label": "Coupon (optional):",
+      "coupon_placeholder": "Coupon",
+      "actions": {
+        "add_to_cart": "Add to cart",
+        "whatsapp": "WhatsApp",
+        "telegram": "Telegram"
+      },
+      "toast": {
+        "added_to_cart": "Product added to cart."
+      },
+      "errors": {
+        "select_both_colors": "Select both colors for “{title}” or leave both blank.",
+        "no_cart_price": "This product does not have a cart price configured yet.",
+        "cart_unavailable": "Cart unavailable right now.",
+        "add_to_cart_failed": "Could not add the product to the cart."
+      }
+    },
+    "about": {
+      "page_title": "About",
+      "title": "About Sandlabs",
+      "subtitle": "Open source, self-custody, and accessibility for Bitcoin users.",
+      "manifesto": {
+        "title": "Manifesto",
+        "paragraph_1": "I am a hardware engineer focused on bringing sovereignty to users through Bitcoin. My projects prioritize transparency, portability, and fair pricing so more people can build their own digital security.",
+        "paragraph_2": "The goal is clear: open hardware from end to end, from manufacturing to firmware, with simple documentation and a practical experience for people who want to start today."
+      },
+      "what": {
+        "title": "What I do",
+        "items": [
+          "<strong>Jade DIY</strong> — open-source hardware wallet produced in Brazil.",
+          "<strong>3D printing</strong> — custom cases, boxes, and parts.",
+          "<strong>Krux / K210</strong> — integration and usability improvements.",
+          "<strong>NerdMiner and related</strong> — support for production and maintenance.",
+          "<strong>Tutorials</strong> — step-by-step guides to build your own setup."
+        ]
+      },
+      "channels": {
+        "title": "Channels",
+        "subtitle": "Follow updates and tutorials.",
+        "open": "Open",
+        "x": {
+          "title": "Twitter / X",
+          "text": "Behind the scenes, updates, and quick tips."
+        },
+        "youtube": {
+          "title": "YouTube",
+          "text": "Step-by-step tutorials and demonstrations."
+        },
+        "telegram": {
+          "title": "Telegram",
+          "text": "Direct contact and fast support."
+        }
+      }
+    },
+    "terms": {
+      "page_title": "Terms",
+      "title": "Terms",
+      "subtitle": "A short summary of payment, shipping, and privacy conditions.",
+      "payments": {
+        "title": "Payments",
+        "items": [
+          "Lightning payments are generated on demand during checkout.",
+          "Orders only move into processing after payment confirmation.",
+          "Fiat-denominated prices may vary in sats according to the current BTC exchange rate."
+        ]
+      },
+      "shipping": {
+        "title": "Shipping and privacy",
+        "items": [
+          "Shipping is calculated based on destination country and total order weight.",
+          "Shipping data is stored with encryption at rest.",
+          "We only collect the data required to deliver the order and provide support."
+        ]
+      },
+      "footer": "Questions about payment or shipping?"
+    },
+    "support": {
+      "page_title": "Support",
+      "title": "Support",
+      "subtitle": "Choose the most direct channel to ask questions, build an order, or follow updates.",
+      "cards": {
+        "whatsapp": {
+          "title": "WhatsApp",
+          "text": "Fast channel for quotes, shipping, and purchase questions.",
+          "button": "Open WhatsApp"
+        },
+        "telegram": {
+          "title": "Telegram",
+          "text": "Direct contact for technical questions and follow-up.",
+          "button": "Open Telegram"
+        },
+        "x": {
+          "title": "Twitter / X",
+          "text": "Short updates, behind the scenes, and announcements.",
+          "button": "Open profile"
+        }
+      }
+    },
+    "errors": {
+      "not_found_title": "Page not found",
+      "not_found_body": "The link may be broken or the page has moved.",
+      "back_home": "Back to home",
+      "internal_title": "Internal error",
+      "internal_body": "Something went wrong. Please try again later."
+    }
+  }
+}

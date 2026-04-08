@@ -1,0 +1,158 @@
+{
+  "public": {
+    "index": {
+      "page_title": "Start",
+      "hero": {
+        "badge": "open source • self-custody • sicherheit",
+        "title": "Sicheres Geld, echte Souveränität.",
+        "subtitle": "Hardware-Wallets und Zubehör mit Transparenz, gestalterischer Sorgfalt und Fokus auf deine Freiheit.",
+        "cta_products": "Produkte ansehen",
+        "cta_about": "Mehr erfahren"
+      },
+      "featured": {
+        "title": "Highlights",
+        "subtitle": "Wähle deinen Weg zur Selbstverwahrung."
+      },
+      "cta": {
+        "title": "Bereit, die Kontrolle zu übernehmen?",
+        "subtitle": "Stelle deine Bestellung zusammen, wähle Farben und schließe per WhatsApp oder Telegram ab.",
+        "button": "Jetzt starten"
+      }
+    },
+    "products": {
+      "page_title": "Produkte",
+      "title": "Stelle deins zusammen",
+      "subtitle": "Wähle Farben, Zubehör und schließe deine Bestellung per WhatsApp oder Telegram ab.",
+      "footer": {
+        "question": "Fragen?",
+        "contact": "Kontaktiere uns"
+      },
+      "lightbox": {
+        "close": "Schließen",
+        "previous": "Zurück",
+        "next": "Weiter",
+        "image_alt": "Vergrößertes Bild"
+      },
+      "info_about": "Informationen zu {name}",
+      "info_button": "+ Informationen",
+      "buy_product": "{name} kaufen",
+      "modal": {
+        "demo_alt": "Demonstration",
+        "options_for": "Optionen für {name}"
+      },
+      "seed": {
+        "select": "Auswählen:",
+        "kit_label": "5er-Set – 5.000 sats",
+        "single_label": "Einzelplatte – 2.000 sats",
+        "qty_label": "Anzahl der Platten:"
+      },
+      "add_seed_kit": "<strong>SandSeed-Set (5 Platten)</strong> hinzufügen",
+      "shipping_code_label": "Postleitzahl:",
+      "shipping_code_placeholder": "Deine Postleitzahl",
+      "coupon_label": "Gutschein (optional):",
+      "coupon_placeholder": "Gutschein",
+      "actions": {
+        "add_to_cart": "In den Warenkorb",
+        "whatsapp": "WhatsApp",
+        "telegram": "Telegram"
+      },
+      "toast": {
+        "added_to_cart": "Produkt zum Warenkorb hinzugefügt."
+      },
+      "errors": {
+        "select_both_colors": "Wähle beide Farben für „{title}“ oder lasse beide leer.",
+        "no_cart_price": "Für dieses Produkt ist noch kein Warenkorbpreis konfiguriert.",
+        "cart_unavailable": "Warenkorb derzeit nicht verfügbar.",
+        "add_to_cart_failed": "Das Produkt konnte nicht zum Warenkorb hinzugefügt werden."
+      }
+    },
+    "about": {
+      "page_title": "Über uns",
+      "title": "Über Sandlabs",
+      "subtitle": "Open Source, Selbstverwahrung und Zugänglichkeit für Bitcoin-Nutzer.",
+      "manifesto": {
+        "title": "Manifest",
+        "paragraph_1": "Ich bin Hardware-Ingenieur und konzentriere mich darauf, Nutzern durch Bitcoin mehr Souveränität zu geben. Meine Projekte priorisieren Transparenz, Portabilität und faire Preise, damit mehr Menschen ihre eigene digitale Sicherheit aufbauen können.",
+        "paragraph_2": "Das Ziel ist klar: offene Hardware von Anfang bis Ende, von der Fertigung bis zur Firmware, mit einfacher Dokumentation und einer praktischen Erfahrung für alle, die heute anfangen wollen."
+      },
+      "what": {
+        "title": "Was ich mache",
+        "items": [
+          "<strong>Jade DIY</strong> — Open-Source-Hardware-Wallet aus Brasilien.",
+          "<strong>3D-Druck</strong> — individuelle Cases, Boxen und Teile.",
+          "<strong>Krux / K210</strong> — Integration und Verbesserungen der Bedienbarkeit.",
+          "<strong>NerdMiner und ähnliche</strong> — Unterstützung bei Produktion und Wartung.",
+          "<strong>Tutorials</strong> — Schritt-für-Schritt-Anleitungen für deine eigene Lösung."
+        ]
+      },
+      "channels": {
+        "title": "Kanäle",
+        "subtitle": "Folge Neuigkeiten und Tutorials.",
+        "open": "Öffnen",
+        "x": {
+          "title": "Twitter / X",
+          "text": "Einblicke hinter die Kulissen, Updates und kurze Tipps."
+        },
+        "youtube": {
+          "title": "YouTube",
+          "text": "Schritt-für-Schritt-Tutorials und Demonstrationen."
+        },
+        "telegram": {
+          "title": "Telegram",
+          "text": "Direkter Kontakt und schneller Support."
+        }
+      }
+    },
+    "terms": {
+      "page_title": "Bedingungen",
+      "title": "Bedingungen",
+      "subtitle": "Kurze Zusammenfassung zu Zahlung, Versand und Datenschutz.",
+      "payments": {
+        "title": "Zahlungen",
+        "items": [
+          "Lightning-Zahlungen werden beim Checkout bei Bedarf erzeugt.",
+          "Bestellungen gehen erst nach Zahlungsbestätigung in Bearbeitung.",
+          "Fiat-Preise können je nach aktuellem BTC-Kurs in sats schwanken."
+        ]
+      },
+      "shipping": {
+        "title": "Versand und Datenschutz",
+        "items": [
+          "Die Versandkosten werden nach Land und Gesamtgewicht der Bestellung berechnet.",
+          "Versanddaten werden verschlüsselt im Ruhezustand gespeichert.",
+          "Wir erfassen nur die Daten, die für Lieferung und Support erforderlich sind."
+        ]
+      },
+      "footer": "Fragen zu Zahlung oder Versand?"
+    },
+    "support": {
+      "page_title": "Support",
+      "title": "Support",
+      "subtitle": "Wähle den direktesten Kanal für Fragen, Bestellungen oder Updates.",
+      "cards": {
+        "whatsapp": {
+          "title": "WhatsApp",
+          "text": "Schneller Kanal für Angebote, Versand und Kauffragen.",
+          "button": "WhatsApp öffnen"
+        },
+        "telegram": {
+          "title": "Telegram",
+          "text": "Direkter Kontakt für technische Fragen und Rückmeldungen.",
+          "button": "Telegram öffnen"
+        },
+        "x": {
+          "title": "Twitter / X",
+          "text": "Kurze Updates, Einblicke und Ankündigungen.",
+          "button": "Profil öffnen"
+        }
+      }
+    },
+    "errors": {
+      "not_found_title": "Seite nicht gefunden",
+      "not_found_body": "Der Link ist möglicherweise defekt oder die Seite wurde verschoben.",
+      "back_home": "Zur Startseite",
+      "internal_title": "Interner Fehler",
+      "internal_body": "Etwas ist schiefgelaufen. Bitte später erneut versuchen."
+    }
+  }
+}

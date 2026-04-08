@@ -1,0 +1,158 @@
+{
+  "public": {
+    "index": {
+      "page_title": "Início",
+      "hero": {
+        "badge": "open source • self-custody • segurança",
+        "title": "Dinheiro seguro, soberania real.",
+        "subtitle": "Hardware wallets e acessórios com transparência, estética e foco na sua liberdade.",
+        "cta_products": "Ver produtos",
+        "cta_about": "Saiba mais"
+      },
+      "featured": {
+        "title": "Destaques",
+        "subtitle": "Escolha o seu caminho para a autocustódia."
+      },
+      "cta": {
+        "title": "Pronto para assumir o controle?",
+        "subtitle": "Monte seu pedido, escolha cores e finalize por WhatsApp ou Telegram.",
+        "button": "Começar agora"
+      }
+    },
+    "products": {
+      "page_title": "Produtos",
+      "title": "Monte o seu",
+      "subtitle": "Escolha cores, acessórios e finalize por WhatsApp ou Telegram.",
+      "footer": {
+        "question": "Dúvidas?",
+        "contact": "Fale conosco"
+      },
+      "lightbox": {
+        "close": "Fechar",
+        "previous": "Anterior",
+        "next": "Próxima",
+        "image_alt": "Imagem expandida"
+      },
+      "info_about": "Informações sobre {name}",
+      "info_button": "+ Informações",
+      "buy_product": "Comprar {name}",
+      "modal": {
+        "demo_alt": "Demonstração",
+        "options_for": "Opções para {name}"
+      },
+      "seed": {
+        "select": "Selecione:",
+        "kit_label": "Kit 5 un – 5 000 sats",
+        "single_label": "Placa avulsa – 2 000 sats",
+        "qty_label": "Quantidade de placas:"
+      },
+      "add_seed_kit": "Adicionar <strong>Kit SandSeed (5 placas)</strong>",
+      "shipping_code_label": "CEP:",
+      "shipping_code_placeholder": "Seu CEP",
+      "coupon_label": "Cupom (opcional):",
+      "coupon_placeholder": "Cupom",
+      "actions": {
+        "add_to_cart": "Adicionar ao Carrinho",
+        "whatsapp": "WhatsApp",
+        "telegram": "Telegram"
+      },
+      "toast": {
+        "added_to_cart": "Produto adicionado ao carrinho."
+      },
+      "errors": {
+        "select_both_colors": "Selecione ambas as cores para “{title}” ou deixe ambas em branco.",
+        "no_cart_price": "Este produto ainda não tem preço configurado para o carrinho.",
+        "cart_unavailable": "Carrinho indisponível no momento.",
+        "add_to_cart_failed": "Não foi possível adicionar ao carrinho."
+      }
+    },
+    "about": {
+      "page_title": "Sobre",
+      "title": "Sobre a Sandlabs",
+      "subtitle": "Open source, autocustódia e acessibilidade para o público brasileiro.",
+      "manifesto": {
+        "title": "Manifesto",
+        "paragraph_1": "Sou um engenheiro de hardware focado em levar soberania aos usuários via Bitcoin. Meus projetos priorizam transparência, portabilidade e preço justo, para que mais pessoas possam construir sua própria segurança digital.",
+        "paragraph_2": "O objetivo é claro: hardware aberto de ponta a ponta, da fabricação ao firmware, com documentação simples e uma experiência prática para quem quer começar hoje."
+      },
+      "what": {
+        "title": "O que eu faço",
+        "items": [
+          "<strong>Jade DIY</strong> — carteira de hardware open source produzida no Brasil.",
+          "<strong>Impressão 3D</strong> — cases, boxes e peças sob medida.",
+          "<strong>Krux / K210</strong> — integração e otimizações para usabilidade.",
+          "<strong>NerdMiner &amp; afins</strong> — apoio em produção e manutenção.",
+          "<strong>Tutoriais</strong> — guias passo a passo para montar sua própria solução."
+        ]
+      },
+      "channels": {
+        "title": "Canais",
+        "subtitle": "Acompanhe novidades e tutoriais.",
+        "open": "Abrir",
+        "x": {
+          "title": "Twitter / X",
+          "text": "Bastidores, updates e dicas rápidas."
+        },
+        "youtube": {
+          "title": "YouTube",
+          "text": "Tutoriais e demonstrações passo a passo."
+        },
+        "telegram": {
+          "title": "Telegram",
+          "text": "Contato direto e suporte rápido."
+        }
+      }
+    },
+    "terms": {
+      "page_title": "Termos",
+      "title": "Termos",
+      "subtitle": "Condições resumidas de pagamento, envio e privacidade.",
+      "payments": {
+        "title": "Pagamentos",
+        "items": [
+          "Pagamentos Lightning são gerados sob demanda no checkout.",
+          "Pedidos só entram em processamento após confirmação do pagamento.",
+          "Valores em fiat podem variar em sats conforme a cotação BTC vigente."
+        ]
+      },
+      "shipping": {
+        "title": "Envio e privacidade",
+        "items": [
+          "O frete é calculado conforme país e peso total do pedido.",
+          "Os dados de envio são armazenados com criptografia em repouso.",
+          "Coletamos apenas os dados necessários para entregar o pedido e dar suporte."
+        ]
+      },
+      "footer": "Dúvidas sobre pagamento ou envio?"
+    },
+    "support": {
+      "page_title": "Suporte",
+      "title": "Suporte",
+      "subtitle": "Escolha o canal mais direto para tirar dúvidas, montar pedido ou acompanhar novidades.",
+      "cards": {
+        "whatsapp": {
+          "title": "WhatsApp",
+          "text": "Canal rápido para orçamento, frete e dúvidas de compra.",
+          "button": "Abrir WhatsApp"
+        },
+        "telegram": {
+          "title": "Telegram",
+          "text": "Contato direto para perguntas técnicas e acompanhamento.",
+          "button": "Abrir Telegram"
+        },
+        "x": {
+          "title": "Twitter / X",
+          "text": "Atualizações curtas, bastidores e anúncios.",
+          "button": "Abrir perfil"
+        }
+      }
+    },
+    "errors": {
+      "not_found_title": "Página não encontrada",
+      "not_found_body": "O link pode estar quebrado ou a página foi movida.",
+      "back_home": "Voltar ao início",
+      "internal_title": "Erro interno",
+      "internal_body": "Algo deu errado. Tente novamente mais tarde."
+    }
+  }
+}

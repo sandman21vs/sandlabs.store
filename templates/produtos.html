@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Produtos{% endblock %}
+{% block title %}{{ t('public.products.page_title') }}{% endblock %}
 
 {% block content %}
     <section class="section">
       <div class="section-head">
-        <h1 class="section-title">Monte o seu</h1>
-        <p class="section-sub">Escolha cores, acess&oacute;rios e finalize por WhatsApp ou Telegram.</p>
+        <h1 class="section-title">{{ t('public.products.title') }}</h1>
+        <p class="section-sub">{{ t('public.products.subtitle') }}</p>
       </div>
     </section>
 
@@ -13,21 +13,20 @@
       <div id="produtos-container" class="stack-lg"></div>
     </section>
 
-    <!-- Lightbox -->
     <div id="lightbox" class="lightbox" aria-hidden="true">
       <div class="lightbox-inner">
-        <button class="close-btn" data-action="close" aria-label="Fechar">&times;</button>
+        <button class="close-btn" data-action="close" aria-label="{{ t('public.products.lightbox.close') }}">&times;</button>
         <figure class="lightbox-figure">
-          <img id="imagemModal" alt="Imagem expandida">
+          <img id="imagemModal" alt="{{ t('public.products.lightbox.image_alt') }}">
         </figure>
-        <button class="nav-btn prev-btn" data-action="prev" aria-label="Anterior">&#10094;</button>
-        <button class="nav-btn next-btn" data-action="next" aria-label="Pr&oacute;xima">&#10095;</button>
+        <button class="nav-btn prev-btn" data-action="prev" aria-label="{{ t('public.products.lightbox.previous') }}">&#10094;</button>
+        <button class="nav-btn next-btn" data-action="next" aria-label="{{ t('public.products.lightbox.next') }}">&#10095;</button>
       </div>
     </div>
 {% endblock %}
 
 {% block footer %}
-    <p class="muted">D&uacute;vidas? <a href="{{ url_for('public.suporte') }}">Fale conosco</a>.</p>
+    <p class="muted">{{ t('public.products.footer.question') }} <a href="{{ url_for('public.suporte') }}">{{ t('public.products.footer.contact') }}</a>.</p>
 {% endblock %}
 
 {% block scripts %}

@@ -1,34 +1,32 @@
 {% extends "base.html" %}
-{% block title %}Início{% endblock %}
+{% block title %}{{ t('public.index.page_title') }}{% endblock %}
 
 {% block content %}
     <section class="hero hero-with-bg">
       <div class="hero-inner glass soft-shadow">
-        <div class="hero-badge">open source &bull; self-custody &bull; seguran&ccedil;a</div>
-        <h1 class="hero-title">Dinheiro seguro, soberania real.</h1>
-        <p class="hero-subtitle">
-          Hardware wallets e acess&oacute;rios com transpar&ecirc;ncia, est&eacute;tica e foco na sua liberdade.
-        </p>
+        <div class="hero-badge">{{ t('public.index.hero.badge') }}</div>
+        <h1 class="hero-title">{{ t('public.index.hero.title') }}</h1>
+        <p class="hero-subtitle">{{ t('public.index.hero.subtitle') }}</p>
         <div class="hero-cta">
-          <a href="{{ url_for('public.produtos') }}" class="btn btn-accent">Ver produtos</a>
-          <a href="{{ url_for('public.sobre') }}" class="btn btn-ghost">Saiba mais</a>
+          <a href="{{ url_for('public.produtos') }}" class="btn btn-accent">{{ t('public.index.hero.cta_products') }}</a>
+          <a href="{{ url_for('public.sobre') }}" class="btn btn-ghost">{{ t('public.index.hero.cta_about') }}</a>
         </div>
       </div>
     </section>
 
     <section class="section">
       <div class="section-head">
-        <h2 class="section-title">Destaques</h2>
-        <p class="section-sub">Escolha o seu caminho para a autocust&oacute;dia.</p>
+        <h2 class="section-title">{{ t('public.index.featured.title') }}</h2>
+        <p class="section-sub">{{ t('public.index.featured.subtitle') }}</p>
       </div>
       <div id="home-products" class="grid cards-3"></div>
     </section>
 
     <section class="section section-cta">
       <div class="cta glass soft-shadow">
-        <h3>Pronto para assumir o controle?</h3>
-        <p>Monte seu pedido, escolha cores e finalize por WhatsApp ou Telegram.</p>
-        <a class="btn btn-accent" href="{{ url_for('public.produtos') }}">Come&ccedil;ar agora</a>
+        <h3>{{ t('public.index.cta.title') }}</h3>
+        <p>{{ t('public.index.cta.subtitle') }}</p>
+        <a class="btn btn-accent" href="{{ url_for('public.produtos') }}">{{ t('public.index.cta.button') }}</a>
       </div>
     </section>
 {% endblock %}
