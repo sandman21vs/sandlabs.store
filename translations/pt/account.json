@@ -1,3 +1,35 @@
 {
-  "account": {}
+  "account": {
+    "orders": {
+      "page_title": "Pedidos",
+      "heading": "Seus pedidos",
+      "subtitle": "Acompanhe status, pagamento confirmado e codigo de rastreio.",
+      "order_label": "Pedido #{id}",
+      "created_at": "Criado em {value}",
+      "tracking": "Tracking: {value}",
+      "view_details": "Ver detalhes",
+      "empty": {
+        "title": "Nenhum pedido ainda",
+        "body": "Quando voce finalizar uma compra, ela aparecera aqui.",
+        "cta": "Ver produtos"
+      }
+    },
+    "order_detail": {
+      "page_title": "Pedido #{id}",
+      "heading": "Pedido #{id}",
+      "subtitle": "Resumo do pedido, pagamento e entrega.",
+      "current_status": "Status atual",
+      "created_at": "Criado em {value}",
+      "shipping_cost": "Frete: {sats} sats",
+      "country": "Pais: {value}",
+      "tracking": "Tracking",
+      "payment_confirmed_at": "Pagamento confirmado em",
+      "shipping_heading": "Endereco de entrega",
+      "items_heading": "Itens",
+      "price_label_fallback": "Preco",
+      "format": "Formato",
+      "quantity_short": "Qtd.",
+      "empty_items": "Nenhum item encontrado para este pedido."
+    }
+  }
 }

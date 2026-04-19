@@ -1,3 +1,35 @@
 {
-  "account": {}
+  "account": {
+    "orders": {
+      "page_title": "Orders",
+      "heading": "Your orders",
+      "subtitle": "Track status, confirmed payment, and shipping code.",
+      "order_label": "Order #{id}",
+      "created_at": "Created at {value}",
+      "tracking": "Tracking: {value}",
+      "view_details": "View details",
+      "empty": {
+        "title": "No orders yet",
+        "body": "When you complete a purchase, it will appear here.",
+        "cta": "View products"
+      }
+    },
+    "order_detail": {
+      "page_title": "Order #{id}",
+      "heading": "Order #{id}",
+      "subtitle": "Order, payment, and delivery summary.",
+      "current_status": "Current status",
+      "created_at": "Created at {value}",
+      "shipping_cost": "Shipping: {sats} sats",
+      "country": "Country: {value}",
+      "tracking": "Tracking",
+      "payment_confirmed_at": "Payment confirmed at",
+      "shipping_heading": "Shipping address",
+      "items_heading": "Items",
+      "price_label_fallback": "Price",
+      "format": "Format",
+      "quantity_short": "Qty.",
+      "empty_items": "No items found for this order."
+    }
+  }
 }

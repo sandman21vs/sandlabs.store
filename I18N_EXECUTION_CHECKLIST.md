@@ -79,13 +79,13 @@
 
 ## Fase 7 — Auth e conta
 
-- [ ] Traduzir `templates/auth/login.html`
-- [ ] Traduzir `templates/auth/register.html`
-- [ ] Traduzir `templates/account/orders.html`
-- [ ] Traduzir `templates/account/order_detail.html`
-- [ ] Traduzir mensagens em `routes/routes_auth.py`
-- [ ] Preencher `translations/*/auth.json`
-- [ ] Preencher `translations/*/account.json`
+- [x] Traduzir `templates/auth/login.html`
+- [x] Traduzir `templates/auth/register.html`
+- [x] Traduzir `templates/account/orders.html`
+- [x] Traduzir `templates/account/order_detail.html`
+- [x] Traduzir mensagens em `routes/routes_auth.py`
+- [x] Preencher `translations/*/auth.json`
+- [x] Preencher `translations/*/account.json`
 
 ## Fase 8 — Admin e config
 

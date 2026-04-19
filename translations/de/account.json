@@ -1,3 +1,35 @@
 {
-  "account": {}
+  "account": {
+    "orders": {
+      "page_title": "Bestellungen",
+      "heading": "Deine Bestellungen",
+      "subtitle": "Verfolge Status, bestaetigte Zahlung und Tracking-Code.",
+      "order_label": "Bestellung #{id}",
+      "created_at": "Erstellt am {value}",
+      "tracking": "Tracking: {value}",
+      "view_details": "Details ansehen",
+      "empty": {
+        "title": "Noch keine Bestellungen",
+        "body": "Wenn du einen Kauf abschliesst, erscheint er hier.",
+        "cta": "Produkte ansehen"
+      }
+    },
+    "order_detail": {
+      "page_title": "Bestellung #{id}",
+      "heading": "Bestellung #{id}",
+      "subtitle": "Zusammenfassung von Bestellung, Zahlung und Lieferung.",
+      "current_status": "Aktueller Status",
+      "created_at": "Erstellt am {value}",
+      "shipping_cost": "Versand: {sats} sats",
+      "country": "Land: {value}",
+      "tracking": "Tracking",
+      "payment_confirmed_at": "Zahlung bestaetigt am",
+      "shipping_heading": "Lieferadresse",
+      "items_heading": "Artikel",
+      "price_label_fallback": "Preis",
+      "format": "Format",
+      "quantity_short": "Menge",
+      "empty_items": "Keine Artikel fuer diese Bestellung gefunden."
+    }
+  }
 }

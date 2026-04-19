@@ -50,7 +50,7 @@
         "total": "Total"
       },
       "errors": {
-        "unpriced_items": "Alguns itens não têm preço configurado. Remova-os para continuar.",
+        "unpriced_items": "Existem itens sem conversao disponivel para sats. Ajuste os precos fiat ou aguarde a cotacao BTC voltar.",
         "shipping_required": "Calcule o frete antes de prosseguir.",
         "invoice_failed": "Não foi possível gerar a fatura. Tente novamente."
       }
