@@ -13,7 +13,7 @@ from flask import (Blueprint, current_app, flash, redirect, render_template,
 from werkzeug.utils import secure_filename
 
 import db
-from i18n import t as translate
+from i18n import translate
 from models.model_config import admin_exists, get_all_config, get_config, set_config
 from models.model_users import create_user, get_user_by_email
 from models.model_products import (create_product, delete_product,

@@ -39,3 +39,5 @@ htmlcov/
 
 # Logs
 *.log
+
+.codex
