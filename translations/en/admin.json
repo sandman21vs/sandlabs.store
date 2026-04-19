@@ -1,3 +1,92 @@
 {
-  "admin": {}
+  "admin": {
+    "sidebar": {
+      "admin": "Admin",
+      "dashboard": "Dashboard",
+      "catalog": "Catalog",
+      "products": "Products",
+      "orders": "Orders",
+      "all_orders": "All orders",
+      "system": "System",
+      "settings": "Settings"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "heading": "Dashboard",
+      "new_product": "New product",
+      "stats": {
+        "total_orders": "Orders",
+        "revenue": "Revenue in sats",
+        "pending_shipments": "Pending shipments",
+        "products": "Products"
+      },
+      "status_breakdown": "Orders by status",
+      "recent_orders": "Recent orders",
+      "table": {
+        "date": "Date",
+        "total_sats": "Total (sats)",
+        "status": "Status"
+      },
+      "empty_orders": "No orders yet."
+    },
+    "products": {
+      "title": "Products",
+      "heading": "Products",
+      "new_product": "New product",
+      "table": {
+        "name": "Name",
+        "main_price": "Main price",
+        "badge": "Badge",
+        "sort_order": "Order",
+        "status": "Status"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "edit": "Edit",
+      "confirm_delete": "Remove {name}?",
+      "remove": "Remove",
+      "empty": "No products registered.",
+      "create_first": "Create first product",
+      "errors": {
+        "id_required": "Product ID is required."
+      },
+      "flash": {
+        "created": "Product created successfully.",
+        "not_found": "Product not found.",
+        "updated": "Product updated.",
+        "deleted": "Product removed."
+      }
+    },
+    "orders": {
+      "flash": {
+        "not_found": "Order not found.",
+        "invalid_status": "Invalid status.",
+        "status_updated": "Status updated to '{status}'."
+      }
+    },
+    "settings": {
+      "errors": {
+        "coinos_api_key_required": "Configure a Coinos API Key before enabling Lightning payments.",
+        "invalid_shipping_json": "Shipping table has invalid JSON. Everything else was saved."
+      },
+      "flash": {
+        "webhook_generated": "Coinos Webhook Secret was generated automatically.",
+        "saved": "Settings saved."
+      }
+    },
+    "setup": {
+      "errors": {
+        "email_password_required": "Email and password are required.",
+        "password_mismatch": "Passwords do not match.",
+        "password_min_length": "Password must have at least 8 characters.",
+        "coinos_api_key_required": "Configure a Coinos API Key to enable Lightning payments during setup."
+      },
+      "flash": {
+        "completed": "Initial setup completed.",
+        "webhook_generated": "Coinos Webhook Secret was generated automatically."
+      }
+    }
+  }
 }

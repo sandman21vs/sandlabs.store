@@ -1,3 +1,92 @@
 {
-  "admin": {}
+  "admin": {
+    "sidebar": {
+      "admin": "Admin",
+      "dashboard": "Dashboard",
+      "catalog": "Catalogo",
+      "products": "Produtos",
+      "orders": "Pedidos",
+      "all_orders": "Todos os pedidos",
+      "system": "Sistema",
+      "settings": "Configuracoes"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "heading": "Dashboard",
+      "new_product": "Novo produto",
+      "stats": {
+        "total_orders": "Pedidos",
+        "revenue": "Receita em sats",
+        "pending_shipments": "Envios pendentes",
+        "products": "Produtos"
+      },
+      "status_breakdown": "Pedidos por status",
+      "recent_orders": "Pedidos recentes",
+      "table": {
+        "date": "Data",
+        "total_sats": "Total (sats)",
+        "status": "Status"
+      },
+      "empty_orders": "Nenhum pedido ainda."
+    },
+    "products": {
+      "title": "Produtos",
+      "heading": "Produtos",
+      "new_product": "Novo produto",
+      "table": {
+        "name": "Nome",
+        "main_price": "Preco principal",
+        "badge": "Badge",
+        "sort_order": "Ordem",
+        "status": "Status"
+      },
+      "status": {
+        "active": "Ativo",
+        "inactive": "Inativo"
+      },
+      "edit": "Editar",
+      "confirm_delete": "Remover {name}?",
+      "remove": "Remover",
+      "empty": "Nenhum produto cadastrado.",
+      "create_first": "Criar primeiro produto",
+      "errors": {
+        "id_required": "ID do produto e obrigatorio."
+      },
+      "flash": {
+        "created": "Produto criado com sucesso.",
+        "not_found": "Produto nao encontrado.",
+        "updated": "Produto atualizado.",
+        "deleted": "Produto removido."
+      }
+    },
+    "orders": {
+      "flash": {
+        "not_found": "Pedido nao encontrado.",
+        "invalid_status": "Status invalido.",
+        "status_updated": "Status atualizado para '{status}'."
+      }
+    },
+    "settings": {
+      "errors": {
+        "coinos_api_key_required": "Configure a Coinos API Key antes de habilitar pagamentos Lightning.",
+        "invalid_shipping_json": "Tabela de frete com JSON invalido. Restante salvo."
+      },
+      "flash": {
+        "webhook_generated": "Webhook Secret do Coinos foi gerado automaticamente.",
+        "saved": "Configuracoes salvas."
+      }
+    },
+    "setup": {
+      "errors": {
+        "email_password_required": "Email e senha sao obrigatorios.",
+        "password_mismatch": "As senhas nao coincidem.",
+        "password_min_length": "Senha deve ter pelo menos 8 caracteres.",
+        "coinos_api_key_required": "Configure a Coinos API Key para habilitar pagamentos Lightning no setup inicial."
+      },
+      "flash": {
+        "completed": "Setup inicial concluido.",
+        "webhook_generated": "Webhook Secret do Coinos foi gerado automaticamente."
+      }
+    }
+  }
 }

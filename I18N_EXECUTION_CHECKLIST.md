@@ -89,18 +89,18 @@
 
 ## Fase 8 — Admin e config
 
-- [ ] Traduzir `templates/admin/base_admin.html`
-- [ ] Traduzir `templates/admin/dashboard.html`
-- [ ] Traduzir `templates/admin/products.html`
+- [x] Traduzir `templates/admin/base_admin.html`
+- [x] Traduzir `templates/admin/dashboard.html`
+- [x] Traduzir `templates/admin/products.html`
 - [ ] Traduzir `templates/admin/product_form.html`
 - [ ] Traduzir `templates/admin/orders.html`
 - [ ] Traduzir `templates/admin/order_detail.html`
 - [ ] Traduzir `templates/admin/settings.html`
 - [ ] Traduzir `templates/admin/setup.html`
 - [ ] Traduzir `templates/config.html`
-- [ ] Traduzir mensagens em `routes/routes_admin.py`
+- [x] Traduzir mensagens em `routes/routes_admin.py`
 - [ ] Traduzir `static/js/config-page.js`
-- [ ] Preencher `translations/*/admin.json`
+- [x] Preencher `translations/*/admin.json`
 
 ## Fase 9 — Traduções finais
 
