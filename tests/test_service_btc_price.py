@@ -36,6 +36,18 @@ def test_get_btc_rates_reads_multiple_fiat_currencies(monkeypatch):
     assert sbp.get_btc_rate("EUR") == 95000.0
 
 
+def test_get_display_rates_exposes_only_positive_supported_values(monkeypatch):
+    import services.service_btc_price as sbp
+
+    monkeypatch.setattr(
+        sbp,
+        "_get_btc_rates",
+        lambda: {"chf": 100000, "usd": "110000", "eur": None, "other": 1},
+    )
+
+    assert sbp.get_display_rates() == {"CHF": 100000.0, "USD": 110000.0}
+
+
 def test_brl_to_sats(monkeypatch):
     import services.service_btc_price as sbp
 

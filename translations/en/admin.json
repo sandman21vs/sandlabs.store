@@ -87,6 +87,36 @@
         "completed": "Initial setup completed.",
         "webhook_generated": "Coinos Webhook Secret was generated automatically."
       }
+    },
+    "coupons": {
+      "sidebar_link": "Coupons",
+      "title": "Coupons",
+      "heading": "Discount coupons",
+      "new_heading": "New coupon",
+      "code": "Code",
+      "type": "Type",
+      "percent": "Percentage (%)",
+      "fixed": "Fixed amount (sats)",
+      "value": "Value",
+      "expires_at": "Expires on",
+      "max_uses": "Max uses",
+      "used": "Used",
+      "active": "Active",
+      "actions": "Actions",
+      "create": "Create",
+      "save": "Save",
+      "delete": "Delete",
+      "none": "No coupons yet.",
+      "unlimited": "unlimited",
+      "flash": {
+        "created": "Coupon created.",
+        "updated": "Coupon updated.",
+        "deleted": "Coupon deleted."
+      },
+      "errors": {
+        "invalid": "Invalid coupon data.",
+        "duplicate": "A coupon with that code already exists."
+      }
     }
   }
 }

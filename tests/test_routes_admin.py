@@ -36,10 +36,12 @@ class TestAdminSetup:
         assert resp.headers["Location"].endswith("/admin/")
 
         import db as db_mod
+        from services.service_security import email_blind_index
         conn = db_mod.get_db()
         try:
             user = conn.execute(
-                "SELECT * FROM users WHERE email='setup@test.com'"
+                "SELECT * FROM users WHERE email_bidx = ?",
+                (email_blind_index("setup@test.com"),),
             ).fetchone()
         finally:
             conn.close()
@@ -176,6 +178,7 @@ class TestAdminProducts:
     def test_new_product_form_renders(self, admin_client):
         resp = admin_client.get("/admin/products/new")
         assert resp.status_code == 200
+        assert b'["SATS", "CHF", "USD"]' in resp.data
         assert b"Novo produto" in resp.data
 
     def test_create_product_via_form(self, admin_client, csrf_headers):
@@ -235,6 +238,34 @@ class TestAdminProducts:
         assert p["prices"][0]["amount_fiat"] == "149.00"
         js_price = products_to_js_format([p])[0]["preco"][0]
         assert js_price["amountSats"] == 14900
+
+    def test_create_usd_product_via_form(self, admin_client, csrf_headers, monkeypatch):
+        monkeypatch.setattr("services.service_pricing.fiat_to_sats", lambda amount, currency: 12500)
+        resp = _form(admin_client, csrf_headers, "/admin/products/new", {
+            "id": "new-usd-prod",
+            "name": "USD Product",
+            "summary": "Created via form",
+            "details_html": "<p>Test</p>",
+            "weight_grams": "100",
+            "buy_button_text": "Buy",
+            "sort_order": "0",
+            "active": "on",
+            "prices_json": json.dumps([{
+                "label": "Base",
+                "pricing_mode": "fiat",
+                "currency_code": "USD",
+                "amount_fiat": "125.00",
+            }]),
+            "options_json": "[]",
+            "existing_images_json": "[]",
+        })
+        assert resp.status_code == 302
+
+        from models.model_products import get_product_by_id, products_to_js_format
+        product = get_product_by_id("new-usd-prod")
+        assert product["prices"][0]["currency_code"] == "USD"
+        assert product["prices"][0]["amount_fiat"] == "125.00"
+        assert products_to_js_format([product])[0]["preco"][0]["amountSats"] == 12500
 
     def test_create_product_missing_id_shows_error(self, admin_client, csrf_headers):
         resp = _form(admin_client, csrf_headers, "/admin/products/new", {
@@ -319,9 +350,8 @@ class TestAdminOrders:
         cursor = db_conn.execute(
             """
             INSERT INTO orders (
-                user_id, session_id, status, total_sats, shipping_sats,
-                shipping_name, shipping_address, shipping_postal_code, shipping_country
-            ) VALUES (1, 'admin-session', 'paid', 10000, 0, 'Buyer', 'Street 1', '8000', 'CH')
+                user_id, session_id, status, total_sats, shipping_sats
+            ) VALUES (1, 'admin-session', 'paid', 10000, 0)
             """
         )
         order_id = cursor.lastrowid
@@ -418,3 +448,45 @@ class TestAdminSettings:
         finally:
             conn.close()
         assert row["value"] == "0"
+
+
+class TestAdminCoupons:
+    def test_coupons_page_lists(self, admin_client, csrf_headers):
+        from models.model_coupons import create_coupon
+        create_coupon(code="SHOWME", discount_type="percent", discount_value=15)
+        resp = admin_client.get("/admin/coupons")
+        assert resp.status_code == 200
+        assert b"SHOWME" in resp.data
+
+    def test_create_coupon(self, admin_client, csrf_headers):
+        from models.model_coupons import get_coupon
+        resp = _form(admin_client, csrf_headers, "/admin/coupons/new", {
+            "code": "new10", "discount_type": "percent", "discount_value": "10",
+            "active": "on",
+        })
+        assert resp.status_code in (302, 200)
+        coupon = get_coupon("NEW10")
+        assert coupon is not None
+        assert coupon["discount_value"] == 10
+        assert coupon["active"] is True
+
+    def test_create_coupon_rejects_zero_value(self, admin_client, csrf_headers):
+        from models.model_coupons import get_coupon
+        _form(admin_client, csrf_headers, "/admin/coupons/new", {
+            "code": "ZERO", "discount_type": "percent", "discount_value": "0",
+        })
+        assert get_coupon("ZERO") is None
+
+    def test_delete_coupon(self, admin_client, csrf_headers):
+        from models.model_coupons import create_coupon, get_coupon, list_coupons
+        create_coupon(code="BYE", discount_type="fixed_sats", discount_value=500)
+        coupon_id = [c for c in list_coupons() if c["code"] == "BYE"][0]["id"]
+        _form(admin_client, csrf_headers, f"/admin/coupons/{coupon_id}/delete", {})
+        assert get_coupon("BYE") is None
+
+    def test_non_admin_cannot_access_coupons(self, client, test_user, admin_user):
+        with client.session_transaction() as sess:
+            sess["user_id"] = test_user
+            sess["is_admin"] = False
+        resp = client.get("/admin/coupons")
+        assert resp.status_code == 403

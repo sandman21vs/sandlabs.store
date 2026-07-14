@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ t('public.products.page_title') }}{% endblock %}
+{% block page_data %}
+  <script>window.PRODUTOS = {{ products_json|safe }};</script>
+{% endblock %}
 
 {% block content %}
     <section class="section">
@@ -30,8 +33,6 @@
 {% endblock %}
 
 {% block scripts %}
-  <script>window.PRODUTOS = {{ products_json|safe }};</script>
-  <script src="{{ url_for('static', filename='js/config-store.js') }}"></script>
   <script src="{{ url_for('static', filename='js/cupom.js') }}"></script>
   <script src="{{ url_for('static', filename='js/lightbox.js') }}"></script>
   <script src="{{ url_for('static', filename='js/color-selector.js') }}"></script>

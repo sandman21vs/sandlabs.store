@@ -29,6 +29,7 @@
       "heading": "Finalizar Pedido",
       "subtitle": "Preencha o endereço para calcular o frete.",
       "shipping_heading": "Endereço de Entrega",
+      "guest_notice": "Você pode finalizar sem criar conta. Guarde o token de acesso exibido após gerar o pagamento.",
       "pay_button": "Gerar pagamento",
       "summary_heading": "Resumo do Pedido",
       "quantity_short": "Qtd.",
@@ -53,6 +54,22 @@
         "unpriced_items": "Existem itens sem conversao disponivel para sats. Ajuste os precos fiat ou aguarde a cotacao BTC voltar.",
         "shipping_required": "Calcule o frete antes de prosseguir.",
         "invoice_failed": "Não foi possível gerar a fatura. Tente novamente."
+      },
+      "payment_method_heading": "Forma de pagamento",
+      "shipping_option_heading": "Opção de frete",
+      "coupon": {
+        "label": "Cupom",
+        "placeholder": "Código do cupom",
+        "apply": "Aplicar",
+        "applied": "Cupom aplicado",
+        "discount_label": "Desconto",
+        "errors": {
+          "invalid": "Cupom inválido.",
+          "inactive": "Cupom inativo.",
+          "expired": "Cupom expirado.",
+          "exhausted": "Limite de uso do cupom atingido.",
+          "not_applicable": "Cupom não aplicável a este pedido."
+        }
       }
     },
     "payment": {
@@ -65,7 +82,16 @@
       "qr_alt": "QR Code para pagamento",
       "bolt11_heading": "Fatura Lightning (BOLT11)",
       "bolt11_hint": "Copie a fatura abaixo ou escaneie o QR Code com sua carteira.",
-      "view_order": "Ver pedido"
+      "view_order": "Ver pedido",
+      "access_token_label": "Token de acesso do pedido",
+      "access_token_hint": "Guarde este token em local seguro. Ele permite consultar o pedido sem uma conta.",
+      "address_heading": "Endereço de pagamento",
+      "address_hint": "Envie o valor exato para o endereço abaixo.",
+      "method": {
+        "lightning": "Lightning",
+        "liquid": "Liquid",
+        "onchain": "Bitcoin on-chain"
+      }
     },
     "api": {
       "errors": {

@@ -39,12 +39,17 @@
       </form>
       {% else %}
       <a class="nav-link{{ ' active' if active in ['login', 'register'] }}" href="{{ url_for('auth.login') }}">{{ t('common.nav.login') }}</a>
+      <a class="nav-link{{ ' active' if active == 'order_lookup' }}" href="{{ url_for('checkout.order_lookup') }}">{{ t('common.nav.track_order') }}</a>
       {% endif %}
       <a class="nav-link{{ ' active' if active == 'termos' }}" href="{{ url_for('public.termos') }}">{{ t('common.nav.terms') }}</a>
       <a class="nav-link{{ ' active' if active == 'suporte' }}" href="{{ url_for('public.suporte') }}">{{ t('common.nav.support') }}</a>
-      {% if active == 'config' %}
-      <a class="nav-link active" href="{{ url_for('public.config_page') }}">{{ t('common.nav.config') }}</a>
-      {% endif %}
+      <div class="currency-switcher">
+        <select id="display-currency" aria-label="{{ t('common.currency.label') }}" title="{{ t('common.currency.label') }}">
+          {% for code in ['CHF', 'EUR', 'BRL', 'USD'] %}
+          <option value="{{ code }}">{{ code }}</option>
+          {% endfor %}
+        </select>
+      </div>
       <div class="lang-switcher" aria-label="{{ t('common.language.label') }}">
         {% for code in supported_langs %}
         <a class="nav-link{{ ' active' if lang == code }}" href="{{ url_for('set_lang', lang=code) }}">{{ code|upper }}</a>
@@ -87,7 +92,12 @@
       return typeof current === 'string' ? current : (fallback || key);
     };
   </script>
-  <script src="{{ url_for('static', filename='js/config.js') }}"></script>
+  <script>
+    window.CONFIG = {{ store_config|tojson }};
+    window.CONTACTS = window.CONFIG.contacts;
+  </script>
+  {% block page_data %}{% endblock %}
+  <script src="{{ url_for('static', filename='js/config-store.js') }}"></script>
   <script>window.CSRF_TOKEN = {{ session.get('csrf_token', '')|tojson }};</script>
   <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
   {% block scripts %}{% endblock %}

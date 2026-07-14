@@ -5,6 +5,7 @@ Falls back to the last known value on network errors.
 """
 import json
 import logging
+import math
 import time
 import urllib.request
 from decimal import Decimal
@@ -58,6 +59,19 @@ def get_btc_brl_rate() -> float | None:
 def get_btc_rate(currency_code: str) -> float | None:
     """Return current BTC price in the requested fiat currency."""
     return _get_btc_rates().get((currency_code or "").strip().lower())
+
+
+def get_display_rates() -> dict[str, float]:
+    """Return positive BTC/fiat rates safe to expose to the storefront."""
+    display_rates = {}
+    for code, value in _get_btc_rates().items():
+        try:
+            rate = float(value)
+        except (TypeError, ValueError):
+            continue
+        if code in SUPPORTED_RATE_CURRENCIES and rate > 0 and math.isfinite(rate):
+            display_rates[code.upper()] = rate
+    return display_rates
 
 
 def fiat_to_sats(amount: float | Decimal, currency_code: str) -> int:

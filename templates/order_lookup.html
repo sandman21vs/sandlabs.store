@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ t('account.order_lookup.page_title') }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="section-head">
+    <h1 class="section-title">{{ t('account.order_lookup.heading') }}</h1>
+    <p class="section-sub">{{ t('account.order_lookup.subtitle') }}</p>
+  </div>
+
+  <form method="post" action="{{ url_for('checkout.order_lookup') }}" class="card glass auth-card">
+    <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+    {% if error %}<div class="checkout-error">{{ error }}</div>{% endif %}
+
+    <div class="form-group">
+      <label for="lookup_order_id">{{ t('account.order_lookup.order_id') }}</label>
+      <input id="lookup_order_id" class="form-input" type="number" min="1" name="order_id"
+             value="{{ form_data.order_id or '' }}" required>
+    </div>
+    <div class="form-group">
+      <label for="lookup_access_token">{{ t('account.order_lookup.access_token') }}</label>
+      <input id="lookup_access_token" class="form-input" type="text" name="access_token"
+             value="" autocomplete="off" required>
+    </div>
+    <button type="submit" class="btn btn-accent">{{ t('account.order_lookup.submit') }}</button>
+  </form>
+</section>
+{% endblock %}

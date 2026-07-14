@@ -12,7 +12,7 @@ O sandlabs.store esta sendo convertido de um site estatico (HTML/CSS/JS puro ser
 
 ---
 
-## Estado Atual (Fase 9 Completa + Ajustes Pos-Fase 9)
+## Estado Atual (Fase 9 Completa + Integrations Roadmap)
 
 As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 
@@ -21,11 +21,15 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 - Carrinho com sessao anonima, endpoints JSON, badge no header e pagina `/carrinho`
 - Autenticacao com registro/login/logout, CSRF global, headers de seguranca e area `/account/orders`
 - Setup inicial em `/admin/setup`, inspirado no FREESANDMANN, com criacao do primeiro admin, definicao da senha e login imediato no painel
-- Checkout autenticado com criacao de pedidos, invoice Lightning via Coinos, QR code, polling e webhook de confirmacao
+- Checkout autenticado ou convidado com Lightning/Liquid/on-chain via Coinos, QR, polling e webhook de confirmacao
 - Calculo de frete Post.ch integrado ao checkout, com conversao CHF -> sats via `service_btc_price.py`
 - Painel admin para produtos, pedidos e configuracoes, com tracking/status de pedidos alinhados ao schema atual
 - Configuracoes do Coinos persistidas no SQLite via `/admin/setup` e `/admin/settings`, com prioridade sobre o `.env` durante o runtime de checkout e webhook
-- Pricing dinamico por moeda: cada `product_price` pode ser salvo em `SATS` ou fiat; no momento da compra, valores em CHF sao convertidos para sats usando a cotacao BTC atual
+- Dynamic pricing by currency: each `product_price` can be stored in `SATS` or
+  fiat. The admin accepts `CHF` and `USD`; purchase values are resolved to sats
+  using the current BTC rate.
+- Public catalog display can switch between `CHF`, `EUR`, `BRL`, and `USD`
+  without changing the sats-authoritative cart, checkout, or settlement values.
 - Galeria e cards usando thumbnails WebP em `static/images/thumb/`, com fallback para a imagem original e geracao automatica em uploads do admin
 - Flash messages globais, metadados SEO/Open Graph, endpoint `/health`, logging adicional em checkout/admin, Docker multi-stage com usuario non-root e healthcheck
 - Exibicao de sats ao lado dos precos fiat no payload `window.PRODUTOS`, e limpeza dos arquivos HTML/CSS/JS/imagens legados da raiz do repositorio
@@ -44,6 +48,26 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 - Ajuste pos-Fase 9 executado no commit `46a116d` — pricing multi-moeda com conversao dinamica fiat -> sats no carrinho e checkout
 - Suite de testes apos o ajuste de pricing: `pytest tests/ -q` -> `201 passed`
 
+### Integrations roadmap execution
+
+The integrations roadmap was implemented serially on
+`feature/integrations-foundation`, so reconciliation did not require merging
+parallel implementation branches:
+
+- Phase 0 (governance): `0d1a890`
+- Phase A (PII encryption): `13092ae`
+- Phase B (order schema standardization): `45cfb2e`
+- Phase C (Coinos Liquid and on-chain): `ca788ae`
+- Phase D (hybrid DHL and Swiss Post shipping): `c1ea53e`
+- Phase E (high-resolution image zoom): `c9507a6`
+- Phase F-pdf (order receipt): `c571c8b`
+- Phase F-core (secure guest checkout): `ae4c2cf`
+- Phase G (USD pricing and display currency switcher): `e2f9604`
+
+Final reconciliation validation: `.venv/bin/python -m pytest tests/ -q` →
+`254 passed`. The storefront has no frontend build step; Python modules,
+translation JSON, and diff whitespace are checked separately.
+
 ### Convencao de rastreabilidade
 
 - Cada fase ou bloco relevante de alteracoes deve ser finalizado em commit separado, com mensagem descritiva.
@@ -53,18 +77,20 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 
 - O schema `product_prices` aceita dois modos: `pricing_mode='sats'` ou `pricing_mode='fiat'`.
 - Para precos em fiat, o banco guarda `currency_code` e `amount_fiat`; o valor em sats e resolvido no carrinho e no checkout usando a cotacao BTC atual.
-- A UI do admin hoje esta priorizada para `SATS` e `CHF`, que cobrem o fluxo operacional atual da loja.
+- The admin UI accepts `SATS`, `CHF`, and `USD` product prices.
 - O backend ja esta preparado para outras moedas fiat suportadas pelo service de cotacao, hoje: `USD`, `BRL` e `EUR`.
 - Produtos legados com `display_text` antigo continuam sendo interpretados pelo backend para evitar quebra de compatibilidade.
 - O pedido continua sendo fechado em sats no momento da compra, ou seja: o valor Lightning cobrado e sempre um snapshot da cotacao daquele instante.
 
 ### Roadmap sugerido para futuras adicoes
 
-1. Expandir a UI do admin para permitir selecao explicita de `USD`, `BRL`, `EUR` e outras moedas suportadas, em vez de expor so `CHF` e `SATS`.
-2. Persistir no `order_items` um snapshot completo do preco no momento da compra: `pricing_mode`, `currency_code`, `amount_fiat`, `btc_rate_used` e `unit_sats_resolved`, para auditoria e rastreabilidade historica.
-3. Adicionar cache/telemetria de cotacao com fallback controlado no admin, para que a loja sinalize claramente quando a conversao fiat -> sats estiver indisponivel.
-4. Permitir exibicao multi-moeda no frontend publico: por exemplo mostrar `CHF + sats` agora e futuramente alternar para `USD`, `EUR`, `BRL` por configuracao global ou preferencia do visitante.
-5. Criar testes especificos para regressao de moedas futuras, cobrindo parser legados, arredondamento decimal, snapshot de pedido e indisponibilidade do feed de preco.
+1. Persist a complete order-item price snapshot (`pricing_mode`,
+   `currency_code`, `amount_fiat`, `btc_rate_used`, and `unit_sats_resolved`) for
+   historical accounting audits.
+2. Add rate-cache telemetry and an admin warning when fiat conversion is
+   unavailable.
+3. Extend regression coverage for legacy price parsing and historic snapshot
+   behavior.
 
 ### Arquivos ja criados
 
@@ -853,10 +879,10 @@ GET /api/checkout/check-payment/<order_id>
     - Se received > 0: chamar confirm_order_payment(), retornar { paid: true }
     - Senao: retornar { paid: false }
 
-GET /checkout/invoice-qr
-    Query: bolt11=lnbc...
-    - Chamar service_qr.get_invoice_qr_response(bolt11)
-    - Retornar imagem PNG
+GET /checkout/payment/<order_id>/qr
+    - Autorizar dono, administrador ou sessao de checkout convidado
+    - Derivar o BOLT11 exclusivamente do pedido persistido
+    - Retornar imagem PNG com Cache-Control: private, no-store
 
 POST /checkout/webhook/coinos   (CSRF EXEMPT)
     - Validar webhook secret
@@ -1488,3 +1514,131 @@ git commit -m "Fase N: descricao curta do que foi feito"
 - **CSS:** NAO modificar `style.css` existente exceto para ADICIONAR novas classes. Usar design tokens existentes.
 - **JS:** Manter arquivos existentes funcionando. Novos arquivos em `static/js/`.
 - **Nomes de arquivo:** `model_*.py`, `routes_*.py`, `service_*.py` — consistente com FREESANDMANN.
+
+---
+
+## Criptografia de PII em repouso (Fase A — seed BIP39)
+
+`services/service_security.py` deriva todo o material de chave de um **segredo
+mestre único**: uma frase-semente BIP39 em `MASTER_MNEMONIC` (fallback para
+`SHIPPING_DATA_KEY`/`SECRET_KEY` em dev). Da semente saem, via HKDF-SHA256 com
+labels distintos:
+
+- **chave Fernet** para criptografar PII (nome, endereço, email, display name);
+- **chave HMAC** para *índices cegos* (`blind_index` / `email_blind_index`) —
+  permitem lookup/unicidade por igualdade sem guardar o valor em texto puro.
+
+Compatibilidade: um `MultiFernet([nova, legada])` ainda descriptografa dados
+escritos com o esquema anterior (Fernet de `SHA-256(SHIPPING_DATA_KEY)`); novas
+escritas usam a chave derivada da semente.
+
+Schema: `users` passou a `email_enc` / `email_bidx` (UNIQUE) / `display_name_enc`
+(sem coluna `email` em texto puro). `init_db._migrate_users_pii` reconstrói
+bancos legados preservando os ids. Login/registro buscam por `email_bidx`.
+
+`app.py` chama `require_pii_key()` quando `FLASK_ENV=production`, falhando
+fechado se nenhum segredo dedicado de PII estiver configurado.
+
+**Nota de segurança (honesta):** derivar a chave de uma seed BIP39 **não é mais
+seguro** que uma chave aleatória forte — a vantagem é usabilidade/backup para o
+operador. Criptografia em repouso protege contra **roubo do banco**, não contra
+um servidor comprometido (que precisa da chave em memória para descriptografar o
+endereço na hora de despachar). PII nunca deve ser logada em texto puro. A
+coluna `orders.notes` permanece sem uso; não deve receber PII sem passar a ser
+criptografada como os demais campos.
+
+---
+
+## Pagamento multi-rail (Fase C — Lightning / Liquid / on-chain)
+
+`services/service_coinos.py` suporta três trilhas de liquidação via Coinos, todas
+recebidas em satoshis: `lightning` (bolt11 + webhook), `liquid` e `onchain`
+(endereço por pedido, tipo Coinos `liquid`/`bitcoin`). `PAYMENT_METHODS` mapeia
+os nomes públicos para os tipos Coinos; `get_enabled_methods()` lê os toggles
+`coinos_liquid` / `coinos_onchain` (Lightning fica disponível sempre que o
+Coinos está habilitado). Endereços frescos: `get_fresh_onchain_address()` /
+`get_fresh_liquid_address()` (invoice de amount 0).
+
+No checkout, o comprador escolhe o método (`payment_method`); o pedido guarda
+`payment_method`, `invoice_type` e — para Liquid/onchain — `btc_address`
+(Lightning guarda `bolt11`). A confirmação é uniforme: polling
+`check_invoice(hash).received >= amount` (e webhook para Lightning). Toggles no
+admin em `/admin/settings`. Referência de implementação: `~/prometeu/coinos_client.py`.
+
+---
+
+## Frete híbrido (Fase D — DHL + Swiss Post com fallback)
+
+`services/service_shipping.py::get_shipping_options(weight_grams, country)` é o
+orquestrador: coleta cotações ao vivo dos providers habilitados
+(`service_shipping_dhl.py`, `service_shipping_post.py`) e, se nenhum responder,
+cai numa **única opção da tabela estática** (`calculate_shipping_chf`). Cada
+opção é `{carrier, service, price_chf, source}` (`source` ∈ `dhl`/`post`/`table`),
+ordenada por preço.
+
+Os providers só chamam a API real quando há credenciais no admin
+(`dhl_enabled`+`dhl_api_key`+`dhl_api_url`, idem `post_*`); em ausência/erro/
+timeout retornam `None` sem lançar exceção. **APIs de cotação real exigem contas
+comerciais** das transportadoras — configure em `/admin/settings`.
+
+No checkout, o preço é **autoritativo no servidor**: `routes_checkout._resolve_shipping`
+recalcula as opções e escolhe a transportadora pedida (ou a mais barata),
+gravando `shipping_carrier`/`shipping_service` no pedido. O endpoint
+`/api/shipping/calculate` devolve `options` (lista) além de `shipping_chf`/
+`shipping_sats`/`zone` (compat). O `checkout.js` renderiza o seletor quando há
+mais de uma opção.
+
+---
+
+## Checkout convidado e PDF do pedido (Fase F)
+
+`GET /checkout` e `POST /checkout/create-order` aceitam carrinhos anônimos. Um
+pedido convidado guarda `user_id = NULL`, o `session_id` do carrinho e um
+`access_token` gerado com `secrets.token_urlsafe(32)` e criptografado em repouso
+pela mesma camada Fernet da PII. O token não é logado nem incluído em URLs. O navegador que concluiu a compra é autorizado pelo
+`session_id`; outro navegador usa `POST /orders/lookup` (com CSRF) para validar
+número + token. Depois da validação, a sessão assinada guarda apenas o id do
+pedido autorizado, limitada aos 20 ids mais recentes.
+
+Rotas que expõem pagamento, endereço ou documento reutilizam o mesmo controle
+de acesso (admin, dono autenticado, sessão original ou sessão autorizada):
+
+```
+GET|POST /orders/lookup
+GET      /orders/<id>
+GET      /orders/<id>/receipt.pdf
+GET      /checkout/payment/<id>
+GET      /checkout/payment/<id>/qr
+GET      /api/checkout/check-payment/<id>
+```
+
+Respostas com PII, token, invoice ou PDF usam `Cache-Control: private, no-store`.
+O PDF é produzido por `services/service_pdf.py` com `fpdf2`, recebe pedido,
+contatos, traduções e URL de consulta já resolvidos, e não acessa banco, rede ou
+configuração. A origem do QR vem de `PUBLIC_BASE_URL`; sem essa variável, usa
+um caminho relativo e nunca confia no header `Host`. `services/service_qr.build_qr_png()`
+gera o QR em memória. Como o
+schema ainda não persiste snapshot fiat do pedido, o PDF só mostra um valor
+fiat quando o chamador fornece um snapshot; nunca recalcula uma cotação
+histórica usando a taxa atual.
+
+---
+
+## Display currency switcher (Phase G)
+
+`services/service_pricing.py` allows the admin to create product prices in
+`SATS`, `CHF`, or `USD`. Fiat source prices are still resolved to sats by the
+backend before they can enter the cart.
+
+`GET /api/pricing/rates` returns the positive `CHF`, `EUR`, `BRL`, and `USD`
+values from the existing five-minute BTC rate cache. The endpoint requires no
+authentication and contains no customer or payment data, but its response is
+marked `private, max-age=300`
+because the global i18n hook may refresh the visitor's signed session cookie.
+
+`static/js/config-store.js` stores the visitor's display preference under
+`sandlabs-display-currency`. Home and product renderers convert each product's
+resolved `amountSats` for display and keep the sats value visible as the
+secondary price. Missing or invalid live rates fall back to the product's
+original display text. Cart, checkout, order, PDF, and Coinos values remain in
+satoshis; the display selector never participates in settlement calculations.

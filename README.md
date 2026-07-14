@@ -286,8 +286,41 @@ vim pelo (MEUCUPOM10)
 ## 🖼️ Galeria e lightbox
 
 - A galeria é montada com `imagens: []`.
-- O lightbox é controlado por `render-produtos.js` (navegação anterior/próxima).
-- As miniaturas usam `object-fit: cover` e `aspect-ratio` para manter grade bonita.
+- Cards e galerias carregam miniaturas WebP de `images/thumb/` com lazy loading e
+  recorrem à imagem original caso a miniatura não exista.
+- `render-produtos.js` entrega os caminhos originais para `lightbox.js`, que
+  mantém navegação anterior/próxima e teclado.
+- O lightbox abre a imagem original em alta resolução, oferece lupa seguindo o
+  mouse no desktop e pinch-to-zoom no mobile.
+- As miniaturas usam `object-fit: cover` e `aspect-ratio` para manter a grade.
+
+---
+
+## 🧾 Checkout convidado e comprovante
+
+- O checkout aceita compras com ou sem conta; os dados de entrega continuam
+  criptografados em repouso.
+- Pedidos convidados recebem um token aleatório exibido após a criação do
+  pagamento e criptografado no banco. Guarde o número do pedido e esse token.
+- A consulta pública fica em `/orders/lookup`; o token é enviado por formulário
+  POST com CSRF e não aparece na URL.
+- O detalhe autorizado permite baixar um comprovante PDF com itens, totais,
+  entrega, pagamento, contatos e QR para a página de consulta.
+- Configure `PUBLIC_BASE_URL=https://sua-loja.example` no `.env` para que o QR
+  use a origem canônica do deploy; sem ela, o PDF usa somente um caminho relativo.
+
+---
+
+## Display currencies
+
+- Product prices can be entered in `SATS`, `CHF`, or `USD` in the admin.
+- The public header lets visitors display catalog prices in `CHF`, `EUR`, `BRL`,
+  or `USD`. The preference is stored only in the browser.
+- Display conversion uses `GET /api/pricing/rates`, backed by the existing
+  five-minute CoinGecko cache and stored only in the visitor's private browser
+  cache. If rates are unavailable, the original product price remains visible.
+- The selector is informational only. Cart totals, checkout totals, invoices,
+  and payment settlement remain authoritative in satoshis.
 
 ---
 

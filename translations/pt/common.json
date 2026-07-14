@@ -14,6 +14,7 @@
       "logout": "Sair",
       "terms": "Termos",
       "support": "Suporte",
+      "track_order": "Rastrear pedido",
       "config": "Config"
     },
     "footer": {
@@ -25,6 +26,9 @@
       "en": "English",
       "es": "Español",
       "de": "Deutsch"
+    },
+    "currency": {
+      "label": "Moeda de exibição"
     },
     "actions": {
       "learn_more": "Saiba mais",

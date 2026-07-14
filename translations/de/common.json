@@ -14,6 +14,7 @@
       "logout": "Abmelden",
       "terms": "Bedingungen",
       "support": "Support",
+      "track_order": "Bestellung verfolgen",
       "config": "Konfig"
     },
     "footer": {
@@ -25,6 +26,9 @@
       "en": "Englisch",
       "es": "Spanisch",
       "de": "Deutsch"
+    },
+    "currency": {
+      "label": "Anzeigewährung"
     },
     "actions": {
       "learn_more": "Mehr erfahren",

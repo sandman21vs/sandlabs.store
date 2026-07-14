@@ -6,6 +6,7 @@ from flask import Flask, abort, redirect, request, session
 import config
 from i18n import init_app as init_i18n
 from init_db import init_db
+from services.service_security import require_pii_key
 from routes.routes_account import account
 from routes.routes_admin import admin
 from routes.routes_auth import auth
@@ -20,6 +21,11 @@ if not logging.getLogger().handlers:
     )
 
 
+# Fail closed in production: refuse to serve without a dedicated PII secret so
+# customer data is never encrypted with the insecure dev fallback key.
+if os.environ.get("FLASK_ENV") == "production":
+    require_pii_key()
+
 app = Flask(__name__, static_url_path="")
 app.secret_key = config.SECRET_KEY
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
@@ -27,6 +33,25 @@ init_i18n(app)
 
 CSRF_EXEMPT = set()
 CSRF_EXEMPT.add("/checkout/webhook/coinos")
+
+
+@app.context_processor
+def inject_store_config():
+    """Expose contacts + colour palette to templates from the backend.
+
+    Replaces the removed static/js/config.js so contacts come from the DB
+    config table (with env fallbacks) instead of a client-editable file.
+    """
+    from models.model_config import get_config
+
+    whatsapp = get_config("whatsapp") or config.STORE_WHATSAPP_DEFAULT
+    telegram = get_config("telegram") or config.STORE_TELEGRAM_DEFAULT
+    return {
+        "store_config": {
+            "contacts": {"whatsapp": whatsapp, "telegram": telegram},
+            "colors": config.PRODUCT_COLORS,
+        }
+    }
 
 
 @app.before_request
@@ -79,7 +104,6 @@ _HTML_ROUTES = {
     "sobre.html": "public.sobre",
     "termos.html": "public.termos",
     "suporte.html": "public.suporte",
-    "config.html": "public.config_page",
     "login.html": "auth.login",
     "register.html": "auth.register",
 }

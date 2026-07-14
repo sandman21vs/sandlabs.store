@@ -32,8 +32,8 @@ def test_order_detail_renders_for_owner(client, csrf_token):
 
         cursor = conn.execute(
             """
-            INSERT INTO orders (user_id, session_id, status, total_sats, shipping_sats, shipping_country, created_at, updated_at)
-            VALUES (?, ?, 'pending', ?, 0, 'CH', datetime('now'), datetime('now'))
+            INSERT INTO orders (user_id, session_id, status, total_sats, shipping_sats, created_at, updated_at)
+            VALUES (?, ?, 'pending', ?, 0, datetime('now'), datetime('now'))
             """,
             (user_id, "test-session", int(price["amount_sats"])),
         )
@@ -63,3 +63,10 @@ def test_order_detail_renders_for_owner(client, csrf_token):
     assert response.status_code == 200
     assert f"Pedido #{order_id}" in html
     assert "SandSeed" in html
+    assert response.headers["Cache-Control"] == "private, no-store"
+    assert f"/orders/{order_id}/receipt.pdf" in html
+
+    pdf_response = client.get(f"/orders/{order_id}/receipt.pdf")
+    assert pdf_response.status_code == 200
+    assert f"/account/orders/{order_id}".encode() in pdf_response.data
+    assert b"/orders/lookup" not in pdf_response.data

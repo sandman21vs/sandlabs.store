@@ -29,6 +29,7 @@
       "heading": "Finalizar Pedido",
       "subtitle": "Completa tu dirección para calcular el envío.",
       "shipping_heading": "Dirección de Envío",
+      "guest_notice": "Puedes finalizar sin crear una cuenta. Guarda el token de acceso que aparece al generar el pago.",
       "pay_button": "Generar pago",
       "summary_heading": "Resumen del Pedido",
       "quantity_short": "Cant.",
@@ -53,6 +54,22 @@
         "unpriced_items": "Algunos artículos no tienen precio configurado. Elimínalos para continuar.",
         "shipping_required": "Calcula el envío antes de continuar.",
         "invoice_failed": "No se pudo generar la factura. Inténtalo de nuevo."
+      },
+      "payment_method_heading": "Forma de pago",
+      "shipping_option_heading": "Opción de envío",
+      "coupon": {
+        "label": "Cupón",
+        "placeholder": "Código del cupón",
+        "apply": "Aplicar",
+        "applied": "Cupón aplicado",
+        "discount_label": "Descuento",
+        "errors": {
+          "invalid": "Cupón no válido.",
+          "inactive": "Cupón inactivo.",
+          "expired": "Cupón caducado.",
+          "exhausted": "Límite de uso del cupón alcanzado.",
+          "not_applicable": "Cupón no aplicable a este pedido."
+        }
       }
     },
     "payment": {
@@ -65,7 +82,16 @@
       "qr_alt": "Código QR de pago",
       "bolt11_heading": "Factura Lightning (BOLT11)",
       "bolt11_hint": "Copia la factura o escanea el código QR con tu billetera.",
-      "view_order": "Ver pedido"
+      "view_order": "Ver pedido",
+      "access_token_label": "Token de acceso del pedido",
+      "access_token_hint": "Guarda este token de forma segura. Permite consultar el pedido sin una cuenta.",
+      "address_heading": "Dirección de pago",
+      "address_hint": "Envía el importe exacto a la dirección de abajo.",
+      "method": {
+        "lightning": "Lightning",
+        "liquid": "Liquid",
+        "onchain": "Bitcoin on-chain"
+      }
     },
     "api": {
       "errors": {

@@ -85,3 +85,43 @@ def calculate_shipping_chf(weight_grams: int, country_code: str) -> float:
 
     # Heavier than all brackets — use the largest bracket price
     return float(zone_rates[sorted_thresholds[-1]])
+
+
+def _table_option(weight_grams, country_code):
+    """The static rate-table option (always available as a fallback)."""
+    return {
+        "carrier": "post",
+        "service": "PostPac",
+        "price_chf": calculate_shipping_chf(weight_grams, country_code),
+        "source": "table",
+    }
+
+
+def get_shipping_options(weight_grams, country_code):
+    """Return available shipping options for a destination (hybrid).
+
+    Live carrier quotes are used when credentials are configured (DHL and/or
+    Swiss Post); if none are available, falls back to a single option computed
+    from the static rate table. Each option is a dict with keys ``carrier``,
+    ``service``, ``price_chf`` and ``source`` (``"dhl"``/``"post"``/``"table"``).
+
+    Prices are in CHF; satoshi conversion is left to the caller.
+    """
+    # Imported lazily to avoid import cycles and keep providers optional.
+    from services import service_shipping_dhl, service_shipping_post
+
+    options = []
+    for provider in (service_shipping_dhl, service_shipping_post):
+        try:
+            quotes = provider.quote(weight_grams, country_code)
+        except Exception:
+            logger.exception("Shipping provider %s failed", getattr(provider, "CARRIER", "?"))
+            quotes = None
+        if quotes:
+            options.extend(quotes)
+
+    if not options:
+        options = [_table_option(weight_grams, country_code)]
+
+    options.sort(key=lambda opt: opt["price_chf"])
+    return options

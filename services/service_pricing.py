@@ -15,7 +15,7 @@ SUPPORTED_FIAT_CURRENCIES = {
     "BRL": {"label": "Brazilian Real", "prefix": "R$ ", "decimals": 2},
 }
 
-ADMIN_ENABLED_CURRENCIES = (SATS_CODE, "CHF")
+ADMIN_ENABLED_CURRENCIES = (SATS_CODE, "CHF", "USD")
 
 _SATS_PATTERN = re.compile(r"([0-9\.\,\s]+)\s*sats", re.IGNORECASE)
 _CURRENCY_PATTERNS = {

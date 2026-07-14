@@ -29,7 +29,44 @@
       "price_label_fallback": "Preco",
       "format": "Formato",
       "quantity_short": "Qtd.",
-      "empty_items": "Nenhum item encontrado para este pedido."
+      "empty_items": "Nenhum item encontrado para este pedido.",
+      "download_pdf": "Baixar comprovante PDF",
+      "access_token": "Token de acesso",
+      "access_token_hint": "Use o número do pedido e este token para consultar o pedido depois."
+    },
+    "order_lookup": {
+      "page_title": "Consultar pedido",
+      "heading": "Consultar pedido",
+      "subtitle": "Informe o número e o token recebidos no checkout como convidado.",
+      "order_id": "Número do pedido",
+      "access_token": "Token de acesso",
+      "submit": "Consultar",
+      "invalid": "Pedido ou token inválido. Confira os dados e tente novamente."
+    },
+    "pdf": {
+      "title": "Pedido #{id}",
+      "receipt": "Comprovante de pedido Sandlabs",
+      "summary": "Resumo do pedido",
+      "access_token": "Token de acesso",
+      "account_order": "Pedido da conta",
+      "created": "Criado em",
+      "order_status": "Status do pedido",
+      "payment": "Pagamento",
+      "payment_status": "Status do pagamento",
+      "paid": "Pago",
+      "pending": "Pendente",
+      "products": "Produtos",
+      "shipping": "Frete",
+      "total": "Total",
+      "fiat_total": "Total fiat",
+      "not_recorded": "Não registrado",
+      "items": "Itens",
+      "no_items": "Nenhum item registrado.",
+      "quantity": "Qtd.",
+      "shipping_address": "Endereço de entrega",
+      "tracking": "Acompanhamento",
+      "contact": "Contato",
+      "discount": "Desconto"
     }
   }
 }

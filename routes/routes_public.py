@@ -1,11 +1,24 @@
 import json
 
-from flask import Blueprint, render_template
+from flask import Blueprint, jsonify, render_template
 
 from i18n import current_lang, localize_products
 from models.model_products import get_all_products, products_to_js_format
+from services.service_btc_price import CACHE_TTL, get_display_rates
 
 public = Blueprint("public", __name__)
+
+
+@public.route("/api/pricing/rates")
+def pricing_rates():
+    """Expose cached BTC/fiat rates used only for storefront display."""
+    response = jsonify({
+        "base": "BTC",
+        "rates": get_display_rates(),
+        "ttl_seconds": CACHE_TTL,
+    })
+    response.headers["Cache-Control"] = f"private, max-age={CACHE_TTL}"
+    return response
 
 
 @public.route("/")
@@ -42,10 +55,6 @@ def termos():
 def suporte():
     return render_template("suporte.html", active="suporte")
 
-
-@public.route("/config")
-def config_page():
-    return render_template("config.html", active="config")
 
 def register_error_handlers(app):
     @app.errorhandler(404)
