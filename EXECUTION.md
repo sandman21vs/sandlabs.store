@@ -32,7 +32,7 @@ This checklist **is** the "tik de ok" the user asked for.
 - [x] **Fase F-pdf** — Geração do PDF do pedido — `c571c8b`
 - [x] **Fase F-core** — Checkout como convidado + `access_token` — `ae4c2cf`
 - [x] **Fase G** — Multi-moeda: USD + switcher — `e2f9604`
-- [ ] **Etapa 3** — Reconciliação, merge, atualizar `ARCHITECTURE.md`
+- [x] **Etapa 3** — Reconciliação, merge, atualizar `ARCHITECTURE.md` — `f81043e`
 
 ---
 
@@ -43,8 +43,8 @@ This checklist **is** the "tik de ok" the user asked for.
   from `main`.
 - **Tests:** `254 passing`. Baseline was 207; A +9, B +2, C +7, D +8, E +4,
   F-pdf +5, F-core +6, G +6.
-- **Fases 0/A/B/C/D/E/F-pdf/F-core/G are already committed on this branch** (not in separate
-  worktrees). Only the final reconciliation remains. C is done — the
+- **Fases 0/A/B/C/D/E/F-pdf/F-core/G and Etapa 3 are committed on this branch**
+  (not in separate worktrees). The roadmap is complete. C is done — the
   "reconciliation order" that lists C refers only to the case where it had been
   a separate worktree; here it needs no merge.
 - **Do not push or open a PR** unless the user explicitly asks (AGENTS.md).
