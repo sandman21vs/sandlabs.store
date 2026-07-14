@@ -39,7 +39,12 @@
   }
 
   function toThumbSrc(src) {
-    return (src || '').replace(/^(images\/)(.+)\.\w+$/, '$1thumb/$2.webp');
+    const value = String(src || '');
+    const suffixAt = value.search(/[?#]/);
+    const path = suffixAt === -1 ? value : value.slice(0, suffixAt);
+    const suffix = suffixAt === -1 ? '' : value.slice(suffixAt);
+    const match = path.match(/^(\/?images\/)(?!thumb\/)(.+)\.[^./]+$/i);
+    return match ? `${match[1]}thumb/${match[2]}.webp${suffix}` : value;
   }
 
   function normalizeLabel(text) {

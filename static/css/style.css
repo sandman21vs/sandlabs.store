@@ -817,3 +817,47 @@ textarea.form-input{min-height:120px;resize:vertical}
   .checkout-item-meta,
   .order-item-meta{text-align:left}
 }
+
+/* Product lightbox zoom (Fase E) */
+.lightbox-zoom{
+  position:relative;
+  display:inline-flex;
+  max-width:100%;
+  overflow:hidden;
+  border-radius:12px;
+  cursor:zoom-in;
+  line-height:0;
+  touch-action:none;
+}
+.lightbox-highres{
+  display:block;
+  transform:scale(1);
+  will-change:transform;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+.lightbox-zoom.is-touch-zoomed{
+  cursor:grab;
+}
+.zoom-lens{
+  position:absolute;
+  width:clamp(120px, 18vw, 210px);
+  height:clamp(120px, 18vw, 210px);
+  display:block;
+  opacity:0;
+  pointer-events:none;
+  z-index:2;
+  border:2px solid rgba(255,255,255,.88);
+  border-radius:50%;
+  background-color:#111;
+  background-repeat:no-repeat;
+  box-shadow:0 8px 30px rgba(0,0,0,.55), inset 0 0 0 1px rgba(0,0,0,.35);
+  transition:opacity .12s ease;
+}
+.zoom-lens.is-active{
+  opacity:1;
+}
+@media (hover:none), (pointer:coarse){
+  .zoom-lens{display:none}
+  .lightbox-zoom{cursor:default}
+}

@@ -26,8 +26,8 @@ def _to_public_path(relpath):
     return f"images/{relpath.replace(os.sep, '/')}"
 
 
-def get_thumbnail_relpath(filename):
-    """Return the public thumbnail path for an image path."""
+def thumbnail_path(filename):
+    """Resolve an image filename to its public WebP thumbnail path."""
     relpath = _normalize_relpath(filename)
     if not relpath:
         return filename
@@ -35,6 +35,11 @@ def get_thumbnail_relpath(filename):
         return _to_public_path(relpath)
     name, _ext = os.path.splitext(relpath)
     return _to_public_path(f"{THUMB_DIR}/{name}.webp")
+
+
+def get_thumbnail_relpath(filename):
+    """Backward-compatible alias for :func:`thumbnail_path`."""
+    return thumbnail_path(filename)
 
 
 def generate_thumbnail(source_path, dest_path, max_width=THUMB_MAX_WIDTH, quality=THUMB_QUALITY):
@@ -64,7 +69,7 @@ def ensure_thumbnail(base_dir, filename):
     if not os.path.exists(source_path):
         return filename
 
-    thumb_public = get_thumbnail_relpath(filename)
+    thumb_public = thumbnail_path(filename)
     thumb_rel = _normalize_relpath(thumb_public)
     thumb_path = os.path.join(base_dir, thumb_rel)
     if not os.path.exists(thumb_path):

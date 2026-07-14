@@ -9,7 +9,7 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 
-from services.service_images import THUMB_DIR, ensure_thumbnail, get_thumbnail_relpath
+from services.service_images import THUMB_DIR, ensure_thumbnail, thumbnail_path
 
 
 IMAGES_DIR = os.path.join(ROOT, "static", "images")
@@ -30,7 +30,7 @@ def main():
             if ext not in {".png", ".jpg", ".jpeg", ".webp"}:
                 continue
 
-            thumb_public_before = get_thumbnail_relpath(rel_file)
+            thumb_public_before = thumbnail_path(rel_file)
             thumb_rel_before = thumb_public_before.replace("images/", "", 1) if thumb_public_before.startswith("images/") else thumb_public_before
             thumb_path = os.path.join(IMAGES_DIR, thumb_rel_before)
             already_exists = os.path.exists(thumb_path)

@@ -4,7 +4,12 @@ from pathlib import Path
 
 from PIL import Image
 
-from services.service_images import ensure_thumbnail, generate_thumbnail, get_thumbnail_relpath
+from services.service_images import (
+    ensure_thumbnail,
+    generate_thumbnail,
+    get_thumbnail_relpath,
+    thumbnail_path,
+)
 
 
 def _create_png(path: Path, size=(1200, 800), color=(240, 180, 30, 255)):
@@ -26,9 +31,25 @@ def test_generate_thumbnail_creates_webp_and_resizes(tmp_path):
         assert img.height == 200
 
 
+def test_generate_thumbnail_preserves_original(tmp_path):
+    source = tmp_path / "source.png"
+    dest = tmp_path / "thumb" / "source.webp"
+    _create_png(source, size=(1200, 600))
+    original_bytes = source.read_bytes()
+
+    generate_thumbnail(str(source), str(dest))
+
+    assert source.read_bytes() == original_bytes
+
+
 def test_get_thumbnail_relpath_preserves_images_prefix():
     assert get_thumbnail_relpath("images/jade1.png") == "images/thumb/jade1.webp"
     assert get_thumbnail_relpath("jade1.png") == "images/thumb/jade1.webp"
+
+
+def test_thumbnail_path_is_exported_and_idempotent():
+    assert thumbnail_path("images/nested/jade1.jpeg") == "images/thumb/nested/jade1.webp"
+    assert thumbnail_path("images/thumb/nested/jade1.webp") == "images/thumb/nested/jade1.webp"
 
 
 def test_ensure_thumbnail_generates_and_returns_public_path(tmp_path):

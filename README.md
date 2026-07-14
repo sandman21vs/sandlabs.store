@@ -286,8 +286,13 @@ vim pelo (MEUCUPOM10)
 ## 🖼️ Galeria e lightbox
 
 - A galeria é montada com `imagens: []`.
-- O lightbox é controlado por `render-produtos.js` (navegação anterior/próxima).
-- As miniaturas usam `object-fit: cover` e `aspect-ratio` para manter grade bonita.
+- Cards e galerias carregam miniaturas WebP de `images/thumb/` com lazy loading e
+  recorrem à imagem original caso a miniatura não exista.
+- `render-produtos.js` entrega os caminhos originais para `lightbox.js`, que
+  mantém navegação anterior/próxima e teclado.
+- O lightbox abre a imagem original em alta resolução, oferece lupa seguindo o
+  mouse no desktop e pinch-to-zoom no mobile.
+- As miniaturas usam `object-fit: cover` e `aspect-ratio` para manter a grade.
 
 ---
 
