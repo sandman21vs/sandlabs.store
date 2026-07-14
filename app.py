@@ -35,6 +35,25 @@ CSRF_EXEMPT = set()
 CSRF_EXEMPT.add("/checkout/webhook/coinos")
 
 
+@app.context_processor
+def inject_store_config():
+    """Expose contacts + colour palette to templates from the backend.
+
+    Replaces the removed static/js/config.js so contacts come from the DB
+    config table (with env fallbacks) instead of a client-editable file.
+    """
+    from models.model_config import get_config
+
+    whatsapp = get_config("whatsapp") or config.STORE_WHATSAPP_DEFAULT
+    telegram = get_config("telegram") or config.STORE_TELEGRAM_DEFAULT
+    return {
+        "store_config": {
+            "contacts": {"whatsapp": whatsapp, "telegram": telegram},
+            "colors": config.PRODUCT_COLORS,
+        }
+    }
+
+
 @app.before_request
 def generate_csrf_token():
     if "csrf_token" not in session:
@@ -85,7 +104,6 @@ _HTML_ROUTES = {
     "sobre.html": "public.sobre",
     "termos.html": "public.termos",
     "suporte.html": "public.suporte",
-    "config.html": "public.config_page",
     "login.html": "auth.login",
     "register.html": "auth.register",
 }

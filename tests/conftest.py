@@ -111,6 +111,20 @@ def app(tmp_db):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         return response
 
+    @test_app.context_processor
+    def inject_store_config():
+        import config as cfg
+        from models.model_config import get_config
+
+        whatsapp = get_config("whatsapp") or cfg.STORE_WHATSAPP_DEFAULT
+        telegram = get_config("telegram") or cfg.STORE_TELEGRAM_DEFAULT
+        return {
+            "store_config": {
+                "contacts": {"whatsapp": whatsapp, "telegram": telegram},
+                "colors": cfg.PRODUCT_COLORS,
+            }
+        }
+
     test_app.register_blueprint(rp.public)
     test_app.register_blueprint(rc.cart)
     test_app.register_blueprint(rco.checkout)
@@ -133,7 +147,6 @@ def app(tmp_db):
         "sobre.html": "public.sobre",
         "termos.html": "public.termos",
         "suporte.html": "public.suporte",
-        "config.html": "public.config_page",
         "login.html": "auth.login",
         "register.html": "auth.register",
     }

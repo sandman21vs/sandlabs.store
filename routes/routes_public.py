@@ -56,10 +56,6 @@ def suporte():
     return render_template("suporte.html", active="suporte")
 
 
-@public.route("/config")
-def config_page():
-    return render_template("config.html", active="config")
-
 def register_error_handlers(app):
     @app.errorhandler(404)
     def not_found(e):

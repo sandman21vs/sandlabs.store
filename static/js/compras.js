@@ -1,5 +1,5 @@
 // /js/compras.js  (SUBSTITUIR TODO O ARQUIVO)
-// Finalização de compra automática baseada apenas no /js/produtos-data.js
+// Finalização de compra (WhatsApp/Telegram) baseada em window.PRODUTOS (injetado pelo backend)
 
 (function(){
   const contacts = window.CONTACTS

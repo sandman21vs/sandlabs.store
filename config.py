@@ -17,3 +17,18 @@ COINOS_API_KEY = os.environ.get("COINOS_API_KEY", "")
 COINOS_WEBHOOK_SECRET = os.environ.get("COINOS_WEBHOOK_SECRET", "")
 COINOS_ENABLED = os.environ.get("COINOS_ENABLED", "0") == "1"
 PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "").strip().rstrip("/")
+
+# Contact fallbacks used when the admin has not set them in the config table.
+STORE_WHATSAPP_DEFAULT = os.environ.get("STORE_WHATSAPP", "41779786651")
+STORE_TELEGRAM_DEFAULT = os.environ.get("STORE_TELEGRAM", "SandLabs_21")
+
+# Product colour palette used by the purchase-modal colour selector. Server-side
+# source of truth (previously hardcoded in the removed static/js/config.js).
+PRODUCT_COLORS = [
+    {"id": "amarelo", "nome": "Amarelo"},
+    {"id": "azul", "nome": "Azul"},
+    {"id": "laranja", "nome": "Laranja"},
+    {"id": "preto", "nome": "Preto"},
+    {"id": "translucido", "nome": "Translúcido"},
+    {"id": "vermelho", "nome": "Vermelho"},
+]

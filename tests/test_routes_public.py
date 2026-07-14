@@ -33,10 +33,6 @@ class TestPublicPages:
         assert resp.status_code == 200
         assert b"Suporte" in resp.data
 
-    def test_config_page(self, client):
-        resp = client.get("/config")
-        assert resp.status_code == 200
-
     def test_carrinho_page(self, client):
         resp = client.get("/carrinho")
         assert resp.status_code == 200
@@ -89,9 +85,9 @@ class TestLegacyHtmlRedirects:
         resp = client.get("/suporte.html")
         assert resp.status_code == 301
 
-    def test_config_html_redirects(self, client):
+    def test_removed_config_html_returns_404(self, client):
         resp = client.get("/config.html")
-        assert resp.status_code == 301
+        assert resp.status_code == 404
 
     def test_query_string_preserved(self, client):
         resp = client.get("/produtos.html?cupom=TEST123")
@@ -112,7 +108,7 @@ class TestStaticFiles:
         assert b"--bg:" in resp.data or b"root" in resp.data
 
     def test_js_served(self, client):
-        resp = client.get("/js/config.js")
+        resp = client.get("/js/config-store.js")
         assert resp.status_code == 200
 
     def test_image_served(self, client):
