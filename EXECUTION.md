@@ -31,7 +31,7 @@ This checklist **is** the "tik de ok" the user asked for.
 - [x] **Fase E** — Imagens: thumbnail + lupa/zoom — `c9507a6`
 - [x] **Fase F-pdf** — Geração do PDF do pedido — `c571c8b`
 - [x] **Fase F-core** — Checkout como convidado + `access_token` — `ae4c2cf`
-- [ ] **Fase G** — Multi-moeda: USD + switcher — _brief: `docs/briefs/brief-G-moeda.md`_
+- [x] **Fase G** — Multi-moeda: USD + switcher — `e2f9604`
 - [ ] **Etapa 3** — Reconciliação, merge, atualizar `ARCHITECTURE.md`
 
 ---
@@ -41,10 +41,10 @@ This checklist **is** the "tik de ok" the user asked for.
 - **Branch:** `feature/integrations-foundation` (from `main` @ `6cc7fec`). All new
   work branches/worktrees from **this** branch (it already contains A+B), not
   from `main`.
-- **Tests:** `248 passing`. Baseline was 207; A +9, B +2, C +7, D +8, E +4,
-  F-pdf +5, F-core +6.
-- **Fases 0/A/B/C/D/E/F-pdf/F-core are already committed on this branch** (not in separate
-  worktrees). The remaining implementation covers G. C is done — the
+- **Tests:** `254 passing`. Baseline was 207; A +9, B +2, C +7, D +8, E +4,
+  F-pdf +5, F-core +6, G +6.
+- **Fases 0/A/B/C/D/E/F-pdf/F-core/G are already committed on this branch** (not in separate
+  worktrees). Only the final reconciliation remains. C is done — the
   "reconciliation order" that lists C refers only to the case where it had been
   a separate worktree; here it needs no merge.
 - **Do not push or open a PR** unless the user explicitly asks (AGENTS.md).
