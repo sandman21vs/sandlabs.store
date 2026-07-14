@@ -54,7 +54,8 @@
         "shipping_required": "Calcule o frete antes de prosseguir.",
         "invoice_failed": "Não foi possível gerar a fatura. Tente novamente."
       },
-      "payment_method_heading": "Forma de pagamento"
+      "payment_method_heading": "Forma de pagamento",
+      "shipping_option_heading": "Opção de frete"
     },
     "payment": {
       "page_title": "Pagamento",

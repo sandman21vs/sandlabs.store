@@ -130,7 +130,17 @@ def _normalize_shipping_info(shipping_info):
     }
 
 
-def create_order(user_id, session_id, items, shipping_info, total_sats, shipping_sats, coupon_code=None):
+def create_order(
+    user_id,
+    session_id,
+    items,
+    shipping_info,
+    total_sats,
+    shipping_sats,
+    coupon_code=None,
+    shipping_carrier=None,
+    shipping_service=None,
+):
     """Cria pedido + order_items a partir dos itens do carrinho."""
     if not items:
         raise ValueError("Order requires at least one item")
@@ -154,8 +164,10 @@ def create_order(user_id, session_id, items, shipping_info, total_sats, shipping
                     shipping_city_enc,
                     shipping_postal_code_enc,
                     shipping_country_enc,
+                    shipping_carrier,
+                    shipping_service,
                     coupon_code
-                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     user_id,
@@ -169,6 +181,8 @@ def create_order(user_id, session_id, items, shipping_info, total_sats, shipping
                     encrypt_value(shipping["city"]),
                     encrypt_value(shipping["postal_code"]),
                     encrypt_value(shipping["country"] or "CH"),
+                    shipping_carrier,
+                    shipping_service,
                     coupon_code,
                 ),
             )

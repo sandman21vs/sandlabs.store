@@ -54,7 +54,8 @@
         "shipping_required": "Calcula el envío antes de continuar.",
         "invoice_failed": "No se pudo generar la factura. Inténtalo de nuevo."
       },
-      "payment_method_heading": "Forma de pago"
+      "payment_method_heading": "Forma de pago",
+      "shipping_option_heading": "Opción de envío"
     },
     "payment": {
       "page_title": "Pago",

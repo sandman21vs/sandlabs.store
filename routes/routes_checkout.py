@@ -25,7 +25,7 @@ from services.service_coinos import (
     get_enabled_methods,
 )
 from services.service_qr import get_invoice_qr_response
-from services.service_shipping import calculate_shipping_chf, get_country_zone
+from services.service_shipping import get_country_zone, get_shipping_options
 from services.service_btc_price import chf_to_sats
 
 checkout = Blueprint("checkout", __name__)
@@ -92,6 +92,36 @@ def _normalize_shipping_form(form_data):
     }
 
 
+def _shipping_options_with_sats(weight_grams, country):
+    """Shipping options for a destination, each with price_chf and price_sats."""
+    options = get_shipping_options(weight_grams, country)
+    for opt in options:
+        opt["price_sats"] = chf_to_sats(opt["price_chf"])
+    return options
+
+
+def _resolve_shipping(weight_grams, country, carrier=None, service=None):
+    """Pick the shipping option (server-authoritative price).
+
+    Returns ``(chosen_option, options)``. Honors a requested carrier/service if
+    it matches an available option; otherwise uses the cheapest.
+    """
+    options = _shipping_options_with_sats(weight_grams, country)
+    chosen = None
+    if carrier:
+        chosen = next(
+            (
+                opt
+                for opt in options
+                if opt["carrier"] == carrier and (not service or opt.get("service") == service)
+            ),
+            None,
+        )
+    if chosen is None:
+        chosen = options[0]  # options are sorted cheapest-first
+    return chosen, options
+
+
 def _render_checkout(error=None, form_data=None, status_code=200):
     session_id, user_id, items, total_sats, total_weight_grams = _get_checkout_items()
     if not items:
@@ -109,8 +139,9 @@ def _render_checkout(error=None, form_data=None, status_code=200):
         }
     )
     preview_country = shipping_form["country"] or "CH"
-    shipping_chf = calculate_shipping_chf(total_weight_grams, preview_country)
-    shipping_sats = chf_to_sats(shipping_chf)
+    chosen_shipping, shipping_options = _resolve_shipping(total_weight_grams, preview_country)
+    shipping_chf = chosen_shipping["price_chf"]
+    shipping_sats = chosen_shipping["price_sats"]
 
     return (
         render_template(
@@ -122,6 +153,7 @@ def _render_checkout(error=None, form_data=None, status_code=200):
             shipping_form=shipping_form,
             shipping_chf=shipping_chf,
             shipping_sats=shipping_sats,
+            shipping_options=shipping_options,
             grand_total_sats=total_sats + shipping_sats,
             shipping_zone=get_country_zone(preview_country),
             has_unpriced_items=_has_unpriced_items(items),
@@ -174,23 +206,25 @@ def shipping_calculate():
     if weight_grams < 0:
         return jsonify({"ok": False, "error": translate("commerce.api.errors.weight_non_negative")}), 400
 
-    shipping_chf = calculate_shipping_chf(weight_grams, country)
-    shipping_sats = chf_to_sats(shipping_chf)
+    options = _shipping_options_with_sats(weight_grams, country)
+    default = options[0]  # cheapest (sorted); back-compat single value
     zone = get_country_zone(country)
     logger.info(
-        "shipping_calculated country=%s weight_grams=%s zone=%s shipping_chf=%.2f shipping_sats=%s",
+        "shipping_calculated country=%s weight_grams=%s zone=%s shipping_chf=%.2f shipping_sats=%s options=%s",
         country.upper().strip(),
         weight_grams,
         zone,
-        shipping_chf,
-        shipping_sats,
+        default["price_chf"],
+        default["price_sats"],
+        len(options),
     )
 
     return jsonify({
         "ok": True,
-        "shipping_chf": shipping_chf,
-        "shipping_sats": shipping_sats,
+        "shipping_chf": default["price_chf"],
+        "shipping_sats": default["price_sats"],
         "zone": zone,
+        "options": options,
     })
 
 
@@ -225,8 +259,12 @@ def create_order():
             status_code=400,
         )
 
-    shipping_chf = calculate_shipping_chf(total_weight_grams, shipping_info["country"])
-    shipping_sats = chf_to_sats(shipping_chf)
+    carrier = (request.form.get("shipping_carrier") or "").strip() or None
+    service = (request.form.get("shipping_service") or "").strip() or None
+    chosen_shipping, _ = _resolve_shipping(
+        total_weight_grams, shipping_info["country"], carrier, service
+    )
+    shipping_sats = chosen_shipping["price_sats"]
     order_id = create_order_record(
         user_id=user_id,
         session_id=session_id,
@@ -234,6 +272,8 @@ def create_order():
         shipping_info=shipping_info,
         total_sats=total_sats,
         shipping_sats=shipping_sats,
+        shipping_carrier=chosen_shipping.get("carrier"),
+        shipping_service=chosen_shipping.get("service"),
     )
 
     method = (request.form.get("payment_method") or "lightning").strip().lower()

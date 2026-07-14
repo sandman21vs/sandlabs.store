@@ -455,6 +455,19 @@ def settings():
         set_config("coinos_liquid", "1" if request.form.get("coinos_liquid") else "0")
         set_config("coinos_onchain", "1" if request.form.get("coinos_onchain") else "0")
 
+        # Live shipping providers (DHL / Swiss Post). API keys are only
+        # overwritten when a new value is supplied; URLs and flags always sync.
+        dhl_key = request.form.get("dhl_api_key", "").strip()
+        if dhl_key:
+            set_config("dhl_api_key", dhl_key)
+        set_config("dhl_api_url", request.form.get("dhl_api_url", "").strip())
+        set_config("dhl_enabled", "1" if request.form.get("dhl_enabled") else "0")
+        post_key = request.form.get("post_api_key", "").strip()
+        if post_key:
+            set_config("post_api_key", post_key)
+        set_config("post_api_url", request.form.get("post_api_url", "").strip())
+        set_config("post_enabled", "1" if request.form.get("post_enabled") else "0")
+
         shipping_json = request.form.get("shipping_rates", "").strip()
         settings_saved = False
         try:

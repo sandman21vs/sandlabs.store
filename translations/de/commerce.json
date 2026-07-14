@@ -54,7 +54,8 @@
         "shipping_required": "Bitte berechne den Versand, bevor du fortfährst.",
         "invoice_failed": "Die Rechnung konnte nicht erstellt werden. Bitte erneut versuchen."
       },
-      "payment_method_heading": "Zahlungsart"
+      "payment_method_heading": "Zahlungsart",
+      "shipping_option_heading": "Versandoption"
     },
     "payment": {
       "page_title": "Zahlung",

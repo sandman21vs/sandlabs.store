@@ -1538,3 +1538,26 @@ No checkout, o comprador escolhe o método (`payment_method`); o pedido guarda
 (Lightning guarda `bolt11`). A confirmação é uniforme: polling
 `check_invoice(hash).received >= amount` (e webhook para Lightning). Toggles no
 admin em `/admin/settings`. Referência de implementação: `~/prometeu/coinos_client.py`.
+
+---
+
+## Frete híbrido (Fase D — DHL + Swiss Post com fallback)
+
+`services/service_shipping.py::get_shipping_options(weight_grams, country)` é o
+orquestrador: coleta cotações ao vivo dos providers habilitados
+(`service_shipping_dhl.py`, `service_shipping_post.py`) e, se nenhum responder,
+cai numa **única opção da tabela estática** (`calculate_shipping_chf`). Cada
+opção é `{carrier, service, price_chf, source}` (`source` ∈ `dhl`/`post`/`table`),
+ordenada por preço.
+
+Os providers só chamam a API real quando há credenciais no admin
+(`dhl_enabled`+`dhl_api_key`+`dhl_api_url`, idem `post_*`); em ausência/erro/
+timeout retornam `None` sem lançar exceção. **APIs de cotação real exigem contas
+comerciais** das transportadoras — configure em `/admin/settings`.
+
+No checkout, o preço é **autoritativo no servidor**: `routes_checkout._resolve_shipping`
+recalcula as opções e escolhe a transportadora pedida (ou a mais barata),
+gravando `shipping_carrier`/`shipping_service` no pedido. O endpoint
+`/api/shipping/calculate` devolve `options` (lista) além de `shipping_chf`/
+`shipping_sats`/`zone` (compat). O `checkout.js` renderiza o seletor quando há
+mais de uma opção.

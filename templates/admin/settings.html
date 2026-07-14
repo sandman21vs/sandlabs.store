@@ -63,9 +63,39 @@
     </div>
   </div>
 
+  {# Live shipping providers #}
+  <div class="admin-card" style="margin-top:var(--space-3)">
+    <h3 style="margin-bottom:.5rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Cotação ao vivo (DHL / Swiss Post)</h3>
+    <p class="form-hint" style="margin-bottom:.75rem">Opcional. Exige contas comerciais das transportadoras. Sem credenciais, o frete usa a tabela abaixo automaticamente.</p>
+    <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
+      <input type="checkbox" name="dhl_enabled" id="dhl_enabled" class="form-input" {{ 'checked' if cfg.dhl_enabled == '1' }}>
+      <label for="dhl_enabled" style="margin-bottom:0">DHL habilitado</label>
+    </div>
+    <div class="form-group">
+      <label>DHL API key</label>
+      <input type="password" name="dhl_api_key" class="form-input" placeholder="{{ '••••••••' if cfg.dhl_api_key else '' }}">
+    </div>
+    <div class="form-group">
+      <label>DHL API URL (opcional)</label>
+      <input type="text" name="dhl_api_url" class="form-input" value="{{ cfg.dhl_api_url }}" placeholder="https://api.dhl.com/rates">
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
+      <input type="checkbox" name="post_enabled" id="post_enabled" class="form-input" {{ 'checked' if cfg.post_enabled == '1' }}>
+      <label for="post_enabled" style="margin-bottom:0">Swiss Post habilitado</label>
+    </div>
+    <div class="form-group">
+      <label>Swiss Post API key</label>
+      <input type="password" name="post_api_key" class="form-input" placeholder="{{ '••••••••' if cfg.post_api_key else '' }}">
+    </div>
+    <div class="form-group">
+      <label>Swiss Post API URL (opcional)</label>
+      <input type="text" name="post_api_url" class="form-input" value="{{ cfg.post_api_url }}" placeholder="https://api.post.ch/rates">
+    </div>
+  </div>
+
   {# Shipping rates #}
   <div class="admin-card" style="margin-top:var(--space-3)">
-    <h3 style="margin-bottom:.5rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Tabela de frete Post.ch (JSON)</h3>
+    <h3 style="margin-bottom:.5rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Tabela de frete Post.ch (JSON) — fallback</h3>
     <p class="form-hint" style="margin-bottom:.75rem">Chaves são peso máximo em kg, valores em CHF. Zonas: CH (Suíça), EU (Europa/EEA/UK), WORLD (resto).</p>
     <textarea name="shipping_rates" class="form-input" style="min-height:200px;font-family:monospace;font-size:.85rem">{{ cfg.shipping_rates }}</textarea>
   </div>

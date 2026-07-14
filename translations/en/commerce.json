@@ -54,7 +54,8 @@
         "shipping_required": "Please calculate shipping before proceeding.",
         "invoice_failed": "Could not generate the invoice. Please try again."
       },
-      "payment_method_heading": "Payment method"
+      "payment_method_heading": "Payment method",
+      "shipping_option_heading": "Shipping option"
     },
     "payment": {
       "page_title": "Payment",

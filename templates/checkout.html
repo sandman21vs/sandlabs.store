@@ -117,6 +117,24 @@
         >
       </div>
 
+      <fieldset class="form-group checkout-shipping-options" id="checkout-shipping-options"
+                {% if not shipping_options or shipping_options|length <= 1 %}hidden{% endif %}>
+        <legend class="order-section-title">{{ t('commerce.checkout.shipping_option_heading') }}</legend>
+        {% for opt in shipping_options %}
+        <label class="shipping-option">
+          <input type="radio" name="shipping_choice"
+                 data-carrier="{{ opt.carrier }}" data-service="{{ opt.service }}"
+                 data-sats="{{ opt.price_sats }}" data-chf="{{ '%.2f'|format(opt.price_chf) }}"
+                 {% if loop.first %}checked{% endif %}>
+          <span>{{ opt.carrier|upper }} · {{ opt.service }} — {{ opt.price_sats }} sats ({{ '%.2f'|format(opt.price_chf) }} CHF)</span>
+        </label>
+        {% endfor %}
+      </fieldset>
+      <input type="hidden" name="shipping_carrier" id="shipping_carrier"
+             value="{{ shipping_options[0].carrier if shipping_options else '' }}">
+      <input type="hidden" name="shipping_service" id="shipping_service"
+             value="{{ shipping_options[0].service if shipping_options else '' }}">
+
       {% if payment_methods and payment_methods|length > 1 %}
       <fieldset class="form-group checkout-payment-methods">
         <legend class="order-section-title">{{ t('commerce.checkout.payment_method_heading') }}</legend>

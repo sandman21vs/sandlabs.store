@@ -27,7 +27,7 @@ This checklist **is** the "tik de ok" the user asked for.
 - [x] **Fase A** — Criptografia de PII com seed BIP39 — `13092ae`
 - [x] **Fase B** — Padronização de schema (`orders`) — `45cfb2e`
 - [x] **Fase C** — Pagamento onchain + Liquid (Coinos) — `ca788ae`
-- [ ] **Fase D** — Frete híbrido DHL + Swiss Post — _brief: `docs/briefs/brief-D-frete.md`_
+- [x] **Fase D** — Frete híbrido DHL + Swiss Post — `PENDING_HASH`
 - [ ] **Fase E** — Imagens: thumbnail + lupa/zoom — _brief: `docs/briefs/brief-E-imagens.md`_
 - [ ] **Fase F-pdf** — Geração do PDF do pedido — _brief: `docs/briefs/brief-F-pdf.md`_
 - [ ] **Fase F-core** — Checkout como convidado + `access_token` — _owner: brain (auth/migration)_

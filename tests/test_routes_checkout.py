@@ -140,8 +140,7 @@ class TestCheckoutFlow:
     def test_checkout_renders_with_cart_items(self, client, test_user, seeded_product):
         _login_session(client, user_id=test_user)
         add_to_cart("test-session", seeded_product["id"], seeded_product["prices"][0]["id"], 2, {}, user_id=test_user)
-        with patch("routes.routes_checkout.calculate_shipping_chf", return_value=7.0), \
-             patch("routes.routes_checkout.chf_to_sats", return_value=8500):
+        with patch("routes.routes_checkout.chf_to_sats", return_value=8500):
             resp = client.get("/checkout")
         html = resp.data.decode()
         assert resp.status_code == 200
@@ -152,8 +151,7 @@ class TestCheckoutFlow:
         _login_session(client, user_id=test_user)
         add_to_cart("test-session", seeded_product["id"], seeded_product["prices"][0]["id"], 1, {}, user_id=test_user)
 
-        with patch("routes.routes_checkout.calculate_shipping_chf", return_value=7.0), \
-             patch("routes.routes_checkout.chf_to_sats", return_value=8500), \
+        with patch("routes.routes_checkout.chf_to_sats", return_value=8500), \
              patch("routes.routes_checkout.create_invoice", return_value={"hash": "hash123", "text": "lnbc1paid"}):
             resp = client.post(
                 "/checkout/create-order",
@@ -202,8 +200,7 @@ class TestCheckoutFlow:
         set_config("coinos_enabled", "1")
         set_config("coinos_onchain", "1")
 
-        with patch("routes.routes_checkout.calculate_shipping_chf", return_value=0.0), \
-             patch("routes.routes_checkout.chf_to_sats", return_value=0), \
+        with patch("routes.routes_checkout.chf_to_sats", return_value=0), \
              patch("routes.routes_checkout.create_invoice", return_value={"hash": "onchainhash", "text": "bc1qaddress"}) as mock_inv:
             resp = client.post(
                 "/checkout/create-order",
@@ -257,8 +254,7 @@ class TestCheckoutFlow:
         _login_session(client, user_id=test_user)
         add_to_cart("test-session", "zero-prod", price["id"], 1, {}, user_id=test_user)
 
-        with patch("routes.routes_checkout.calculate_shipping_chf", return_value=7.0), \
-             patch("routes.routes_checkout.chf_to_sats", return_value=8500):
+        with patch("routes.routes_checkout.chf_to_sats", return_value=8500):
             resp = client.post(
                 "/checkout/create-order",
                 data={
@@ -300,7 +296,6 @@ class TestCheckoutFlow:
         add_to_cart("test-session", "chf-prod", price["id"], 2, {}, user_id=test_user)
 
         with patch("services.service_pricing.fiat_to_sats", return_value=2500), \
-             patch("routes.routes_checkout.calculate_shipping_chf", return_value=7.0), \
              patch("routes.routes_checkout.chf_to_sats", return_value=8500), \
              patch("routes.routes_checkout.create_invoice", return_value={"hash": "hashchf", "text": "lnbc1chf"}):
             resp = client.post(
