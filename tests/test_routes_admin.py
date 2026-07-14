@@ -321,9 +321,8 @@ class TestAdminOrders:
         cursor = db_conn.execute(
             """
             INSERT INTO orders (
-                user_id, session_id, status, total_sats, shipping_sats,
-                shipping_name, shipping_address, shipping_postal_code, shipping_country
-            ) VALUES (1, 'admin-session', 'paid', 10000, 0, 'Buyer', 'Street 1', '8000', 'CH')
+                user_id, session_id, status, total_sats, shipping_sats
+            ) VALUES (1, 'admin-session', 'paid', 10000, 0)
             """
         )
         order_id = cursor.lastrowid

@@ -1,4 +1,5 @@
 import os
+import sqlite3
 
 import config
 import db
@@ -89,24 +90,33 @@ CREATE TABLE IF NOT EXISTS cart_items (
 );
 
 CREATE TABLE IF NOT EXISTS orders (
-    id                   INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id              INTEGER,
-    session_id           TEXT,
-    status               TEXT DEFAULT 'pending',
-    total_sats           INTEGER NOT NULL,
-    shipping_sats        INTEGER DEFAULT 0,
-    invoice_hash         TEXT,
-    bolt11               TEXT,
-    payment_confirmed_at TEXT,
-    shipping_name        TEXT,
-    shipping_address     TEXT,
-    shipping_postal_code TEXT,
-    shipping_country     TEXT DEFAULT 'CH',
-    shipping_tracking    TEXT,
-    coupon_code          TEXT,
-    notes                TEXT DEFAULT '',
-    created_at           TEXT DEFAULT (datetime('now')),
-    updated_at           TEXT DEFAULT (datetime('now')),
+    id                         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id                    INTEGER,
+    session_id                 TEXT,
+    status                     TEXT DEFAULT 'pending',
+    total_sats                 INTEGER NOT NULL,
+    shipping_sats              INTEGER DEFAULT 0,
+    invoice_hash               TEXT,
+    bolt11                     TEXT,
+    payment_confirmed_at       TEXT,
+    shipping_name_enc          TEXT,
+    shipping_street_enc        TEXT,
+    shipping_house_number_enc  TEXT,
+    shipping_address_extra_enc TEXT,
+    shipping_city_enc          TEXT,
+    shipping_postal_code_enc   TEXT,
+    shipping_country_enc       TEXT,
+    shipping_tracking          TEXT,
+    shipping_carrier           TEXT,
+    shipping_service           TEXT,
+    payment_method             TEXT,
+    invoice_type               TEXT,
+    btc_address                TEXT,
+    access_token               TEXT,
+    coupon_code                TEXT,
+    notes                      TEXT DEFAULT '',
+    created_at                 TEXT DEFAULT (datetime('now')),
+    updated_at                 TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -148,7 +158,40 @@ def _ensure_column(conn, table_name, column_name, column_sql):
         conn.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_sql}")
 
 
+_LEGACY_SHIPPING_COLUMNS = (
+    "shipping_name",
+    "shipping_address",
+    "shipping_postal_code",
+    "shipping_country",
+)
+
+
+def _table_columns(conn, table_name):
+    return {row["name"] for row in conn.execute(f"PRAGMA table_info({table_name})").fetchall()}
+
+
+def _drop_legacy_shipping_columns(conn):
+    """Drop the now-unused plaintext shipping columns from ``orders``.
+
+    Runs after ``_migrate_legacy_shipping_data`` has copied any old plaintext
+    values into the encrypted columns. Idempotent and defensive: skips columns
+    that are already gone and tolerates SQLite builds without DROP COLUMN.
+    """
+    existing = _table_columns(conn, "orders")
+    for column in _LEGACY_SHIPPING_COLUMNS:
+        if column not in existing:
+            continue
+        try:
+            with conn:
+                conn.execute(f"ALTER TABLE orders DROP COLUMN {column}")
+        except sqlite3.OperationalError:
+            # Older SQLite without DROP COLUMN support: leave the (nulled) column.
+            break
+
+
 def _migrate_legacy_shipping_data(conn):
+    if "shipping_name" not in _table_columns(conn, "orders"):
+        return  # legacy plaintext columns already removed
     rows = conn.execute(
         """
         SELECT
@@ -303,7 +346,16 @@ def init_db():
         _ensure_column(conn, "orders", "shipping_city_enc", "shipping_city_enc TEXT")
         _ensure_column(conn, "orders", "shipping_postal_code_enc", "shipping_postal_code_enc TEXT")
         _ensure_column(conn, "orders", "shipping_country_enc", "shipping_country_enc TEXT")
+        # New standardized columns used by payment (Fase C), shipping (Fase D)
+        # and guest checkout (Fase F).
+        _ensure_column(conn, "orders", "shipping_carrier", "shipping_carrier TEXT")
+        _ensure_column(conn, "orders", "shipping_service", "shipping_service TEXT")
+        _ensure_column(conn, "orders", "payment_method", "payment_method TEXT")
+        _ensure_column(conn, "orders", "invoice_type", "invoice_type TEXT")
+        _ensure_column(conn, "orders", "btc_address", "btc_address TEXT")
+        _ensure_column(conn, "orders", "access_token", "access_token TEXT")
         _migrate_legacy_shipping_data(conn)
+        _drop_legacy_shipping_columns(conn)
         conn.executemany(
             """
             INSERT INTO colors (id, name)

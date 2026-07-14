@@ -22,11 +22,13 @@ SELECT
     o.shipping_city_enc,
     o.shipping_postal_code_enc,
     o.shipping_country_enc,
-    o.shipping_name,
-    o.shipping_address,
-    o.shipping_postal_code,
-    o.shipping_country,
     o.shipping_tracking,
+    o.shipping_carrier,
+    o.shipping_service,
+    o.payment_method,
+    o.invoice_type,
+    o.btc_address,
+    o.access_token,
     o.coupon_code,
     o.notes,
     o.created_at,
@@ -49,16 +51,15 @@ def _normalize_order(order):
     normalized["total_sats"] = int(normalized.get("total_sats") or 0)
     normalized["shipping_sats"] = int(normalized.get("shipping_sats") or 0)
     normalized["grand_total_sats"] = normalized["total_sats"] + normalized["shipping_sats"]
-    normalized["shipping_name"] = decrypt_value(normalized.get("shipping_name_enc")) or (normalized.get("shipping_name") or "").strip()
-    normalized["shipping_street"] = decrypt_value(normalized.get("shipping_street_enc")) or (normalized.get("shipping_address") or "").strip()
+    normalized["shipping_name"] = decrypt_value(normalized.get("shipping_name_enc"))
+    normalized["shipping_street"] = decrypt_value(normalized.get("shipping_street_enc"))
     normalized["shipping_house_number"] = decrypt_value(normalized.get("shipping_house_number_enc"))
     normalized["shipping_address_extra"] = decrypt_value(normalized.get("shipping_address_extra_enc"))
     normalized["shipping_city"] = decrypt_value(normalized.get("shipping_city_enc"))
-    normalized["shipping_postal_code"] = decrypt_value(normalized.get("shipping_postal_code_enc")) or (normalized.get("shipping_postal_code") or "").strip()
+    normalized["shipping_postal_code"] = decrypt_value(normalized.get("shipping_postal_code_enc"))
     normalized["shipping_country"] = (
-        decrypt_value(normalized.get("shipping_country_enc"))
-        or (normalized.get("shipping_country") or "CH").strip().upper()
-    )
+        decrypt_value(normalized.get("shipping_country_enc")) or "CH"
+    ).strip().upper()
     street_line = " ".join(
         part for part in (
             normalized["shipping_street"],
@@ -153,12 +154,8 @@ def create_order(user_id, session_id, items, shipping_info, total_sats, shipping
                     shipping_city_enc,
                     shipping_postal_code_enc,
                     shipping_country_enc,
-                    shipping_name,
-                    shipping_address,
-                    shipping_postal_code,
-                    shipping_country,
                     coupon_code
-                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     user_id,
@@ -172,10 +169,6 @@ def create_order(user_id, session_id, items, shipping_info, total_sats, shipping
                     encrypt_value(shipping["city"]),
                     encrypt_value(shipping["postal_code"]),
                     encrypt_value(shipping["country"] or "CH"),
-                    None,
-                    None,
-                    None,
-                    None,
                     coupon_code,
                 ),
             )

@@ -32,8 +32,8 @@ def test_order_detail_renders_for_owner(client, csrf_token):
 
         cursor = conn.execute(
             """
-            INSERT INTO orders (user_id, session_id, status, total_sats, shipping_sats, shipping_country, created_at, updated_at)
-            VALUES (?, ?, 'pending', ?, 0, 'CH', datetime('now'), datetime('now'))
+            INSERT INTO orders (user_id, session_id, status, total_sats, shipping_sats, created_at, updated_at)
+            VALUES (?, ?, 'pending', ?, 0, datetime('now'), datetime('now'))
             """,
             (user_id, "test-session", int(price["amount_sats"])),
         )

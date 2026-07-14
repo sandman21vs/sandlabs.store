@@ -23,9 +23,8 @@ def _insert_order(user_id, price_id, amount_sats, invoice_hash="invoice123", bol
             """
             INSERT INTO orders (
                 user_id, session_id, status, total_sats, shipping_sats,
-                invoice_hash, bolt11, shipping_name, shipping_address,
-                shipping_postal_code, shipping_country, created_at, updated_at
-            ) VALUES (?, 'test-session', 'pending', ?, 0, ?, ?, 'Buyer', 'Street 1', '8000', 'CH', datetime('now'), datetime('now'))
+                invoice_hash, bolt11, created_at, updated_at
+            ) VALUES (?, 'test-session', 'pending', ?, 0, ?, ?, datetime('now'), datetime('now'))
             """,
             (user_id, amount_sats, invoice_hash, bolt11),
         )
@@ -185,10 +184,6 @@ class TestCheckoutFlow:
         assert order["invoice_hash"] == "hash123"
         assert order["bolt11"] == "lnbc1paid"
         assert int(order["shipping_sats"]) == 8500
-        assert order["shipping_name"] is None
-        assert order["shipping_address"] is None
-        assert order["shipping_postal_code"] is None
-        assert order["shipping_country"] is None
         assert order["shipping_name_enc"]
         assert order["shipping_street_enc"]
         assert order["shipping_house_number_enc"]
