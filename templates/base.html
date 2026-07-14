@@ -39,6 +39,7 @@
       </form>
       {% else %}
       <a class="nav-link{{ ' active' if active in ['login', 'register'] }}" href="{{ url_for('auth.login') }}">{{ t('common.nav.login') }}</a>
+      <a class="nav-link{{ ' active' if active == 'order_lookup' }}" href="{{ url_for('checkout.order_lookup') }}">{{ t('common.nav.track_order') }}</a>
       {% endif %}
       <a class="nav-link{{ ' active' if active == 'termos' }}" href="{{ url_for('public.termos') }}">{{ t('common.nav.terms') }}</a>
       <a class="nav-link{{ ' active' if active == 'suporte' }}" href="{{ url_for('public.suporte') }}">{{ t('common.nav.support') }}</a>

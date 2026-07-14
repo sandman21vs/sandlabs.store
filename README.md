@@ -296,6 +296,21 @@ vim pelo (MEUCUPOM10)
 
 ---
 
+## 🧾 Checkout convidado e comprovante
+
+- O checkout aceita compras com ou sem conta; os dados de entrega continuam
+  criptografados em repouso.
+- Pedidos convidados recebem um token aleatório exibido após a criação do
+  pagamento e criptografado no banco. Guarde o número do pedido e esse token.
+- A consulta pública fica em `/orders/lookup`; o token é enviado por formulário
+  POST com CSRF e não aparece na URL.
+- O detalhe autorizado permite baixar um comprovante PDF com itens, totais,
+  entrega, pagamento, contatos e QR para a página de consulta.
+- Configure `PUBLIC_BASE_URL=https://sua-loja.example` no `.env` para que o QR
+  use a origem canônica do deploy; sem ela, o PDF usa somente um caminho relativo.
+
+---
+
 ## 🧾 Termos, Sobre e Suporte
 
 - **Termos:** edite `termos.html` (pagamentos, privacidade, prazos).

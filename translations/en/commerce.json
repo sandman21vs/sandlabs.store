@@ -29,6 +29,7 @@
       "heading": "Complete Order",
       "subtitle": "Fill in your address to calculate shipping.",
       "shipping_heading": "Shipping Address",
+      "guest_notice": "You can check out without an account. Save the access token shown after payment is generated.",
       "pay_button": "Generate payment",
       "summary_heading": "Order Summary",
       "quantity_short": "Qty.",
@@ -68,6 +69,8 @@
       "bolt11_heading": "Lightning Invoice (BOLT11)",
       "bolt11_hint": "Copy the invoice below or scan the QR code with your wallet.",
       "view_order": "View order",
+      "access_token_label": "Order access token",
+      "access_token_hint": "Store this token securely. It lets you retrieve the order without an account.",
       "address_heading": "Payment address",
       "address_hint": "Send the exact amount to the address below.",
       "method": {

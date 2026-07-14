@@ -1,3 +1,4 @@
+import hmac
 import json
 
 import db
@@ -51,6 +52,7 @@ def _normalize_order(order):
     normalized["total_sats"] = int(normalized.get("total_sats") or 0)
     normalized["shipping_sats"] = int(normalized.get("shipping_sats") or 0)
     normalized["grand_total_sats"] = normalized["total_sats"] + normalized["shipping_sats"]
+    normalized["access_token"] = decrypt_value(normalized.get("access_token"))
     normalized["shipping_name"] = decrypt_value(normalized.get("shipping_name_enc"))
     normalized["shipping_street"] = decrypt_value(normalized.get("shipping_street_enc"))
     normalized["shipping_house_number"] = decrypt_value(normalized.get("shipping_house_number_enc"))
@@ -140,6 +142,7 @@ def create_order(
     coupon_code=None,
     shipping_carrier=None,
     shipping_service=None,
+    access_token=None,
 ):
     """Cria pedido + order_items a partir dos itens do carrinho."""
     if not items:
@@ -166,8 +169,9 @@ def create_order(
                     shipping_country_enc,
                     shipping_carrier,
                     shipping_service,
+                    access_token,
                     coupon_code
-                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     user_id,
@@ -183,6 +187,7 @@ def create_order(
                     encrypt_value(shipping["country"] or "CH"),
                     shipping_carrier,
                     shipping_service,
+                    encrypt_value(access_token) or None,
                     coupon_code,
                 ),
             )
@@ -316,6 +321,8 @@ def delete_order(order_id):
 
 def get_order(order_id):
     """Retorna pedido com order_items."""
+    if not isinstance(order_id, int) or not 0 < order_id <= 2**63 - 1:
+        return None
     conn = db.get_db()
     try:
         row = conn.execute(
@@ -338,6 +345,37 @@ def get_order_by_invoice_hash(invoice_hash):
         row = conn.execute(
             f"{_ORDER_SELECT} WHERE o.invoice_hash = ? LIMIT 1",
             (invoice_hash,),
+        ).fetchone()
+        order = _normalize_order(row)
+        if order is None:
+            return None
+        order["items"] = _get_order_items(conn, order["id"])
+        return order
+    finally:
+        conn.close()
+
+
+def get_guest_order_by_access_token(order_id, access_token):
+    """Return a guest order only when its high-entropy access token matches."""
+    if (
+        not isinstance(order_id, int)
+        or not 0 < order_id <= 2**63 - 1
+        or not access_token
+    ):
+        return None
+    conn = db.get_db()
+    try:
+        token_row = conn.execute(
+            "SELECT access_token FROM orders "
+            "WHERE id = ? AND user_id IS NULL LIMIT 1",
+            (order_id,),
+        ).fetchone()
+        expected_token = decrypt_value(token_row["access_token"]) if token_row else ""
+        if not expected_token or not hmac.compare_digest(expected_token, access_token):
+            return None
+        row = conn.execute(
+            f"{_ORDER_SELECT} WHERE o.id = ? AND o.user_id IS NULL LIMIT 1",
+            (order_id,),
         ).fetchone()
         order = _normalize_order(row)
         if order is None:

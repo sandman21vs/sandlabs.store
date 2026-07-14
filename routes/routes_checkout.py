@@ -2,9 +2,24 @@
 
 import json
 import logging
+import secrets
 import uuid
+from io import BytesIO
+from urllib.parse import urlsplit
 
-from flask import Blueprint, abort, jsonify, redirect, render_template, request, session, url_for
+import config
+from flask import (
+    Blueprint,
+    abort,
+    jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    session,
+    url_for,
+)
 
 from i18n import translate
 from models.model_cart import clear_cart, get_cart, get_cart_total
@@ -13,11 +28,11 @@ from models.model_orders import (
     confirm_order_payment,
     create_order as create_order_record,
     delete_order,
+    get_guest_order_by_access_token,
     get_order,
     get_order_by_invoice_hash,
     set_order_payment,
 )
-from routes.auth_utils import login_required
 from services.service_coinos import (
     PAYMENT_METHODS,
     check_invoice,
@@ -25,11 +40,20 @@ from services.service_coinos import (
     get_enabled_methods,
 )
 from services.service_qr import get_invoice_qr_response
+from services.service_pdf import build_order_pdf
 from services.service_shipping import get_country_zone, get_shipping_options
 from services.service_btc_price import chf_to_sats
 
 checkout = Blueprint("checkout", __name__)
 logger = logging.getLogger(__name__)
+_GUEST_ORDER_ACCESS_KEY = "guest_order_ids"
+_MAX_REMEMBERED_GUEST_ORDERS = 20
+_PDF_LABEL_KEYS = (
+    "title", "receipt", "summary", "access_token", "account_order", "created",
+    "order_status", "payment", "payment_status", "paid", "pending", "products",
+    "shipping", "total", "fiat_total", "not_recorded", "items", "no_items",
+    "quantity", "shipping_address", "tracking", "contact",
+)
 
 
 def _get_cart_session_id():
@@ -143,35 +167,91 @@ def _render_checkout(error=None, form_data=None, status_code=200):
     shipping_chf = chosen_shipping["price_chf"]
     shipping_sats = chosen_shipping["price_sats"]
 
-    return (
-        render_template(
-            "checkout.html",
-            active="cart",
-            items=items,
-            total_sats=total_sats,
-            total_weight_grams=total_weight_grams,
-            shipping_form=shipping_form,
-            shipping_chf=shipping_chf,
-            shipping_sats=shipping_sats,
-            shipping_options=shipping_options,
-            grand_total_sats=total_sats + shipping_sats,
-            shipping_zone=get_country_zone(preview_country),
-            has_unpriced_items=_has_unpriced_items(items),
-            payment_methods=get_enabled_methods(),
-            error=error,
-        ),
-        status_code,
-    )
+    response = make_response(render_template(
+        "checkout.html",
+        active="cart",
+        items=items,
+        total_sats=total_sats,
+        total_weight_grams=total_weight_grams,
+        shipping_form=shipping_form,
+        shipping_chf=shipping_chf,
+        shipping_sats=shipping_sats,
+        shipping_options=shipping_options,
+        grand_total_sats=total_sats + shipping_sats,
+        shipping_zone=get_country_zone(preview_country),
+        has_unpriced_items=_has_unpriced_items(items),
+        payment_methods=get_enabled_methods(),
+        error=error,
+    ), status_code)
+    return _no_store(response)
 
 
-def _ensure_order_owner(order):
+def _remember_guest_order(order_id):
+    remembered = [
+        int(value)
+        for value in session.get(_GUEST_ORDER_ACCESS_KEY, [])
+        if str(value).isdigit()
+    ]
+    if order_id in remembered:
+        remembered.remove(order_id)
+    remembered.append(int(order_id))
+    session[_GUEST_ORDER_ACCESS_KEY] = remembered[-_MAX_REMEMBERED_GUEST_ORDERS:]
+
+
+def _has_remembered_guest_order(order_id):
+    return int(order_id) in {
+        int(value)
+        for value in session.get(_GUEST_ORDER_ACCESS_KEY, [])
+        if str(value).isdigit()
+    }
+
+
+def _ensure_order_access(order):
     if order is None:
         abort(404)
     if session.get("is_admin"):
         return order
-    if order.get("user_id") != session.get("user_id"):
-        abort(403)
-    return order
+
+    order_user_id = order.get("user_id")
+    if order_user_id is not None:
+        if order_user_id == session.get("user_id"):
+            return order
+        abort(404)
+
+    same_checkout_session = (
+        bool(order.get("session_id"))
+        and order.get("session_id") == session.get("cart_session")
+    )
+    if same_checkout_session or _has_remembered_guest_order(order["id"]):
+        return order
+    abort(404)
+
+
+def _order_detail_url(order):
+    if order.get("user_id") is not None:
+        return url_for("account.order_detail", order_id=order["id"])
+    return url_for("checkout.order_detail", order_id=order["id"])
+
+
+def _no_store(response):
+    response.headers["Cache-Control"] = "private, no-store"
+    response.headers["Pragma"] = "no-cache"
+    response.headers.pop("Expires", None)
+    return response
+
+
+def _pdf_labels():
+    return {key: translate(f"account.pdf.{key}") for key in _PDF_LABEL_KEYS}
+
+
+def _public_url(endpoint, **values):
+    path = url_for(endpoint, **values)
+    base_url = (config.PUBLIC_BASE_URL or "").rstrip("/")
+    parsed = urlsplit(base_url)
+    if parsed.scheme in {"http", "https"} and parsed.netloc:
+        origin = f"{parsed.scheme}://{parsed.netloc}"
+        return f"{origin}{path}"
+    return path
 
 
 @checkout.route("/api/shipping/calculate", methods=["POST"])
@@ -210,8 +290,7 @@ def shipping_calculate():
     default = options[0]  # cheapest (sorted); back-compat single value
     zone = get_country_zone(country)
     logger.info(
-        "shipping_calculated country=%s weight_grams=%s zone=%s shipping_chf=%.2f shipping_sats=%s options=%s",
-        country.upper().strip(),
+        "shipping_calculated weight_grams=%s zone=%s shipping_chf=%.2f shipping_sats=%s options=%s",
         weight_grams,
         zone,
         default["price_chf"],
@@ -229,20 +308,18 @@ def shipping_calculate():
 
 
 @checkout.route("/checkout")
-@login_required
 def checkout_page():
     return _render_checkout()
 
 
 @checkout.route("/checkout/create-order", methods=["POST"])
-@login_required
 def create_order():
     session_id, user_id, items, total_sats, total_weight_grams = _get_checkout_items()
     if not items:
-        logger.info("checkout_create_order_empty_cart user_id=%s session_id=%s", user_id, session_id)
+        logger.info("checkout_create_order_empty_cart user_id=%s", user_id)
         return redirect(url_for("cart.cart_page"))
     if _has_unpriced_items(items):
-        logger.warning("checkout_create_order_unpriced_items user_id=%s session_id=%s", user_id, session_id)
+        logger.warning("checkout_create_order_unpriced_items user_id=%s", user_id)
         return _render_checkout(
             error=translate("commerce.checkout.errors.unpriced_items"),
             form_data=request.form,
@@ -252,7 +329,7 @@ def create_order():
     shipping_info = _normalize_shipping_form(request.form)
     required_fields = ("name", "street", "house_number", "city", "postal_code")
     if any(not shipping_info[field] for field in required_fields):
-        logger.warning("checkout_create_order_invalid_shipping user_id=%s session_id=%s", user_id, session_id)
+        logger.warning("checkout_create_order_invalid_shipping user_id=%s", user_id)
         return _render_checkout(
             error=translate("commerce.checkout.errors.shipping_required"),
             form_data=request.form,
@@ -265,6 +342,7 @@ def create_order():
         total_weight_grams, shipping_info["country"], carrier, service
     )
     shipping_sats = chosen_shipping["price_sats"]
+    access_token = secrets.token_urlsafe(32) if user_id is None else None
     order_id = create_order_record(
         user_id=user_id,
         session_id=session_id,
@@ -274,6 +352,7 @@ def create_order():
         shipping_sats=shipping_sats,
         shipping_carrier=chosen_shipping.get("carrier"),
         shipping_service=chosen_shipping.get("service"),
+        access_token=access_token,
     )
 
     method = (request.form.get("payment_method") or "lightning").strip().lower()
@@ -309,46 +388,48 @@ def create_order():
         btc_address=btc_address,
     )
     clear_cart(session_id, user_id)
+    if user_id is None:
+        _remember_guest_order(order_id)
     logger.info(
-        "checkout_order_created order_id=%s user_id=%s total_sats=%s shipping_sats=%s country=%s",
+        "checkout_order_created order_id=%s user_id=%s total_sats=%s shipping_sats=%s",
         order_id,
         user_id,
         total_sats,
         shipping_sats,
-        shipping_info["country"],
     )
     return redirect(url_for("checkout.payment_page", order_id=order_id))
 
 
 @checkout.route("/checkout/payment/<int:order_id>")
-@login_required
 def payment_page(order_id):
-    order = _ensure_order_owner(get_order(order_id))
+    order = _ensure_order_access(get_order(order_id))
     payable = order.get("bolt11") or order.get("btc_address")
     if not payable:
-        return redirect(url_for("account.order_detail", order_id=order_id))
+        return redirect(_order_detail_url(order))
     logger.info("checkout_payment_page_viewed order_id=%s user_id=%s", order_id, session.get("user_id"))
 
-    return render_template(
+    return _no_store(make_response(render_template(
         "payment.html",
         active="orders",
         order=order,
         payable=payable,
-        qr_url=url_for("checkout.invoice_qr", bolt11=payable),
-    )
+        qr_url=url_for("checkout.order_payment_qr", order_id=order_id),
+        order_detail_url=_order_detail_url(order),
+    )))
 
 
 @checkout.route("/api/checkout/check-payment/<int:order_id>")
-@login_required
 def check_payment(order_id):
-    order = _ensure_order_owner(get_order(order_id))
+    order = _ensure_order_access(get_order(order_id))
     if order.get("payment_confirmed_at") or order.get("status") in {"paid", "processing", "shipped", "delivered"}:
         logger.info("checkout_payment_already_confirmed order_id=%s", order_id)
-        return jsonify({"paid": True})
+        return _no_store(jsonify({"paid": True}))
 
     invoice_hash = order.get("invoice_hash")
     if not invoice_hash:
-        return jsonify({"paid": False, "error": "invoice_missing"}), 400
+        response = jsonify({"paid": False, "error": "invoice_missing"})
+        response.status_code = 400
+        return _no_store(response)
 
     invoice = check_invoice(invoice_hash)
     try:
@@ -359,18 +440,87 @@ def check_payment(order_id):
     if received > 0:
         confirm_order_payment(order_id)
         logger.info("checkout_payment_confirmed order_id=%s received=%s", order_id, received)
-        return jsonify({"paid": True})
+        return _no_store(jsonify({"paid": True}))
     logger.info("checkout_payment_pending order_id=%s", order_id)
-    return jsonify({"paid": False})
+    return _no_store(jsonify({"paid": False}))
 
 
-@checkout.route("/checkout/invoice-qr")
-@login_required
-def invoice_qr():
-    response = get_invoice_qr_response(request.args.get("bolt11", ""))
+@checkout.route("/checkout/payment/<int:order_id>/qr")
+def order_payment_qr(order_id):
+    order = _ensure_order_access(get_order(order_id))
+    payable = order.get("bolt11") or order.get("btc_address")
+    response = get_invoice_qr_response(payable)
     if response is None:
         abort(400)
-    return response
+    return _no_store(response)
+
+
+@checkout.route("/orders/lookup", methods=["GET", "POST"])
+def order_lookup():
+    error = None
+    form_data = {}
+    if request.method == "POST":
+        form_data = {
+            "order_id": (request.form.get("order_id") or "").strip(),
+            "access_token": (request.form.get("access_token") or "").strip(),
+        }
+        try:
+            order_id = int(form_data["order_id"])
+        except (TypeError, ValueError):
+            order_id = 0
+        order = get_guest_order_by_access_token(order_id, form_data["access_token"])
+        if order is not None:
+            _remember_guest_order(order_id)
+            return _no_store(redirect(url_for("checkout.order_detail", order_id=order_id)))
+        error = translate("account.order_lookup.invalid")
+
+    response = make_response(render_template(
+        "order_lookup.html",
+        active="order_lookup",
+        error=error,
+        form_data=form_data,
+    ))
+    if error:
+        response.status_code = 404
+    return _no_store(response)
+
+
+@checkout.route("/orders/<int:order_id>")
+def order_detail(order_id):
+    order = _ensure_order_access(get_order(order_id))
+    return _no_store(make_response(render_template(
+        "account/order_detail.html",
+        active="orders",
+        order=order,
+    )))
+
+
+@checkout.route("/orders/<int:order_id>/receipt.pdf")
+def order_pdf(order_id):
+    order = _ensure_order_access(get_order(order_id))
+    contacts = {
+        "whatsapp": get_config("whatsapp"),
+        "telegram": get_config("telegram"),
+    }
+    tracking_url = (
+        _public_url("account.order_detail", order_id=order_id)
+        if order.get("user_id") is not None
+        else _public_url("checkout.order_lookup")
+    )
+    pdf = build_order_pdf(
+        order,
+        contacts=contacts,
+        tracking_url=tracking_url,
+        labels=_pdf_labels(),
+    )
+    response = send_file(
+        BytesIO(pdf),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"sandlabs-order-{order_id}.pdf",
+        max_age=0,
+    )
+    return _no_store(response)
 
 
 @checkout.route("/checkout/webhook/coinos", methods=["POST"])

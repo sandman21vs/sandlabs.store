@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, render_template, session
+from flask import Blueprint, abort, make_response, render_template, session
 
 from models.model_orders import get_order, get_orders_by_user
 from routes.auth_utils import login_required
@@ -28,8 +28,11 @@ def order_detail(order_id):
     if not session.get("is_admin") and order.get("user_id") != session.get("user_id"):
         abort(403)
 
-    return render_template(
+    response = make_response(render_template(
         "account/order_detail.html",
         active="orders",
         order=order,
-    )
+    ))
+    response.headers["Cache-Control"] = "private, no-store"
+    response.headers["Pragma"] = "no-cache"
+    return response

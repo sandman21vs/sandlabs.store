@@ -29,6 +29,7 @@
       "heading": "Bestellung abschließen",
       "subtitle": "Gib deine Adresse ein, um die Versandkosten zu berechnen.",
       "shipping_heading": "Lieferadresse",
+      "guest_notice": "Du kannst ohne Konto bestellen. Bewahre den Zugriffstoken auf, der nach dem Erstellen der Zahlung angezeigt wird.",
       "pay_button": "Zahlung generieren",
       "summary_heading": "Bestellübersicht",
       "quantity_short": "Anz.",
@@ -68,6 +69,8 @@
       "bolt11_heading": "Lightning-Rechnung (BOLT11)",
       "bolt11_hint": "Kopiere die Rechnung oder scanne den QR-Code mit deiner Wallet.",
       "view_order": "Bestellung ansehen",
+      "access_token_label": "Zugriffstoken der Bestellung",
+      "access_token_hint": "Bewahre diesen Token sicher auf. Damit kannst du die Bestellung ohne Konto abrufen.",
       "address_heading": "Zahlungsadresse",
       "address_hint": "Senden Sie den genauen Betrag an die untenstehende Adresse.",
       "method": {

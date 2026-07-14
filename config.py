@@ -16,3 +16,4 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
 COINOS_API_KEY = os.environ.get("COINOS_API_KEY", "")
 COINOS_WEBHOOK_SECRET = os.environ.get("COINOS_WEBHOOK_SECRET", "")
 COINOS_ENABLED = os.environ.get("COINOS_ENABLED", "0") == "1"
+PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "").strip().rstrip("/")

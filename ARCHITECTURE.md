@@ -12,7 +12,7 @@ O sandlabs.store esta sendo convertido de um site estatico (HTML/CSS/JS puro ser
 
 ---
 
-## Estado Atual (Fase 9 Completa + Ajustes Pos-Fase 9)
+## Estado Atual (Fase 9 Completa + Integrations Roadmap)
 
 As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 
@@ -21,7 +21,7 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 - Carrinho com sessao anonima, endpoints JSON, badge no header e pagina `/carrinho`
 - Autenticacao com registro/login/logout, CSRF global, headers de seguranca e area `/account/orders`
 - Setup inicial em `/admin/setup`, inspirado no FREESANDMANN, com criacao do primeiro admin, definicao da senha e login imediato no painel
-- Checkout autenticado com criacao de pedidos, invoice Lightning via Coinos, QR code, polling e webhook de confirmacao
+- Checkout autenticado ou convidado com Lightning/Liquid/on-chain via Coinos, QR, polling e webhook de confirmacao
 - Calculo de frete Post.ch integrado ao checkout, com conversao CHF -> sats via `service_btc_price.py`
 - Painel admin para produtos, pedidos e configuracoes, com tracking/status de pedidos alinhados ao schema atual
 - Configuracoes do Coinos persistidas no SQLite via `/admin/setup` e `/admin/settings`, com prioridade sobre o `.env` durante o runtime de checkout e webhook
@@ -853,10 +853,10 @@ GET /api/checkout/check-payment/<order_id>
     - Se received > 0: chamar confirm_order_payment(), retornar { paid: true }
     - Senao: retornar { paid: false }
 
-GET /checkout/invoice-qr
-    Query: bolt11=lnbc...
-    - Chamar service_qr.get_invoice_qr_response(bolt11)
-    - Retornar imagem PNG
+GET /checkout/payment/<order_id>/qr
+    - Autorizar dono, administrador ou sessao de checkout convidado
+    - Derivar o BOLT11 exclusivamente do pedido persistido
+    - Retornar imagem PNG com Cache-Control: private, no-store
 
 POST /checkout/webhook/coinos   (CSRF EXEMPT)
     - Validar webhook secret
@@ -1561,3 +1561,37 @@ gravando `shipping_carrier`/`shipping_service` no pedido. O endpoint
 `/api/shipping/calculate` devolve `options` (lista) além de `shipping_chf`/
 `shipping_sats`/`zone` (compat). O `checkout.js` renderiza o seletor quando há
 mais de uma opção.
+
+---
+
+## Checkout convidado e PDF do pedido (Fase F)
+
+`GET /checkout` e `POST /checkout/create-order` aceitam carrinhos anônimos. Um
+pedido convidado guarda `user_id = NULL`, o `session_id` do carrinho e um
+`access_token` gerado com `secrets.token_urlsafe(32)` e criptografado em repouso
+pela mesma camada Fernet da PII. O token não é logado nem incluído em URLs. O navegador que concluiu a compra é autorizado pelo
+`session_id`; outro navegador usa `POST /orders/lookup` (com CSRF) para validar
+número + token. Depois da validação, a sessão assinada guarda apenas o id do
+pedido autorizado, limitada aos 20 ids mais recentes.
+
+Rotas que expõem pagamento, endereço ou documento reutilizam o mesmo controle
+de acesso (admin, dono autenticado, sessão original ou sessão autorizada):
+
+```
+GET|POST /orders/lookup
+GET      /orders/<id>
+GET      /orders/<id>/receipt.pdf
+GET      /checkout/payment/<id>
+GET      /checkout/payment/<id>/qr
+GET      /api/checkout/check-payment/<id>
+```
+
+Respostas com PII, token, invoice ou PDF usam `Cache-Control: private, no-store`.
+O PDF é produzido por `services/service_pdf.py` com `fpdf2`, recebe pedido,
+contatos, traduções e URL de consulta já resolvidos, e não acessa banco, rede ou
+configuração. A origem do QR vem de `PUBLIC_BASE_URL`; sem essa variável, usa
+um caminho relativo e nunca confia no header `Host`. `services/service_qr.build_qr_png()`
+gera o QR em memória. Como o
+schema ainda não persiste snapshot fiat do pedido, o PDF só mostra um valor
+fiat quando o chamador fornece um snapshot; nunca recalcula uma cotação
+histórica usando a taxa atual.

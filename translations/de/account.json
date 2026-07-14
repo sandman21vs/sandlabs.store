@@ -29,7 +29,28 @@
       "price_label_fallback": "Preis",
       "format": "Format",
       "quantity_short": "Menge",
-      "empty_items": "Keine Artikel fuer diese Bestellung gefunden."
+      "empty_items": "Keine Artikel fuer diese Bestellung gefunden.",
+      "download_pdf": "PDF-Beleg herunterladen",
+      "access_token": "Zugriffstoken",
+      "access_token_hint": "Verwende Bestellnummer und Token, um die Bestellung später abzurufen."
+    },
+    "order_lookup": {
+      "page_title": "Bestellung abrufen",
+      "heading": "Bestellung abrufen",
+      "subtitle": "Gib Bestellnummer und Token aus dem Gast-Checkout ein.",
+      "order_id": "Bestellnummer",
+      "access_token": "Zugriffstoken",
+      "submit": "Abrufen",
+      "invalid": "Bestellung oder Token ungültig. Prüfe die Angaben und versuche es erneut."
+    },
+    "pdf": {
+      "title": "Bestellung #{id}", "receipt": "Sandlabs-Bestellbeleg", "summary": "Bestellübersicht",
+      "access_token": "Zugriffstoken", "account_order": "Kontobestellung", "created": "Erstellt am",
+      "order_status": "Bestellstatus", "payment": "Zahlung", "payment_status": "Zahlungsstatus",
+      "paid": "Bezahlt", "pending": "Ausstehend", "products": "Produkte", "shipping": "Versand",
+      "total": "Gesamt", "fiat_total": "Fiat-Gesamt", "not_recorded": "Nicht erfasst",
+      "items": "Artikel", "no_items": "Keine Artikel erfasst.", "quantity": "Menge",
+      "shipping_address": "Lieferadresse", "tracking": "Sendungsverfolgung", "contact": "Kontakt"
     }
   }
 }

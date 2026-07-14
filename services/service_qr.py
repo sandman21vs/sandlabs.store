@@ -21,4 +21,4 @@ def get_invoice_qr_response(bolt11):
     png = build_qr_png(bolt11)
     if png is None:
         return None
-    return send_file(io.BytesIO(png), mimetype="image/png", max_age=60)
+    return send_file(io.BytesIO(png), mimetype="image/png", max_age=0)

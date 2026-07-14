@@ -29,7 +29,28 @@
       "price_label_fallback": "Price",
       "format": "Format",
       "quantity_short": "Qty.",
-      "empty_items": "No items found for this order."
+      "empty_items": "No items found for this order.",
+      "download_pdf": "Download PDF receipt",
+      "access_token": "Access token",
+      "access_token_hint": "Use the order number and this token to retrieve the order later."
+    },
+    "order_lookup": {
+      "page_title": "Retrieve order",
+      "heading": "Retrieve order",
+      "subtitle": "Enter the order number and token received during guest checkout.",
+      "order_id": "Order number",
+      "access_token": "Access token",
+      "submit": "Retrieve",
+      "invalid": "Invalid order or token. Check the details and try again."
+    },
+    "pdf": {
+      "title": "Order #{id}", "receipt": "Sandlabs order receipt", "summary": "Order summary",
+      "access_token": "Access token", "account_order": "Account order", "created": "Created",
+      "order_status": "Order status", "payment": "Payment", "payment_status": "Payment status",
+      "paid": "Paid", "pending": "Pending", "products": "Products", "shipping": "Shipping",
+      "total": "Total", "fiat_total": "Fiat total", "not_recorded": "Not recorded",
+      "items": "Items", "no_items": "No items recorded.", "quantity": "Qty",
+      "shipping_address": "Shipping address", "tracking": "Tracking", "contact": "Contact"
     }
   }
 }

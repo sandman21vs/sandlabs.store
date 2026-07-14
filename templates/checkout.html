@@ -19,6 +19,9 @@
       <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
 
       <h2 class="order-section-title">{{ t('commerce.checkout.shipping_heading') }}</h2>
+      {% if not session.get('user_id') %}
+      <p class="muted">{{ t('commerce.checkout.guest_notice') }}</p>
+      {% endif %}
       {% if error %}
       <div class="checkout-error">{{ error }}</div>
       {% endif %}

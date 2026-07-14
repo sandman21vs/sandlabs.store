@@ -80,5 +80,5 @@ def quote(weight_grams, country_code):
         result = _request(api_url, api_key, payload)
         return _parse(result)
     except Exception:
-        logger.exception("DHL rate request failed country=%s", payload["country"])
+        logger.exception("DHL rate request failed")
         return None

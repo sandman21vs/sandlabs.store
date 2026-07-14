@@ -63,3 +63,10 @@ def test_order_detail_renders_for_owner(client, csrf_token):
     assert response.status_code == 200
     assert f"Pedido #{order_id}" in html
     assert "SandSeed" in html
+    assert response.headers["Cache-Control"] == "private, no-store"
+    assert f"/orders/{order_id}/receipt.pdf" in html
+
+    pdf_response = client.get(f"/orders/{order_id}/receipt.pdf")
+    assert pdf_response.status_code == 200
+    assert f"/account/orders/{order_id}".encode() in pdf_response.data
+    assert b"/orders/lookup" not in pdf_response.data

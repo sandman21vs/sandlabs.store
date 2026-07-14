@@ -29,6 +29,7 @@
       "heading": "Finalizar Pedido",
       "subtitle": "Preencha o endereço para calcular o frete.",
       "shipping_heading": "Endereço de Entrega",
+      "guest_notice": "Você pode finalizar sem criar conta. Guarde o token de acesso exibido após gerar o pagamento.",
       "pay_button": "Gerar pagamento",
       "summary_heading": "Resumo do Pedido",
       "quantity_short": "Qtd.",
@@ -68,6 +69,8 @@
       "bolt11_heading": "Fatura Lightning (BOLT11)",
       "bolt11_hint": "Copie a fatura abaixo ou escaneie o QR Code com sua carteira.",
       "view_order": "Ver pedido",
+      "access_token_label": "Token de acesso do pedido",
+      "access_token_hint": "Guarde este token em local seguro. Ele permite consultar o pedido sem uma conta.",
       "address_heading": "Endereço de pagamento",
       "address_hint": "Envie o valor exato para o endereço abaixo.",
       "method": {

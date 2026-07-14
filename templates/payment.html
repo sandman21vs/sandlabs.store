@@ -12,7 +12,7 @@
     id="payment-container"
     class="invoice-shell"
     data-check-url="{{ url_for('checkout.check_payment', order_id=order.id) }}"
-    data-success-url="{{ url_for('account.order_detail', order_id=order.id) }}"
+    data-success-url="{{ order_detail_url }}"
   >
     <article class="card glass invoice-card invoice-qr-card">
       <p class="order-label">{{ t('commerce.payment.order_label', id=order.id) }}</p>
@@ -34,8 +34,15 @@
       <code id="bolt11-text" class="mono-block">{{ payable }}</code>
       <div class="invoice-actions">
         <button type="button" id="copy-bolt11" class="btn btn-accent">{{ t('common.actions.copy') }}</button>
-        <a class="btn btn-ghost" href="{{ url_for('account.order_detail', order_id=order.id) }}">{{ t('commerce.payment.view_order') }}</a>
+        <a class="btn btn-ghost" href="{{ order_detail_url }}">{{ t('commerce.payment.view_order') }}</a>
       </div>
+      {% if not order.user_id and order.access_token %}
+      <div class="group">
+        <strong>{{ t('commerce.payment.access_token_label') }}</strong>
+        <code class="mono-block">{{ order.access_token }}</code>
+        <p class="muted">{{ t('commerce.payment.access_token_hint') }}</p>
+      </div>
+      {% endif %}
     </article>
   </div>
 </section>

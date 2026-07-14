@@ -6,6 +6,7 @@
       <div class="section-head">
         <h1 class="section-title">{{ t('account.order_detail.heading', id=order.id) }}</h1>
         <p class="section-sub">{{ t('account.order_detail.subtitle') }}</p>
+        <a class="btn btn-accent" href="{{ url_for('checkout.order_pdf', order_id=order.id) }}">{{ t('account.order_detail.download_pdf') }}</a>
       </div>
 
       <div class="order-detail-shell stack-lg">
@@ -25,6 +26,10 @@
           {% endif %}
           {% if order.payment_confirmed_at %}
             <p><strong>{{ t('account.order_detail.payment_confirmed_at') }}:</strong> {{ order.payment_confirmed_at }}</p>
+          {% endif %}
+          {% if not order.user_id and order.access_token %}
+            <p><strong>{{ t('account.order_detail.access_token') }}:</strong> <code>{{ order.access_token }}</code></p>
+            <p class="muted">{{ t('account.order_detail.access_token_hint') }}</p>
           {% endif %}
         </article>
 
