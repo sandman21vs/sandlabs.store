@@ -25,7 +25,11 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 - Calculo de frete Post.ch integrado ao checkout, com conversao CHF -> sats via `service_btc_price.py`
 - Painel admin para produtos, pedidos e configuracoes, com tracking/status de pedidos alinhados ao schema atual
 - Configuracoes do Coinos persistidas no SQLite via `/admin/setup` e `/admin/settings`, com prioridade sobre o `.env` durante o runtime de checkout e webhook
-- Pricing dinamico por moeda: cada `product_price` pode ser salvo em `SATS` ou fiat; no momento da compra, valores em CHF sao convertidos para sats usando a cotacao BTC atual
+- Dynamic pricing by currency: each `product_price` can be stored in `SATS` or
+  fiat. The admin accepts `CHF` and `USD`; purchase values are resolved to sats
+  using the current BTC rate.
+- Public catalog display can switch between `CHF`, `EUR`, `BRL`, and `USD`
+  without changing the sats-authoritative cart, checkout, or settlement values.
 - Galeria e cards usando thumbnails WebP em `static/images/thumb/`, com fallback para a imagem original e geracao automatica em uploads do admin
 - Flash messages globais, metadados SEO/Open Graph, endpoint `/health`, logging adicional em checkout/admin, Docker multi-stage com usuario non-root e healthcheck
 - Exibicao de sats ao lado dos precos fiat no payload `window.PRODUTOS`, e limpeza dos arquivos HTML/CSS/JS/imagens legados da raiz do repositorio
@@ -53,18 +57,20 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 
 - O schema `product_prices` aceita dois modos: `pricing_mode='sats'` ou `pricing_mode='fiat'`.
 - Para precos em fiat, o banco guarda `currency_code` e `amount_fiat`; o valor em sats e resolvido no carrinho e no checkout usando a cotacao BTC atual.
-- A UI do admin hoje esta priorizada para `SATS` e `CHF`, que cobrem o fluxo operacional atual da loja.
+- The admin UI accepts `SATS`, `CHF`, and `USD` product prices.
 - O backend ja esta preparado para outras moedas fiat suportadas pelo service de cotacao, hoje: `USD`, `BRL` e `EUR`.
 - Produtos legados com `display_text` antigo continuam sendo interpretados pelo backend para evitar quebra de compatibilidade.
 - O pedido continua sendo fechado em sats no momento da compra, ou seja: o valor Lightning cobrado e sempre um snapshot da cotacao daquele instante.
 
 ### Roadmap sugerido para futuras adicoes
 
-1. Expandir a UI do admin para permitir selecao explicita de `USD`, `BRL`, `EUR` e outras moedas suportadas, em vez de expor so `CHF` e `SATS`.
-2. Persistir no `order_items` um snapshot completo do preco no momento da compra: `pricing_mode`, `currency_code`, `amount_fiat`, `btc_rate_used` e `unit_sats_resolved`, para auditoria e rastreabilidade historica.
-3. Adicionar cache/telemetria de cotacao com fallback controlado no admin, para que a loja sinalize claramente quando a conversao fiat -> sats estiver indisponivel.
-4. Permitir exibicao multi-moeda no frontend publico: por exemplo mostrar `CHF + sats` agora e futuramente alternar para `USD`, `EUR`, `BRL` por configuracao global ou preferencia do visitante.
-5. Criar testes especificos para regressao de moedas futuras, cobrindo parser legados, arredondamento decimal, snapshot de pedido e indisponibilidade do feed de preco.
+1. Persist a complete order-item price snapshot (`pricing_mode`,
+   `currency_code`, `amount_fiat`, `btc_rate_used`, and `unit_sats_resolved`) for
+   historical accounting audits.
+2. Add rate-cache telemetry and an admin warning when fiat conversion is
+   unavailable.
+3. Extend regression coverage for legacy price parsing and historic snapshot
+   behavior.
 
 ### Arquivos ja criados
 
@@ -1595,3 +1601,24 @@ gera o QR em memória. Como o
 schema ainda não persiste snapshot fiat do pedido, o PDF só mostra um valor
 fiat quando o chamador fornece um snapshot; nunca recalcula uma cotação
 histórica usando a taxa atual.
+
+---
+
+## Display currency switcher (Phase G)
+
+`services/service_pricing.py` allows the admin to create product prices in
+`SATS`, `CHF`, or `USD`. Fiat source prices are still resolved to sats by the
+backend before they can enter the cart.
+
+`GET /api/pricing/rates` returns the positive `CHF`, `EUR`, `BRL`, and `USD`
+values from the existing five-minute BTC rate cache. The endpoint requires no
+authentication and contains no customer or payment data, but its response is
+marked `private, max-age=300`
+because the global i18n hook may refresh the visitor's signed session cookie.
+
+`static/js/config-store.js` stores the visitor's display preference under
+`sandlabs-display-currency`. Home and product renderers convert each product's
+resolved `amountSats` for display and keep the sats value visible as the
+secondary price. Missing or invalid live rates fall back to the product's
+original display text. Cart, checkout, order, PDF, and Coinos values remain in
+satoshis; the display selector never participates in settlement calculations.

@@ -89,6 +89,18 @@ body.modal-open{
 .brand-logo{height:40px; width:auto}
 .brand-name{font-weight:700; font-size:1.05rem; letter-spacing:.3px}
 .site-nav{display:flex; gap:1rem}
+.currency-switcher,
+.lang-switcher{display:flex;align-items:center}
+.currency-switcher select{
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:rgba(0,0,0,.25);
+  color:var(--text);
+  padding:.4rem .45rem;
+  font:inherit;
+  cursor:pointer;
+}
+.currency-switcher select:focus{outline:2px solid var(--accent);outline-offset:2px}
 .nav-link{
   color:var(--text); text-decoration:none; padding:.45rem .85rem;
   border-radius:10px; transition:background .2s, color .2s

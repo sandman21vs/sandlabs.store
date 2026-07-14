@@ -27,6 +27,9 @@
       "es": "Spanish",
       "de": "German"
     },
+    "currency": {
+      "label": "Display currency"
+    },
     "actions": {
       "learn_more": "Learn more",
       "view_products": "View products",

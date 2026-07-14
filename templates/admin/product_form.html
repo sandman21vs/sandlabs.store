@@ -166,7 +166,7 @@
 // ─── Prices management ───────────────────────────────────────────────────────
 let prices = {{ (product.prices | tojson) if product else '[]' }};
 const PRICE_CURRENCIES = Array.from(new Set(
-  ['SATS', 'CHF'].concat(
+  {{ price_currencies|list|tojson }}.concat(
     prices.map((price) => (price.currency_code || '').toUpperCase()).filter(Boolean)
   )
 ));

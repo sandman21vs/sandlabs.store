@@ -46,6 +46,22 @@ class TestPublicPages:
         assert resp.status_code == 200
         assert resp.get_json() == {"status": "ok"}
 
+    def test_pricing_rates_endpoint_returns_cacheable_display_rates(self, client, monkeypatch):
+        monkeypatch.setattr(
+            "routes.routes_public.get_display_rates",
+            lambda: {"CHF": 100000.0, "EUR": 95000.0, "BRL": 500000.0, "USD": 110000.0},
+        )
+
+        resp = client.get("/api/pricing/rates")
+
+        assert resp.status_code == 200
+        assert resp.get_json() == {
+            "base": "BTC",
+            "rates": {"CHF": 100000.0, "EUR": 95000.0, "BRL": 500000.0, "USD": 110000.0},
+            "ttl_seconds": 300,
+        }
+        assert resp.headers["Cache-Control"] == "private, max-age=300"
+
 
 class TestLegacyHtmlRedirects:
     """Old .html URLs redirect to clean URLs with 301."""
@@ -114,6 +130,8 @@ class TestProductInjection:
         assert "window.PRODUTOS" in html
         assert "test-product" in html
         assert "Test Product" in html
+        assert html.index("window.PRODUTOS =") < html.index("js/config-store.js")
+        assert html.count("js/config-store.js") == 1
 
     def test_product_data_in_produtos(self, client, seeded_product):
         resp = client.get("/produtos")
@@ -187,3 +205,10 @@ class TestNavigation:
         html = client.get("/").data.decode()
         for page in ["Sobre", "Produtos", "Termos", "Suporte"]:
             assert page in html
+
+    def test_display_currency_switcher_lists_supported_fiat(self, client):
+        html = client.get("/").data.decode()
+
+        assert 'id="display-currency"' in html
+        for currency in ("CHF", "EUR", "BRL", "USD"):
+            assert f'<option value="{currency}">{currency}</option>' in html

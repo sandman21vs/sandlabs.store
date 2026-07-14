@@ -26,6 +26,7 @@ from models.model_orders import (
 )
 from routes.auth_utils import admin_required
 from services.service_images import ensure_thumbnail, get_images_base_dir
+from services.service_pricing import ADMIN_ENABLED_CURRENCIES
 
 logger = logging.getLogger(__name__)
 admin = Blueprint("admin", __name__, url_prefix="/admin")
@@ -308,7 +309,13 @@ def product_new():
                 logger.exception("admin_product_create_failed product_id=%s", product_id)
                 error = str(exc)
 
-    return render_template("admin/product_form.html", product=None, error=error, action="new")
+    return render_template(
+        "admin/product_form.html",
+        product=None,
+        error=error,
+        action="new",
+        price_currencies=ADMIN_ENABLED_CURRENCIES,
+    )
 
 
 @admin.route("/products/<product_id>/edit", methods=["GET", "POST"])
@@ -347,8 +354,13 @@ def product_edit(product_id):
             logger.exception("admin_product_update_failed product_id=%s", product_id)
             error = str(exc)
 
-    return render_template("admin/product_form.html",
-                           product=product, error=error, action="edit")
+    return render_template(
+        "admin/product_form.html",
+        product=product,
+        error=error,
+        action="edit",
+        price_currencies=ADMIN_ENABLED_CURRENCIES,
+    )
 
 
 @admin.route("/products/<product_id>/delete", methods=["POST"])

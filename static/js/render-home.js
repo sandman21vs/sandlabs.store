@@ -19,12 +19,19 @@
     return match ? `${match[1]}thumb/${match[2]}.webp${suffix}` : value;
   }
 
-  function buildSecondaryPrice(price){
+  function buildSecondaryPrice(price, displayed){
     const bits = [];
-    if (price && price.satsDisplay && !/sats/i.test(price.valor || '')) {
+    if (price && price.satsDisplay && !/sats/i.test(displayed || '')) {
       bits.push(price.satsDisplay);
     }
     return bits.join(' • ');
+  }
+
+  function displayPrice(price){
+    if (window.CurrencyDisplay && typeof window.CurrencyDisplay.formatPrice === 'function') {
+      return window.CurrencyDisplay.formatPrice(price);
+    }
+    return price && price.valor ? price.valor : '';
   }
 
   function buildCard(prod){
@@ -62,11 +69,11 @@
     const price = el('div',{class:'price-line'});
     const firstPrice = Array.isArray(prod.preco) && prod.preco[0] ? prod.preco[0] : null;
     const secondPrice = Array.isArray(prod.preco) && prod.preco[1] ? prod.preco[1] : null;
-    const p0 = firstPrice ? firstPrice.valor : '';
+    const p0 = displayPrice(firstPrice);
     const secondaryBits = [];
-    const firstSats = buildSecondaryPrice(firstPrice);
+    const firstSats = buildSecondaryPrice(firstPrice, p0);
     if (firstSats) secondaryBits.push(firstSats);
-    if (secondPrice) secondaryBits.push(`${secondPrice.label} ${secondPrice.valor}`);
+    if (secondPrice) secondaryBits.push(`${secondPrice.label} ${displayPrice(secondPrice)}`);
     price.innerHTML = `<span>${p0}</span><span class="muted">${secondaryBits.join(' • ')}</span>`;
     body.appendChild(price);
 
@@ -74,10 +81,18 @@
     return a;
   }
 
-  window.addEventListener('DOMContentLoaded', ()=>{
+  function renderProducts(){
     const wrap = document.getElementById('home-products');
     if (!wrap) return;
     wrap.innerHTML='';
     (window.PRODUTOS||[]).forEach(prod=> wrap.appendChild(buildCard(prod)));
+  }
+
+  window.addEventListener('DOMContentLoaded', ()=>{
+    renderProducts();
+    if (window.CurrencyDisplay && typeof window.CurrencyDisplay.loadRates === 'function') {
+      window.CurrencyDisplay.loadRates().then(renderProducts);
+    }
   });
+  window.addEventListener('displaycurrencychange', renderProducts);
 })();

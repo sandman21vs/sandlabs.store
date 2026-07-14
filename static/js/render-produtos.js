@@ -22,6 +22,13 @@
     return (window.PRODUTOS || []).find((product) => product.id === id) || null;
   }
 
+  function displayPrice(price) {
+    if (window.CurrencyDisplay && typeof window.CurrencyDisplay.formatPrice === 'function') {
+      return window.CurrencyDisplay.formatPrice(price);
+    }
+    return price && price.valor ? price.valor : '';
+  }
+
   function formDataToObject(form) {
     const data = {};
     const fd = new FormData(form);
@@ -202,8 +209,9 @@
   function priceListHTML(precos) {
     if (!Array.isArray(precos)) return '';
     return precos.map((p) => {
-      const sats = p.satsDisplay && !/sats/i.test(p.valor || '') ? ` <span class="muted">${p.satsDisplay}</span>` : '';
-      return `<p><strong>${p.label}:</strong> ${p.valor}${sats}</p>`;
+      const displayed = displayPrice(p);
+      const sats = p.satsDisplay && !/sats/i.test(displayed) ? ` <span class="muted">${p.satsDisplay}</span>` : '';
+      return `<p><strong>${p.label}:</strong> ${displayed}${sats}</p>`;
     }).join('');
   }
 
@@ -453,11 +461,7 @@ function buildGallery(prod) {
   }
 
   /* ===== Renderização da página de produtos =============================== */
-  window.addEventListener('DOMContentLoaded', () => {
-    if (window.lightbox && typeof lightbox.mount === 'function') {
-      lightbox.mount();
-    }
-
+  function renderProductList() {
     const cont = document.getElementById('produtos-container');
     if (cont) {
       cont.innerHTML = '';
@@ -465,5 +469,16 @@ function buildGallery(prod) {
         cont.appendChild(sectionProduto(prod));
       });
     }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.lightbox && typeof lightbox.mount === 'function') {
+      lightbox.mount();
+    }
+    renderProductList();
+    if (window.CurrencyDisplay && typeof window.CurrencyDisplay.loadRates === 'function') {
+      window.CurrencyDisplay.loadRates().then(renderProductList);
+    }
   });
+  window.addEventListener('displaycurrencychange', renderProductList);
 })();

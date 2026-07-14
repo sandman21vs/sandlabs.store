@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Configuração{% endblock %}
+{% block page_data %}
+  <script src="{{ url_for('static', filename='js/produtos-data.js') }}"></script>
+{% endblock %}
 
 {% block content %}
     <section class="section">
@@ -54,7 +57,5 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="{{ url_for('static', filename='js/produtos-data.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/config-store.js') }}"></script>
   <script src="{{ url_for('static', filename='js/config-page.js') }}"></script>
 {% endblock %}

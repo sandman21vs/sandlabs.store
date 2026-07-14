@@ -27,6 +27,9 @@
       "es": "Español",
       "de": "Alemán"
     },
+    "currency": {
+      "label": "Moneda de visualización"
+    },
     "actions": {
       "learn_more": "Saber más",
       "view_products": "Ver productos",

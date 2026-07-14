@@ -311,6 +311,19 @@ vim pelo (MEUCUPOM10)
 
 ---
 
+## Display currencies
+
+- Product prices can be entered in `SATS`, `CHF`, or `USD` in the admin.
+- The public header lets visitors display catalog prices in `CHF`, `EUR`, `BRL`,
+  or `USD`. The preference is stored only in the browser.
+- Display conversion uses `GET /api/pricing/rates`, backed by the existing
+  five-minute CoinGecko cache and stored only in the visitor's private browser
+  cache. If rates are unavailable, the original product price remains visible.
+- The selector is informational only. Cart totals, checkout totals, invoices,
+  and payment settlement remain authoritative in satoshis.
+
+---
+
 ## 🧾 Termos, Sobre e Suporte
 
 - **Termos:** edite `termos.html` (pagamentos, privacidade, prazos).

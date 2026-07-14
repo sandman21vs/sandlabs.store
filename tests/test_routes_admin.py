@@ -178,6 +178,7 @@ class TestAdminProducts:
     def test_new_product_form_renders(self, admin_client):
         resp = admin_client.get("/admin/products/new")
         assert resp.status_code == 200
+        assert b'["SATS", "CHF", "USD"]' in resp.data
         assert b"Novo produto" in resp.data
 
     def test_create_product_via_form(self, admin_client, csrf_headers):
@@ -237,6 +238,34 @@ class TestAdminProducts:
         assert p["prices"][0]["amount_fiat"] == "149.00"
         js_price = products_to_js_format([p])[0]["preco"][0]
         assert js_price["amountSats"] == 14900
+
+    def test_create_usd_product_via_form(self, admin_client, csrf_headers, monkeypatch):
+        monkeypatch.setattr("services.service_pricing.fiat_to_sats", lambda amount, currency: 12500)
+        resp = _form(admin_client, csrf_headers, "/admin/products/new", {
+            "id": "new-usd-prod",
+            "name": "USD Product",
+            "summary": "Created via form",
+            "details_html": "<p>Test</p>",
+            "weight_grams": "100",
+            "buy_button_text": "Buy",
+            "sort_order": "0",
+            "active": "on",
+            "prices_json": json.dumps([{
+                "label": "Base",
+                "pricing_mode": "fiat",
+                "currency_code": "USD",
+                "amount_fiat": "125.00",
+            }]),
+            "options_json": "[]",
+            "existing_images_json": "[]",
+        })
+        assert resp.status_code == 302
+
+        from models.model_products import get_product_by_id, products_to_js_format
+        product = get_product_by_id("new-usd-prod")
+        assert product["prices"][0]["currency_code"] == "USD"
+        assert product["prices"][0]["amount_fiat"] == "125.00"
+        assert products_to_js_format([product])[0]["preco"][0]["amountSats"] == 12500
 
     def test_create_product_missing_id_shows_error(self, admin_client, csrf_headers):
         resp = _form(admin_client, csrf_headers, "/admin/products/new", {
