@@ -28,7 +28,7 @@ This checklist **is** the "tik de ok" the user asked for.
 - [x] **Fase B** — Padronização de schema (`orders`) — `45cfb2e`
 - [x] **Fase C** — Pagamento onchain + Liquid (Coinos) — `ca788ae`
 - [x] **Fase D** — Frete híbrido DHL + Swiss Post — `c1ea53e`
-- [ ] **Fase E** — Imagens: thumbnail + lupa/zoom — _brief: `docs/briefs/brief-E-imagens.md`_
+- [x] **Fase E** — Imagens: thumbnail + lupa/zoom — `c9507a6`
 - [ ] **Fase F-pdf** — Geração do PDF do pedido — _brief: `docs/briefs/brief-F-pdf.md`_
 - [ ] **Fase F-core** — Checkout como convidado + `access_token` — _owner: brain (auth/migration)_
 - [ ] **Fase G** — Multi-moeda: USD + switcher — _brief: `docs/briefs/brief-G-moeda.md`_
@@ -41,9 +41,9 @@ This checklist **is** the "tik de ok" the user asked for.
 - **Branch:** `feature/integrations-foundation` (from `main` @ `6cc7fec`). All new
   work branches/worktrees from **this** branch (it already contains A+B), not
   from `main`.
-- **Tests:** `225 passing`. Baseline was 207; A +9, B +2, C +7, D +8. Total 233.
-- **Fases 0/A/B/C are already committed on this branch** (not in separate
-  worktrees). So the fan-out below only covers D, E, F, G. C is done — the
+- **Tests:** `237 passing`. Baseline was 207; A +9, B +2, C +7, D +8, E +4.
+- **Fases 0/A/B/C/D/E are already committed on this branch** (not in separate
+  worktrees). The remaining implementation covers F and G. C is done — the
   "reconciliation order" that lists C refers only to the case where it had been
   a separate worktree; here it needs no merge.
 - **Do not push or open a PR** unless the user explicitly asks (AGENTS.md).
