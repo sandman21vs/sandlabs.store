@@ -48,6 +48,26 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 - Ajuste pos-Fase 9 executado no commit `46a116d` — pricing multi-moeda com conversao dinamica fiat -> sats no carrinho e checkout
 - Suite de testes apos o ajuste de pricing: `pytest tests/ -q` -> `201 passed`
 
+### Integrations roadmap execution
+
+The integrations roadmap was implemented serially on
+`feature/integrations-foundation`, so reconciliation did not require merging
+parallel implementation branches:
+
+- Phase 0 (governance): `0d1a890`
+- Phase A (PII encryption): `13092ae`
+- Phase B (order schema standardization): `45cfb2e`
+- Phase C (Coinos Liquid and on-chain): `ca788ae`
+- Phase D (hybrid DHL and Swiss Post shipping): `c1ea53e`
+- Phase E (high-resolution image zoom): `c9507a6`
+- Phase F-pdf (order receipt): `c571c8b`
+- Phase F-core (secure guest checkout): `ae4c2cf`
+- Phase G (USD pricing and display currency switcher): `e2f9604`
+
+Final reconciliation validation: `.venv/bin/python -m pytest tests/ -q` →
+`254 passed`. The storefront has no frontend build step; Python modules,
+translation JSON, and diff whitespace are checked separately.
+
 ### Convencao de rastreabilidade
 
 - Cada fase ou bloco relevante de alteracoes deve ser finalizado em commit separado, com mensagem descritiva.
