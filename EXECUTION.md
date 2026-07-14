@@ -41,7 +41,11 @@ This checklist **is** the "tik de ok" the user asked for.
 - **Branch:** `feature/integrations-foundation` (from `main` @ `6cc7fec`). All new
   work branches/worktrees from **this** branch (it already contains A+B), not
   from `main`.
-- **Tests:** `218 passing`. Baseline was 207; A added 9, B added 2.
+- **Tests:** `225 passing`. Baseline was 207; A +9, B +2, C +7.
+- **Fases 0/A/B/C are already committed on this branch** (not in separate
+  worktrees). So the fan-out below only covers D, E, F, G. C is done — the
+  "reconciliation order" that lists C refers only to the case where it had been
+  a separate worktree; here it needs no merge.
 - **Do not push or open a PR** unless the user explicitly asks (AGENTS.md).
 
 ### What A+B delivered (foundation the other phases build on)
