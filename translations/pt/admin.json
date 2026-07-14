@@ -87,6 +87,36 @@
         "completed": "Setup inicial concluido.",
         "webhook_generated": "Webhook Secret do Coinos foi gerado automaticamente."
       }
+    },
+    "coupons": {
+      "sidebar_link": "Cupons",
+      "title": "Cupons",
+      "heading": "Cupons de desconto",
+      "new_heading": "Novo cupom",
+      "code": "Código",
+      "type": "Tipo",
+      "percent": "Percentual (%)",
+      "fixed": "Valor fixo (sats)",
+      "value": "Valor",
+      "expires_at": "Expira em",
+      "max_uses": "Usos máx.",
+      "used": "Usados",
+      "active": "Ativo",
+      "actions": "Ações",
+      "create": "Criar",
+      "save": "Salvar",
+      "delete": "Excluir",
+      "none": "Nenhum cupom cadastrado.",
+      "unlimited": "ilimitado",
+      "flash": {
+        "created": "Cupom criado.",
+        "updated": "Cupom atualizado.",
+        "deleted": "Cupom excluído."
+      },
+      "errors": {
+        "invalid": "Dados do cupom inválidos.",
+        "duplicate": "Já existe um cupom com esse código."
+      }
     }
   }
 }

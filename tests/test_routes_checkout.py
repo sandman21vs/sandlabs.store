@@ -603,3 +603,92 @@ class TestCoinosRuntimeConfig:
         assert captured["headers"]["Authorization"] == "Bearer db-api-key"
         assert captured["payload"]["invoice"]["secret"] == "db-webhook-secret"
         assert captured["payload"]["invoice"]["webhook"] == "https://example.com/checkout/webhook/coinos"
+
+
+class TestCheckoutCoupons:
+    def test_apply_coupon_returns_discount(self, client, test_user, seeded_product, csrf_headers):
+        from models.model_coupons import create_coupon
+        _login_session(client, user_id=test_user)
+        add_to_cart("test-session", seeded_product["id"], seeded_product["prices"][0]["id"], 1, {}, user_id=test_user)
+        create_coupon(code="SAVE20", discount_type="percent", discount_value=20)
+
+        resp = client.post("/api/checkout/apply-coupon", json={"code": "save20"}, headers=csrf_headers)
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data["ok"] is True
+        assert data["code"] == "SAVE20"
+        # subtotal 10000 sats * 20% = 2000
+        assert data["discount_sats"] == 2000
+        assert data["subtotal_sats"] == 10000
+
+    def test_apply_invalid_coupon_returns_400(self, client, test_user, seeded_product, csrf_headers):
+        _login_session(client, user_id=test_user)
+        add_to_cart("test-session", seeded_product["id"], seeded_product["prices"][0]["id"], 1, {}, user_id=test_user)
+
+        resp = client.post("/api/checkout/apply-coupon", json={"code": "NOPE"}, headers=csrf_headers)
+        assert resp.status_code == 400
+        assert resp.get_json()["ok"] is False
+
+    def test_create_order_applies_discount_to_invoice(self, client, test_user, seeded_product, csrf_headers):
+        from models.model_coupons import create_coupon, get_coupon
+        _login_session(client, user_id=test_user)
+        add_to_cart("test-session", seeded_product["id"], seeded_product["prices"][0]["id"], 1, {}, user_id=test_user)
+        create_coupon(code="HALF", discount_type="percent", discount_value=50)
+
+        with patch("routes.routes_checkout.chf_to_sats", return_value=8500), \
+             patch("routes.routes_checkout.create_invoice", return_value={"hash": "h", "text": "lnbc1"}) as mock_inv:
+            resp = client.post(
+                "/checkout/create-order",
+                data={
+                    "name": "Buyer", "street": "Bahnhofstrasse", "house_number": "1",
+                    "city": "Zurich", "postal_code": "8000", "country": "CH",
+                    "cupom": "half",
+                },
+                headers=csrf_headers,
+                follow_redirects=False,
+            )
+
+        assert resp.status_code == 302
+        # subtotal 10000, 50% off => 5000 products + 8500 shipping = 13500
+        assert mock_inv.call_args[0][0] == 5000 + 8500
+
+        conn = get_db()
+        try:
+            order = conn.execute(
+                "SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC LIMIT 1", (test_user,)
+            ).fetchone()
+        finally:
+            conn.close()
+        assert order["coupon_code"] == "HALF"
+        assert int(order["discount_sats"]) == 5000
+        assert get_coupon("HALF")["used_count"] == 1
+
+    def test_create_order_ignores_invalid_coupon(self, client, test_user, seeded_product, csrf_headers):
+        _login_session(client, user_id=test_user)
+        add_to_cart("test-session", seeded_product["id"], seeded_product["prices"][0]["id"], 1, {}, user_id=test_user)
+
+        with patch("routes.routes_checkout.chf_to_sats", return_value=8500), \
+             patch("routes.routes_checkout.create_invoice", return_value={"hash": "h", "text": "lnbc1"}) as mock_inv:
+            resp = client.post(
+                "/checkout/create-order",
+                data={
+                    "name": "Buyer", "street": "Bahnhofstrasse", "house_number": "1",
+                    "city": "Zurich", "postal_code": "8000", "country": "CH",
+                    "cupom": "GARBAGE",
+                },
+                headers=csrf_headers,
+                follow_redirects=False,
+            )
+
+        assert resp.status_code == 302
+        # No discount applied: full 10000 + 8500
+        assert mock_inv.call_args[0][0] == 10000 + 8500
+        conn = get_db()
+        try:
+            order = conn.execute(
+                "SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC LIMIT 1", (test_user,)
+            ).fetchone()
+        finally:
+            conn.close()
+        assert order["coupon_code"] is None
+        assert int(order["discount_sats"]) == 0

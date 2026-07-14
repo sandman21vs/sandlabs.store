@@ -15,6 +15,8 @@ from werkzeug.utils import secure_filename
 import db
 from i18n import translate
 from models.model_config import admin_exists, get_all_config, get_config, set_config
+from models.model_coupons import (create_coupon, delete_coupon, list_coupons,
+                                  update_coupon)
 from models.model_users import create_user, get_user_by_email
 from models.model_products import (create_product, delete_product,
                                     get_product_by_id, update_product)
@@ -502,3 +504,72 @@ def settings():
     cfg = current_cfg
     cfg["shipping_rates"] = get_config("shipping_rates", _DEFAULT_SHIPPING_RATES)
     return render_template("admin/settings.html", cfg=cfg)
+
+
+def _coupon_form_values(form):
+    discount_type = form.get("discount_type", "percent")
+    if discount_type not in ("percent", "fixed_sats"):
+        discount_type = "percent"
+    try:
+        discount_value = max(0, int(form.get("discount_value") or 0))
+    except (TypeError, ValueError):
+        discount_value = 0
+    if discount_type == "percent":
+        discount_value = min(100, discount_value)
+    max_uses_raw = (form.get("max_uses") or "").strip()
+    max_uses = None
+    if max_uses_raw:
+        try:
+            max_uses = max(0, int(max_uses_raw))
+        except ValueError:
+            max_uses = None
+    return {
+        "discount_type": discount_type,
+        "discount_value": discount_value,
+        "expires_at": (form.get("expires_at") or "").strip() or None,
+        "max_uses": max_uses,
+        "active": bool(form.get("active")),
+    }
+
+
+@admin.route("/coupons")
+@admin_required
+def coupons():
+    return render_template("admin/coupons.html", coupons=list_coupons())
+
+
+@admin.route("/coupons/new", methods=["POST"])
+@admin_required
+def coupon_new():
+    code = (request.form.get("code") or "").strip()
+    values = _coupon_form_values(request.form)
+    if not code or values["discount_value"] <= 0:
+        flash(translate("admin.coupons.errors.invalid"), "error")
+        return redirect(url_for("admin.coupons"))
+    try:
+        create_coupon(code=code, **values)
+        flash(translate("admin.coupons.flash.created"), "success")
+    except Exception:
+        logger.warning("admin_coupon_create_failed admin_user_id=%s", session.get("user_id"))
+        flash(translate("admin.coupons.errors.duplicate"), "error")
+    return redirect(url_for("admin.coupons"))
+
+
+@admin.route("/coupons/<int:coupon_id>/edit", methods=["POST"])
+@admin_required
+def coupon_edit(coupon_id):
+    values = _coupon_form_values(request.form)
+    if values["discount_value"] <= 0:
+        flash(translate("admin.coupons.errors.invalid"), "error")
+        return redirect(url_for("admin.coupons"))
+    update_coupon(coupon_id, **values)
+    flash(translate("admin.coupons.flash.updated"), "success")
+    return redirect(url_for("admin.coupons"))
+
+
+@admin.route("/coupons/<int:coupon_id>/delete", methods=["POST"])
+@admin_required
+def coupon_delete(coupon_id):
+    delete_coupon(coupon_id)
+    flash(translate("admin.coupons.flash.deleted"), "success")
+    return redirect(url_for("admin.coupons"))

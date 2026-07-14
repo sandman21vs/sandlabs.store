@@ -44,13 +44,29 @@
       "invalid": "Pedido ou token inválido. Confira os dados e tente novamente."
     },
     "pdf": {
-      "title": "Pedido #{id}", "receipt": "Comprovante de pedido Sandlabs", "summary": "Resumo do pedido",
-      "access_token": "Token de acesso", "account_order": "Pedido da conta", "created": "Criado em",
-      "order_status": "Status do pedido", "payment": "Pagamento", "payment_status": "Status do pagamento",
-      "paid": "Pago", "pending": "Pendente", "products": "Produtos", "shipping": "Frete",
-      "total": "Total", "fiat_total": "Total fiat", "not_recorded": "Não registrado",
-      "items": "Itens", "no_items": "Nenhum item registrado.", "quantity": "Qtd.",
-      "shipping_address": "Endereço de entrega", "tracking": "Acompanhamento", "contact": "Contato"
+      "title": "Pedido #{id}",
+      "receipt": "Comprovante de pedido Sandlabs",
+      "summary": "Resumo do pedido",
+      "access_token": "Token de acesso",
+      "account_order": "Pedido da conta",
+      "created": "Criado em",
+      "order_status": "Status do pedido",
+      "payment": "Pagamento",
+      "payment_status": "Status do pagamento",
+      "paid": "Pago",
+      "pending": "Pendente",
+      "products": "Produtos",
+      "shipping": "Frete",
+      "total": "Total",
+      "fiat_total": "Total fiat",
+      "not_recorded": "Não registrado",
+      "items": "Itens",
+      "no_items": "Nenhum item registrado.",
+      "quantity": "Qtd.",
+      "shipping_address": "Endereço de entrega",
+      "tracking": "Acompanhamento",
+      "contact": "Contato",
+      "discount": "Desconto"
     }
   }
 }

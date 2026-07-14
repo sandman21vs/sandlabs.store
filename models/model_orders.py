@@ -31,6 +31,7 @@ SELECT
     o.btc_address,
     o.access_token,
     o.coupon_code,
+    o.discount_sats,
     o.notes,
     o.created_at,
     o.updated_at
@@ -51,7 +52,11 @@ def _normalize_order(order):
     normalized = dict(order)
     normalized["total_sats"] = int(normalized.get("total_sats") or 0)
     normalized["shipping_sats"] = int(normalized.get("shipping_sats") or 0)
-    normalized["grand_total_sats"] = normalized["total_sats"] + normalized["shipping_sats"]
+    normalized["discount_sats"] = int(normalized.get("discount_sats") or 0)
+    normalized["grand_total_sats"] = max(
+        0,
+        normalized["total_sats"] - normalized["discount_sats"],
+    ) + normalized["shipping_sats"]
     normalized["access_token"] = decrypt_value(normalized.get("access_token"))
     normalized["shipping_name"] = decrypt_value(normalized.get("shipping_name_enc"))
     normalized["shipping_street"] = decrypt_value(normalized.get("shipping_street_enc"))
@@ -140,6 +145,7 @@ def create_order(
     total_sats,
     shipping_sats,
     coupon_code=None,
+    discount_sats=0,
     shipping_carrier=None,
     shipping_service=None,
     access_token=None,
@@ -170,8 +176,9 @@ def create_order(
                     shipping_carrier,
                     shipping_service,
                     access_token,
-                    coupon_code
-                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    coupon_code,
+                    discount_sats
+                ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     user_id,
@@ -189,6 +196,7 @@ def create_order(
                     shipping_service,
                     encrypt_value(access_token) or None,
                     coupon_code,
+                    int(discount_sats or 0),
                 ),
             )
             order_id = cursor.lastrowid

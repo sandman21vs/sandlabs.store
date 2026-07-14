@@ -41,8 +41,10 @@ from services.service_coinos import (
 )
 from services.service_qr import get_invoice_qr_response
 from services.service_pdf import build_order_pdf
+from services.service_coupons import evaluate_coupon
 from services.service_shipping import get_country_zone, get_shipping_options
 from services.service_btc_price import chf_to_sats
+from models.model_coupons import increment_usage as increment_coupon_usage
 
 checkout = Blueprint("checkout", __name__)
 logger = logging.getLogger(__name__)
@@ -51,7 +53,7 @@ _MAX_REMEMBERED_GUEST_ORDERS = 20
 _PDF_LABEL_KEYS = (
     "title", "receipt", "summary", "access_token", "account_order", "created",
     "order_status", "payment", "payment_status", "paid", "pending", "products",
-    "shipping", "total", "fiat_total", "not_recorded", "items", "no_items",
+    "shipping", "discount", "total", "fiat_total", "not_recorded", "items", "no_items",
     "quantity", "shipping_address", "tracking", "contact",
 )
 
@@ -307,6 +309,29 @@ def shipping_calculate():
     })
 
 
+@checkout.route("/api/checkout/apply-coupon", methods=["POST"])
+def apply_coupon():
+    """Preview a coupon against the authoritative server-side cart subtotal.
+
+    Never trusts a client-supplied amount; the subtotal is recomputed from the
+    cart. The binding discount is applied again at order creation.
+    """
+    _, _, items, total_sats, _ = _get_checkout_items()
+    data = request.get_json(silent=True) or {}
+    coupon, discount_sats, error_key = evaluate_coupon(data.get("code"), total_sats)
+    if error_key:
+        return jsonify({
+            "ok": False,
+            "error": translate(f"commerce.checkout.coupon.errors.{error_key}"),
+        }), 400
+    return jsonify({
+        "ok": True,
+        "code": coupon["code"] if coupon else "",
+        "discount_sats": discount_sats,
+        "subtotal_sats": total_sats,
+    })
+
+
 @checkout.route("/checkout")
 def checkout_page():
     return _render_checkout()
@@ -342,6 +367,14 @@ def create_order():
         total_weight_grams, shipping_info["country"], carrier, service
     )
     shipping_sats = chosen_shipping["price_sats"]
+
+    # Re-validate the coupon server-side against the authoritative subtotal.
+    # An invalid/expired code simply yields no discount (safe for money).
+    coupon, discount_sats, _coupon_error = evaluate_coupon(
+        request.form.get("cupom"), total_sats
+    )
+    coupon_code = coupon["code"] if coupon else None
+
     access_token = secrets.token_urlsafe(32) if user_id is None else None
     order_id = create_order_record(
         user_id=user_id,
@@ -350,6 +383,8 @@ def create_order():
         shipping_info=shipping_info,
         total_sats=total_sats,
         shipping_sats=shipping_sats,
+        coupon_code=coupon_code,
+        discount_sats=discount_sats,
         shipping_carrier=chosen_shipping.get("carrier"),
         shipping_service=chosen_shipping.get("service"),
         access_token=access_token,
@@ -364,8 +399,9 @@ def create_order():
         method = enabled_methods[0]
     coinos_type = PAYMENT_METHODS[method]
 
+    payable_sats = max(0, total_sats - discount_sats) + shipping_sats
     webhook_url = request.url_root.rstrip("/") + url_for("checkout.coinos_webhook")
-    invoice = create_invoice(total_sats + shipping_sats, invoice_type=method, webhook_url=webhook_url)
+    invoice = create_invoice(payable_sats, invoice_type=method, webhook_url=webhook_url)
     invoice_hash = (invoice or {}).get("hash", "")
     payable = (invoice or {}).get("text", "")
     if not invoice_hash or not payable:
@@ -388,6 +424,8 @@ def create_order():
         btc_address=btc_address,
     )
     clear_cart(session_id, user_id)
+    if coupon_code:
+        increment_coupon_usage(coupon_code)
     if user_id is None:
         _remember_guest_order(order_id)
     logger.info(

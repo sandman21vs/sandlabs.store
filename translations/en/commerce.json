@@ -56,7 +56,21 @@
         "invoice_failed": "Could not generate the invoice. Please try again."
       },
       "payment_method_heading": "Payment method",
-      "shipping_option_heading": "Shipping option"
+      "shipping_option_heading": "Shipping option",
+      "coupon": {
+        "label": "Coupon",
+        "placeholder": "Coupon code",
+        "apply": "Apply",
+        "applied": "Coupon applied",
+        "discount_label": "Discount",
+        "errors": {
+          "invalid": "Invalid coupon.",
+          "inactive": "Coupon is inactive.",
+          "expired": "Coupon has expired.",
+          "exhausted": "Coupon usage limit reached.",
+          "not_applicable": "Coupon not applicable to this order."
+        }
+      }
     },
     "payment": {
       "page_title": "Payment",

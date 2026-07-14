@@ -56,7 +56,21 @@
         "invoice_failed": "Die Rechnung konnte nicht erstellt werden. Bitte erneut versuchen."
       },
       "payment_method_heading": "Zahlungsart",
-      "shipping_option_heading": "Versandoption"
+      "shipping_option_heading": "Versandoption",
+      "coupon": {
+        "label": "Gutschein",
+        "placeholder": "Gutscheincode",
+        "apply": "Anwenden",
+        "applied": "Gutschein angewendet",
+        "discount_label": "Rabatt",
+        "errors": {
+          "invalid": "Ungültiger Gutschein.",
+          "inactive": "Gutschein ist inaktiv.",
+          "expired": "Gutschein ist abgelaufen.",
+          "exhausted": "Nutzungslimit des Gutscheins erreicht.",
+          "not_applicable": "Gutschein für diese Bestellung nicht anwendbar."
+        }
+      }
     },
     "payment": {
       "page_title": "Zahlung",

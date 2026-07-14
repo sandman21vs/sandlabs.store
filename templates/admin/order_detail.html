@@ -25,8 +25,10 @@
         <dd>{{ "{:,}".format(order.shipping_sats or 0) }} sats</dd>
         {% if order.coupon_code %}
         <dt class="muted">Cupom</dt>
-        <dd>{{ order.coupon_code }}</dd>
+        <dd>{{ order.coupon_code }} (&minus;{{ "{:,}".format(order.discount_sats or 0) }} sats)</dd>
         {% endif %}
+        <dt class="muted">Total a pagar</dt>
+        <dd><strong>{{ "{:,}".format(order.grand_total_sats) }} sats</strong></dd>
         {% if order.invoice_hash %}
         <dt class="muted">Invoice hash</dt>
         <dd style="font-family:monospace;font-size:.78rem;word-break:break-all">{{ order.invoice_hash }}</dd>

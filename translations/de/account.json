@@ -44,13 +44,29 @@
       "invalid": "Bestellung oder Token ungültig. Prüfe die Angaben und versuche es erneut."
     },
     "pdf": {
-      "title": "Bestellung #{id}", "receipt": "Sandlabs-Bestellbeleg", "summary": "Bestellübersicht",
-      "access_token": "Zugriffstoken", "account_order": "Kontobestellung", "created": "Erstellt am",
-      "order_status": "Bestellstatus", "payment": "Zahlung", "payment_status": "Zahlungsstatus",
-      "paid": "Bezahlt", "pending": "Ausstehend", "products": "Produkte", "shipping": "Versand",
-      "total": "Gesamt", "fiat_total": "Fiat-Gesamt", "not_recorded": "Nicht erfasst",
-      "items": "Artikel", "no_items": "Keine Artikel erfasst.", "quantity": "Menge",
-      "shipping_address": "Lieferadresse", "tracking": "Sendungsverfolgung", "contact": "Kontakt"
+      "title": "Bestellung #{id}",
+      "receipt": "Sandlabs-Bestellbeleg",
+      "summary": "Bestellübersicht",
+      "access_token": "Zugriffstoken",
+      "account_order": "Kontobestellung",
+      "created": "Erstellt am",
+      "order_status": "Bestellstatus",
+      "payment": "Zahlung",
+      "payment_status": "Zahlungsstatus",
+      "paid": "Bezahlt",
+      "pending": "Ausstehend",
+      "products": "Produkte",
+      "shipping": "Versand",
+      "total": "Gesamt",
+      "fiat_total": "Fiat-Gesamt",
+      "not_recorded": "Nicht erfasst",
+      "items": "Artikel",
+      "no_items": "Keine Artikel erfasst.",
+      "quantity": "Menge",
+      "shipping_address": "Lieferadresse",
+      "tracking": "Sendungsverfolgung",
+      "contact": "Kontakt",
+      "discount": "Rabatt"
     }
   }
 }

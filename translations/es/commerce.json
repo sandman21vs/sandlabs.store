@@ -56,7 +56,21 @@
         "invoice_failed": "No se pudo generar la factura. Inténtalo de nuevo."
       },
       "payment_method_heading": "Forma de pago",
-      "shipping_option_heading": "Opción de envío"
+      "shipping_option_heading": "Opción de envío",
+      "coupon": {
+        "label": "Cupón",
+        "placeholder": "Código del cupón",
+        "apply": "Aplicar",
+        "applied": "Cupón aplicado",
+        "discount_label": "Descuento",
+        "errors": {
+          "invalid": "Cupón no válido.",
+          "inactive": "Cupón inactivo.",
+          "expired": "Cupón caducado.",
+          "exhausted": "Límite de uso del cupón alcanzado.",
+          "not_applicable": "Cupón no aplicable a este pedido."
+        }
+      }
     },
     "payment": {
       "page_title": "Pago",

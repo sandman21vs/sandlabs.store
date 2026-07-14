@@ -34,6 +34,24 @@ This checklist **is** the "tik de ok" the user asked for.
 - [x] **Fase G** — Multi-moeda: USD + switcher — `e2f9604`
 - [x] **Etapa 3** — Reconciliação, merge, atualizar `ARCHITECTURE.md` — `f81043e`
 
+### Post-roadmap — endurecimento "tudo no back-end"
+
+Revisão de segurança pedida pelo usuário ("trazer tudo pro back-end").
+**Conclusão-chave:** o caminho do dinheiro já é 100% autoritativo no servidor —
+o carrinho guarda só `product_id`+`price_id`, o preço em sats vem do banco, e
+`routes_cart._price_exists_for_product` valida que o `price_id` pertence ao
+produto ativo. Manipular `window.PRODUTOS` no navegador não altera o que o
+servidor cobra.
+
+- [x] **H1** — Remover editor de loja legado do navegador (`/config`,
+  `config-page.js`, `produtos-data.js`, `config.js`); contatos/cores agora vêm
+  de um context processor do backend (`store_config`). — `ced2221`
+- [x] **H2** — Sistema de cupons com desconto server-side (tabela `coupons`,
+  `service_coupons`, aplicação no `create_order`, `orders.discount_sats`, CRUD
+  no admin, +20 testes).
+- [ ] **H3 (adiado)** — SSR dos cards: sem ganho de segurança (servidor já
+  revalida cada sat); mantido em JS. Reabrir só se quiserem catálogo sem-JS.
+
 ---
 
 ## Current state

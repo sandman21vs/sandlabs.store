@@ -152,6 +152,17 @@
       <input type="hidden" name="payment_method" value="{{ payment_methods[0] }}">
       {% endif %}
 
+      <fieldset class="form-group checkout-coupon" id="checkout-coupon"
+                data-apply-url="{{ url_for('checkout.apply_coupon') }}">
+        <legend class="order-section-title">{{ t('commerce.checkout.coupon.label') }}</legend>
+        <div class="coupon-row">
+          <input type="text" name="cupom" id="coupon-code"
+                 placeholder="{{ t('commerce.checkout.coupon.placeholder') }}" autocomplete="off">
+          <button type="button" class="btn" id="coupon-apply">{{ t('commerce.checkout.coupon.apply') }}</button>
+        </div>
+        <p class="coupon-feedback" id="coupon-feedback" hidden></p>
+      </fieldset>
+
       <button type="submit" class="btn btn-accent" {% if has_unpriced_items %}disabled{% endif %}>
         {{ t('commerce.checkout.pay_button') }}
       </button>
@@ -200,6 +211,10 @@
             <span id="checkout-shipping-sats">{{ shipping_sats }}</span> sats
             <span class="muted">(<span id="checkout-shipping-chf">{{ '%.2f'|format(shipping_chf) }}</span> CHF)</span>
           </dd>
+        </div>
+        <div id="checkout-discount-row" hidden>
+          <dt>{{ t('commerce.checkout.coupon.discount_label') }}</dt>
+          <dd>&minus;<span id="checkout-discount-sats">0</span> sats</dd>
         </div>
         <div class="checkout-grand-total">
           <dt>{{ t('commerce.checkout.totals.total') }}</dt>

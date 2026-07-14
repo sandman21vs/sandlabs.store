@@ -87,6 +87,36 @@
         "completed": "Initiales Setup abgeschlossen.",
         "webhook_generated": "Coinos Webhook Secret wurde automatisch generiert."
       }
+    },
+    "coupons": {
+      "sidebar_link": "Gutscheine",
+      "title": "Gutscheine",
+      "heading": "Rabattgutscheine",
+      "new_heading": "Neuer Gutschein",
+      "code": "Code",
+      "type": "Typ",
+      "percent": "Prozent (%)",
+      "fixed": "Fester Betrag (Sats)",
+      "value": "Wert",
+      "expires_at": "Läuft ab am",
+      "max_uses": "Max. Nutzungen",
+      "used": "Genutzt",
+      "active": "Aktiv",
+      "actions": "Aktionen",
+      "create": "Erstellen",
+      "save": "Speichern",
+      "delete": "Löschen",
+      "none": "Noch keine Gutscheine.",
+      "unlimited": "unbegrenzt",
+      "flash": {
+        "created": "Gutschein erstellt.",
+        "updated": "Gutschein aktualisiert.",
+        "deleted": "Gutschein gelöscht."
+      },
+      "errors": {
+        "invalid": "Ungültige Gutscheindaten.",
+        "duplicate": "Ein Gutschein mit diesem Code existiert bereits."
+      }
     }
   }
 }

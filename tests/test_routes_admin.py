@@ -448,3 +448,45 @@ class TestAdminSettings:
         finally:
             conn.close()
         assert row["value"] == "0"
+
+
+class TestAdminCoupons:
+    def test_coupons_page_lists(self, admin_client, csrf_headers):
+        from models.model_coupons import create_coupon
+        create_coupon(code="SHOWME", discount_type="percent", discount_value=15)
+        resp = admin_client.get("/admin/coupons")
+        assert resp.status_code == 200
+        assert b"SHOWME" in resp.data
+
+    def test_create_coupon(self, admin_client, csrf_headers):
+        from models.model_coupons import get_coupon
+        resp = _form(admin_client, csrf_headers, "/admin/coupons/new", {
+            "code": "new10", "discount_type": "percent", "discount_value": "10",
+            "active": "on",
+        })
+        assert resp.status_code in (302, 200)
+        coupon = get_coupon("NEW10")
+        assert coupon is not None
+        assert coupon["discount_value"] == 10
+        assert coupon["active"] is True
+
+    def test_create_coupon_rejects_zero_value(self, admin_client, csrf_headers):
+        from models.model_coupons import get_coupon
+        _form(admin_client, csrf_headers, "/admin/coupons/new", {
+            "code": "ZERO", "discount_type": "percent", "discount_value": "0",
+        })
+        assert get_coupon("ZERO") is None
+
+    def test_delete_coupon(self, admin_client, csrf_headers):
+        from models.model_coupons import create_coupon, get_coupon, list_coupons
+        create_coupon(code="BYE", discount_type="fixed_sats", discount_value=500)
+        coupon_id = [c for c in list_coupons() if c["code"] == "BYE"][0]["id"]
+        _form(admin_client, csrf_headers, f"/admin/coupons/{coupon_id}/delete", {})
+        assert get_coupon("BYE") is None
+
+    def test_non_admin_cannot_access_coupons(self, client, test_user, admin_user):
+        with client.session_transaction() as sess:
+            sess["user_id"] = test_user
+            sess["is_admin"] = False
+        resp = client.get("/admin/coupons")
+        assert resp.status_code == 403

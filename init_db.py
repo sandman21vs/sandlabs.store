@@ -114,6 +114,7 @@ CREATE TABLE IF NOT EXISTS orders (
     btc_address                TEXT,
     access_token               TEXT,
     coupon_code                TEXT,
+    discount_sats              INTEGER DEFAULT 0,
     notes                      TEXT DEFAULT '',
     created_at                 TEXT DEFAULT (datetime('now')),
     updated_at                 TEXT DEFAULT (datetime('now')),
@@ -136,6 +137,18 @@ CREATE TABLE IF NOT EXISTS login_attempts (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     ip           TEXT NOT NULL,
     attempted_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS coupons (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    code           TEXT NOT NULL UNIQUE,
+    discount_type  TEXT NOT NULL DEFAULT 'percent',
+    discount_value INTEGER NOT NULL DEFAULT 0,
+    active         INTEGER NOT NULL DEFAULT 1,
+    expires_at     TEXT,
+    max_uses       INTEGER,
+    used_count     INTEGER NOT NULL DEFAULT 0,
+    created_at     TEXT DEFAULT (datetime('now'))
 );
 """
 
@@ -354,6 +367,8 @@ def init_db():
         _ensure_column(conn, "orders", "invoice_type", "invoice_type TEXT")
         _ensure_column(conn, "orders", "btc_address", "btc_address TEXT")
         _ensure_column(conn, "orders", "access_token", "access_token TEXT")
+        _ensure_column(conn, "orders", "coupon_code", "coupon_code TEXT")
+        _ensure_column(conn, "orders", "discount_sats", "discount_sats INTEGER DEFAULT 0")
         _migrate_legacy_shipping_data(conn)
         _drop_legacy_shipping_columns(conn)
         conn.executemany(

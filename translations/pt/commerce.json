@@ -56,7 +56,21 @@
         "invoice_failed": "Não foi possível gerar a fatura. Tente novamente."
       },
       "payment_method_heading": "Forma de pagamento",
-      "shipping_option_heading": "Opção de frete"
+      "shipping_option_heading": "Opção de frete",
+      "coupon": {
+        "label": "Cupom",
+        "placeholder": "Código do cupom",
+        "apply": "Aplicar",
+        "applied": "Cupom aplicado",
+        "discount_label": "Desconto",
+        "errors": {
+          "invalid": "Cupom inválido.",
+          "inactive": "Cupom inativo.",
+          "expired": "Cupom expirado.",
+          "exhausted": "Limite de uso do cupom atingido.",
+          "not_applicable": "Cupom não aplicável a este pedido."
+        }
+      }
     },
     "payment": {
       "page_title": "Pagamento",

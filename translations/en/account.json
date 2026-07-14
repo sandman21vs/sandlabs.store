@@ -44,13 +44,29 @@
       "invalid": "Invalid order or token. Check the details and try again."
     },
     "pdf": {
-      "title": "Order #{id}", "receipt": "Sandlabs order receipt", "summary": "Order summary",
-      "access_token": "Access token", "account_order": "Account order", "created": "Created",
-      "order_status": "Order status", "payment": "Payment", "payment_status": "Payment status",
-      "paid": "Paid", "pending": "Pending", "products": "Products", "shipping": "Shipping",
-      "total": "Total", "fiat_total": "Fiat total", "not_recorded": "Not recorded",
-      "items": "Items", "no_items": "No items recorded.", "quantity": "Qty",
-      "shipping_address": "Shipping address", "tracking": "Tracking", "contact": "Contact"
+      "title": "Order #{id}",
+      "receipt": "Sandlabs order receipt",
+      "summary": "Order summary",
+      "access_token": "Access token",
+      "account_order": "Account order",
+      "created": "Created",
+      "order_status": "Order status",
+      "payment": "Payment",
+      "payment_status": "Payment status",
+      "paid": "Paid",
+      "pending": "Pending",
+      "products": "Products",
+      "shipping": "Shipping",
+      "total": "Total",
+      "fiat_total": "Fiat total",
+      "not_recorded": "Not recorded",
+      "items": "Items",
+      "no_items": "No items recorded.",
+      "quantity": "Qty",
+      "shipping_address": "Shipping address",
+      "tracking": "Tracking",
+      "contact": "Contact",
+      "discount": "Discount"
     }
   }
 }

@@ -14,17 +14,39 @@
   var carrierInput = document.getElementById('shipping_carrier');
   var serviceInput = document.getElementById('shipping_service');
 
+  // Coupon elements
+  var couponBox = document.getElementById('checkout-coupon');
+  var couponInput = document.getElementById('coupon-code');
+  var couponApply = document.getElementById('coupon-apply');
+  var couponFeedback = document.getElementById('coupon-feedback');
+  var discountRow = document.getElementById('checkout-discount-row');
+  var discountSatsEl = document.getElementById('checkout-discount-sats');
+
+  var state = {
+    shippingSats: Number(shippingSats ? shippingSats.textContent : 0) || 0,
+    discountSats: 0
+  };
+
+  function recomputeTotal() {
+    var discounted = Math.max(0, productsTotal - state.discountSats);
+    grandTotal.textContent = String(discounted + state.shippingSats);
+    if (discountRow) {
+      discountRow.hidden = state.discountSats <= 0;
+      if (discountSatsEl) discountSatsEl.textContent = String(state.discountSats);
+    }
+  }
+
   function applyOption(sats, chf, carrier, service) {
-    shippingSats.textContent = String(sats || 0);
+    state.shippingSats = Number(sats || 0);
+    shippingSats.textContent = String(state.shippingSats);
     shippingChf.textContent = Number(chf || 0).toFixed(2);
-    grandTotal.textContent = String(productsTotal + Number(sats || 0));
     if (carrierInput) carrierInput.value = carrier || '';
     if (serviceInput) serviceInput.value = service || '';
+    recomputeTotal();
   }
 
   function renderOptions(options) {
     if (!optionsBox) return;
-    // Keep the <legend>, replace the option labels.
     optionsBox.querySelectorAll('.shipping-option').forEach(function (el) { el.remove(); });
     options.forEach(function (opt, i) {
       var label = document.createElement('label');
@@ -77,7 +99,45 @@
     }
   }
 
-  // Sync the hidden carrier/service when a server-rendered option is chosen.
+  function showCouponFeedback(message, ok) {
+    if (!couponFeedback) return;
+    couponFeedback.textContent = message || '';
+    couponFeedback.hidden = !message;
+    couponFeedback.classList.toggle('is-error', !ok);
+    couponFeedback.classList.toggle('is-ok', !!ok && !!message);
+  }
+
+  async function applyCoupon() {
+    if (!couponBox || !couponInput) return;
+    var code = (couponInput.value || '').trim();
+    if (!code) {
+      state.discountSats = 0;
+      showCouponFeedback('', true);
+      recomputeTotal();
+      return;
+    }
+    var response = await fetch(couponBox.dataset.applyUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': window.CSRF_TOKEN || ''
+      },
+      body: JSON.stringify({ code: code })
+    });
+    var data = await response.json().catch(function () { return {}; });
+    if (!response.ok || !data.ok) {
+      state.discountSats = 0;
+      showCouponFeedback((data && data.error) || 'Invalid coupon.', false);
+      recomputeTotal();
+      return;
+    }
+    state.discountSats = Number(data.discount_sats || 0);
+    showCouponFeedback(window.t ? window.t('commerce.checkout.coupon.applied', 'Coupon applied') : 'Coupon applied', true);
+    recomputeTotal();
+  }
+
+  if (couponApply) couponApply.addEventListener('click', applyCoupon);
+
   if (optionsBox) {
     optionsBox.addEventListener('change', function (e) {
       var r = e.target;
@@ -91,5 +151,10 @@
   countryInput.addEventListener('blur', updateShipping);
   if ((countryInput.value || '').trim().length >= 2) {
     updateShipping();
+  }
+
+  // A coupon may already be present (filled from localStorage by cupom.js).
+  if (couponInput && (couponInput.value || '').trim()) {
+    applyCoupon();
   }
 })();

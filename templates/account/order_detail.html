@@ -20,6 +20,10 @@
           </div>
           <p class="muted">{{ t('account.order_detail.created_at', value=order.created_at) }}</p>
           <p class="muted">{{ t('account.order_detail.shipping_cost', sats=order.shipping_sats) }}</p>
+          {% if order.discount_sats %}
+          <p class="muted">{{ t('commerce.checkout.coupon.discount_label') }}: &minus;{{ order.discount_sats }} sats
+            {% if order.coupon_code %}({{ order.coupon_code }}){% endif %}</p>
+          {% endif %}
           <p class="muted">{{ t('account.order_detail.country', value=order.shipping_country or 'CH') }}</p>
           {% if order.shipping_tracking %}
             <p><strong>{{ t('account.order_detail.tracking') }}:</strong> {{ order.shipping_tracking }}</p>

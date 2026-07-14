@@ -23,6 +23,7 @@ _DEFAULT_LABELS = {
     "pending": "Pending",
     "products": "Products",
     "shipping": "Shipping",
+    "discount": "Discount",
     "total": "Total",
     "fiat_total": "Fiat total",
     "not_recorded": "Not recorded",
@@ -120,6 +121,13 @@ def build_order_pdf(order: dict, contacts=None, tracking_url=None, labels=None) 
     _line(pdf, resolved_labels["payment_status"], payment_status)
     _line(pdf, resolved_labels["products"], f"{int(order.get('total_sats') or 0):,} sats")
     _line(pdf, resolved_labels["shipping"], f"{int(order.get('shipping_sats') or 0):,} sats")
+    discount_sats = int(order.get("discount_sats") or 0)
+    if discount_sats > 0:
+        coupon = order.get("coupon_code")
+        label = resolved_labels["discount"]
+        if coupon:
+            label = f"{label} ({coupon})"
+        _line(pdf, label, f"-{discount_sats:,} sats")
     _line(pdf, resolved_labels["total"], f"{int(order.get('grand_total_sats') or 0):,} sats")
     _line(pdf, resolved_labels["fiat_total"], _fiat_total(order, resolved_labels))
 
