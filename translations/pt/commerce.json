@@ -53,7 +53,8 @@
         "unpriced_items": "Existem itens sem conversao disponivel para sats. Ajuste os precos fiat ou aguarde a cotacao BTC voltar.",
         "shipping_required": "Calcule o frete antes de prosseguir.",
         "invoice_failed": "Não foi possível gerar a fatura. Tente novamente."
-      }
+      },
+      "payment_method_heading": "Forma de pagamento"
     },
     "payment": {
       "page_title": "Pagamento",
@@ -65,7 +66,14 @@
       "qr_alt": "QR Code para pagamento",
       "bolt11_heading": "Fatura Lightning (BOLT11)",
       "bolt11_hint": "Copie a fatura abaixo ou escaneie o QR Code com sua carteira.",
-      "view_order": "Ver pedido"
+      "view_order": "Ver pedido",
+      "address_heading": "Endereço de pagamento",
+      "address_hint": "Envie o valor exato para o endereço abaixo.",
+      "method": {
+        "lightning": "Lightning",
+        "liquid": "Liquid",
+        "onchain": "Bitcoin on-chain"
+      }
     },
     "api": {
       "errors": {

@@ -202,18 +202,34 @@ def create_order(user_id, session_id, items, shipping_info, total_sats, shipping
         conn.close()
 
 
-def set_order_payment(order_id, invoice_hash, bolt11):
-    """Atualiza pedido com dados da invoice Coinos."""
+def set_order_payment(
+    order_id,
+    invoice_hash,
+    bolt11,
+    payment_method="lightning",
+    invoice_type="lightning",
+    btc_address=None,
+):
+    """Atualiza pedido com dados da invoice Coinos.
+
+    Para Lightning, ``bolt11`` guarda o invoice; para Liquid/onchain,
+    ``btc_address`` guarda o endereco. ``invoice_hash`` e usado no polling.
+    """
     conn = db.get_db()
     try:
         with conn:
             cursor = conn.execute(
                 """
                 UPDATE orders
-                SET invoice_hash = ?, bolt11 = ?, updated_at = datetime('now')
+                SET invoice_hash = ?,
+                    bolt11 = ?,
+                    payment_method = ?,
+                    invoice_type = ?,
+                    btc_address = ?,
+                    updated_at = datetime('now')
                 WHERE id = ?
                 """,
-                (invoice_hash, bolt11, order_id),
+                (invoice_hash, bolt11, payment_method, invoice_type, btc_address, order_id),
             )
             return cursor.rowcount > 0
     finally:

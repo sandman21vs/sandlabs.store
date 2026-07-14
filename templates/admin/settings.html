@@ -35,6 +35,16 @@
                {{ 'checked' if cfg.coinos_enabled == '1' }}>
         <label for="coinos_enabled" style="margin-bottom:0">Pagamentos Lightning habilitados</label>
       </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
+        <input type="checkbox" name="coinos_liquid" id="coinos_liquid" class="form-input"
+               {{ 'checked' if cfg.coinos_liquid == '1' }}>
+        <label for="coinos_liquid" style="margin-bottom:0">Pagamentos Liquid habilitados</label>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
+        <input type="checkbox" name="coinos_onchain" id="coinos_onchain" class="form-input"
+               {{ 'checked' if cfg.coinos_onchain == '1' }}>
+        <label for="coinos_onchain" style="margin-bottom:0">Pagamentos Bitcoin on-chain habilitados</label>
+      </div>
     </div>
 
     {# Contatos #}

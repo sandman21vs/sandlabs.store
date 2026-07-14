@@ -117,6 +117,20 @@
         >
       </div>
 
+      {% if payment_methods and payment_methods|length > 1 %}
+      <fieldset class="form-group checkout-payment-methods">
+        <legend class="order-section-title">{{ t('commerce.checkout.payment_method_heading') }}</legend>
+        {% for method in payment_methods %}
+        <label class="payment-method-option">
+          <input type="radio" name="payment_method" value="{{ method }}" {% if loop.first %}checked{% endif %}>
+          <span>{{ t('commerce.payment.method.' ~ method) }}</span>
+        </label>
+        {% endfor %}
+      </fieldset>
+      {% elif payment_methods %}
+      <input type="hidden" name="payment_method" value="{{ payment_methods[0] }}">
+      {% endif %}
+
       <button type="submit" class="btn btn-accent" {% if has_unpriced_items %}disabled{% endif %}>
         {{ t('commerce.checkout.pay_button') }}
       </button>

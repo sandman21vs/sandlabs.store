@@ -196,6 +196,41 @@ class TestCheckoutFlow:
         assert len(items) == 1
         assert get_cart_count("test-session", test_user) == 0
 
+    def test_create_order_onchain_stores_address_and_method(self, client, test_user, seeded_product, csrf_headers):
+        _login_session(client, user_id=test_user)
+        add_to_cart("test-session", seeded_product["id"], seeded_product["prices"][0]["id"], 1, {}, user_id=test_user)
+        set_config("coinos_enabled", "1")
+        set_config("coinos_onchain", "1")
+
+        with patch("routes.routes_checkout.calculate_shipping_chf", return_value=0.0), \
+             patch("routes.routes_checkout.chf_to_sats", return_value=0), \
+             patch("routes.routes_checkout.create_invoice", return_value={"hash": "onchainhash", "text": "bc1qaddress"}) as mock_inv:
+            resp = client.post(
+                "/checkout/create-order",
+                data={
+                    "name": "Buyer", "street": "Street", "house_number": "1",
+                    "city": "Zurich", "postal_code": "8000", "country": "CH",
+                    "payment_method": "onchain",
+                },
+                headers=csrf_headers,
+                follow_redirects=False,
+            )
+
+        assert resp.status_code == 302
+        # create_invoice called with the onchain method.
+        assert mock_inv.call_args.kwargs.get("invoice_type") == "onchain"
+
+        conn = get_db()
+        try:
+            order = conn.execute("SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC LIMIT 1", (test_user,)).fetchone()
+        finally:
+            conn.close()
+        assert order["payment_method"] == "onchain"
+        assert order["invoice_type"] == "bitcoin"
+        assert order["btc_address"] == "bc1qaddress"
+        assert order["bolt11"] is None
+        assert order["invoice_hash"] == "onchainhash"
+
     def test_create_order_rejects_items_without_available_sats_conversion(self, client, test_user, csrf_headers, tmp_db, monkeypatch):
         conn = get_db()
         try:

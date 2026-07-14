@@ -53,7 +53,8 @@
         "unpriced_items": "Some items have no configured price. Remove them to continue.",
         "shipping_required": "Please calculate shipping before proceeding.",
         "invoice_failed": "Could not generate the invoice. Please try again."
-      }
+      },
+      "payment_method_heading": "Payment method"
     },
     "payment": {
       "page_title": "Payment",
@@ -65,7 +66,14 @@
       "qr_alt": "Payment QR code",
       "bolt11_heading": "Lightning Invoice (BOLT11)",
       "bolt11_hint": "Copy the invoice below or scan the QR code with your wallet.",
-      "view_order": "View order"
+      "view_order": "View order",
+      "address_heading": "Payment address",
+      "address_hint": "Send the exact amount to the address below.",
+      "method": {
+        "lightning": "Lightning",
+        "liquid": "Liquid",
+        "onchain": "Bitcoin on-chain"
+      }
     },
     "api": {
       "errors": {

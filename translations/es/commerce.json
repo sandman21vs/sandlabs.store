@@ -53,7 +53,8 @@
         "unpriced_items": "Algunos artículos no tienen precio configurado. Elimínalos para continuar.",
         "shipping_required": "Calcula el envío antes de continuar.",
         "invoice_failed": "No se pudo generar la factura. Inténtalo de nuevo."
-      }
+      },
+      "payment_method_heading": "Forma de pago"
     },
     "payment": {
       "page_title": "Pago",
@@ -65,7 +66,14 @@
       "qr_alt": "Código QR de pago",
       "bolt11_heading": "Factura Lightning (BOLT11)",
       "bolt11_hint": "Copia la factura o escanea el código QR con tu billetera.",
-      "view_order": "Ver pedido"
+      "view_order": "Ver pedido",
+      "address_heading": "Dirección de pago",
+      "address_hint": "Envía el importe exacto a la dirección de abajo.",
+      "method": {
+        "lightning": "Lightning",
+        "liquid": "Liquid",
+        "onchain": "Bitcoin on-chain"
+      }
     },
     "api": {
       "errors": {

@@ -53,7 +53,8 @@
         "unpriced_items": "Einige Artikel haben keinen konfigurierten Preis. Entferne sie, um fortzufahren.",
         "shipping_required": "Bitte berechne den Versand, bevor du fortfährst.",
         "invoice_failed": "Die Rechnung konnte nicht erstellt werden. Bitte erneut versuchen."
-      }
+      },
+      "payment_method_heading": "Zahlungsart"
     },
     "payment": {
       "page_title": "Zahlung",
@@ -65,7 +66,14 @@
       "qr_alt": "Zahlungs-QR-Code",
       "bolt11_heading": "Lightning-Rechnung (BOLT11)",
       "bolt11_hint": "Kopiere die Rechnung oder scanne den QR-Code mit deiner Wallet.",
-      "view_order": "Bestellung ansehen"
+      "view_order": "Bestellung ansehen",
+      "address_heading": "Zahlungsadresse",
+      "address_hint": "Senden Sie den genauen Betrag an die untenstehende Adresse.",
+      "method": {
+        "lightning": "Lightning",
+        "liquid": "Liquid",
+        "onchain": "Bitcoin on-chain"
+      }
     },
     "api": {
       "errors": {

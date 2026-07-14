@@ -1520,3 +1520,21 @@ um servidor comprometido (que precisa da chave em memória para descriptografar 
 endereço na hora de despachar). PII nunca deve ser logada em texto puro. A
 coluna `orders.notes` permanece sem uso; não deve receber PII sem passar a ser
 criptografada como os demais campos.
+
+---
+
+## Pagamento multi-rail (Fase C — Lightning / Liquid / on-chain)
+
+`services/service_coinos.py` suporta três trilhas de liquidação via Coinos, todas
+recebidas em satoshis: `lightning` (bolt11 + webhook), `liquid` e `onchain`
+(endereço por pedido, tipo Coinos `liquid`/`bitcoin`). `PAYMENT_METHODS` mapeia
+os nomes públicos para os tipos Coinos; `get_enabled_methods()` lê os toggles
+`coinos_liquid` / `coinos_onchain` (Lightning fica disponível sempre que o
+Coinos está habilitado). Endereços frescos: `get_fresh_onchain_address()` /
+`get_fresh_liquid_address()` (invoice de amount 0).
+
+No checkout, o comprador escolhe o método (`payment_method`); o pedido guarda
+`payment_method`, `invoice_type` e — para Liquid/onchain — `btc_address`
+(Lightning guarda `bolt11`). A confirmação é uniforme: polling
+`check_invoice(hash).received >= amount` (e webhook para Lightning). Toggles no
+admin em `/admin/settings`. Referência de implementação: `~/prometeu/coinos_client.py`.

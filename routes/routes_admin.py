@@ -452,6 +452,9 @@ def settings():
         else:
             set_config("coinos_enabled", "1" if coinos_enabled_requested else "0")
 
+        set_config("coinos_liquid", "1" if request.form.get("coinos_liquid") else "0")
+        set_config("coinos_onchain", "1" if request.form.get("coinos_onchain") else "0")
+
         shipping_json = request.form.get("shipping_rates", "").strip()
         settings_saved = False
         try:

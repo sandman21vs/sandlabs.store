@@ -24,9 +24,14 @@
     </article>
 
     <article class="card glass invoice-card">
+      {% if order.payment_method in ('onchain', 'liquid') %}
+      <h2 class="order-section-title">{{ t('commerce.payment.address_heading') }}</h2>
+      <p class="muted">{{ t('commerce.payment.address_hint') }}</p>
+      {% else %}
       <h2 class="order-section-title">{{ t('commerce.payment.bolt11_heading') }}</h2>
       <p class="muted">{{ t('commerce.payment.bolt11_hint') }}</p>
-      <code id="bolt11-text" class="mono-block">{{ order.bolt11 }}</code>
+      {% endif %}
+      <code id="bolt11-text" class="mono-block">{{ payable }}</code>
       <div class="invoice-actions">
         <button type="button" id="copy-bolt11" class="btn btn-accent">{{ t('common.actions.copy') }}</button>
         <a class="btn btn-ghost" href="{{ url_for('account.order_detail', order_id=order.id) }}">{{ t('commerce.payment.view_order') }}</a>

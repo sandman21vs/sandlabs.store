@@ -18,7 +18,12 @@ from models.model_orders import (
     set_order_payment,
 )
 from routes.auth_utils import login_required
-from services.service_coinos import check_invoice, create_invoice
+from services.service_coinos import (
+    PAYMENT_METHODS,
+    check_invoice,
+    create_invoice,
+    get_enabled_methods,
+)
 from services.service_qr import get_invoice_qr_response
 from services.service_shipping import calculate_shipping_chf, get_country_zone
 from services.service_btc_price import chf_to_sats
@@ -120,6 +125,7 @@ def _render_checkout(error=None, form_data=None, status_code=200):
             grand_total_sats=total_sats + shipping_sats,
             shipping_zone=get_country_zone(preview_country),
             has_unpriced_items=_has_unpriced_items(items),
+            payment_methods=get_enabled_methods(),
             error=error,
         ),
         status_code,
@@ -230,11 +236,20 @@ def create_order():
         shipping_sats=shipping_sats,
     )
 
+    method = (request.form.get("payment_method") or "lightning").strip().lower()
+    # Validate the chosen method against what the admin enabled; fall back to
+    # the first enabled rail (Lightning). create_invoice() is the source of
+    # truth for whether Coinos can actually settle, returning None otherwise.
+    enabled_methods = get_enabled_methods() or ["lightning"]
+    if method not in enabled_methods:
+        method = enabled_methods[0]
+    coinos_type = PAYMENT_METHODS[method]
+
     webhook_url = request.url_root.rstrip("/") + url_for("checkout.coinos_webhook")
-    invoice = create_invoice(total_sats + shipping_sats, webhook_url=webhook_url)
+    invoice = create_invoice(total_sats + shipping_sats, invoice_type=method, webhook_url=webhook_url)
     invoice_hash = (invoice or {}).get("hash", "")
-    bolt11 = (invoice or {}).get("text", "")
-    if not invoice_hash or not bolt11:
+    payable = (invoice or {}).get("text", "")
+    if not invoice_hash or not payable:
         delete_order(order_id)
         logger.warning("checkout_invoice_creation_failed order_id=%s user_id=%s", order_id, user_id)
         return _render_checkout(
@@ -243,7 +258,16 @@ def create_order():
             status_code=502,
         )
 
-    set_order_payment(order_id, invoice_hash, bolt11)
+    bolt11 = payable if method == "lightning" else None
+    btc_address = payable if method in ("liquid", "onchain") else None
+    set_order_payment(
+        order_id,
+        invoice_hash,
+        bolt11,
+        payment_method=method,
+        invoice_type=coinos_type,
+        btc_address=btc_address,
+    )
     clear_cart(session_id, user_id)
     logger.info(
         "checkout_order_created order_id=%s user_id=%s total_sats=%s shipping_sats=%s country=%s",
@@ -260,7 +284,8 @@ def create_order():
 @login_required
 def payment_page(order_id):
     order = _ensure_order_owner(get_order(order_id))
-    if not order.get("bolt11"):
+    payable = order.get("bolt11") or order.get("btc_address")
+    if not payable:
         return redirect(url_for("account.order_detail", order_id=order_id))
     logger.info("checkout_payment_page_viewed order_id=%s user_id=%s", order_id, session.get("user_id"))
 
@@ -268,7 +293,8 @@ def payment_page(order_id):
         "payment.html",
         active="orders",
         order=order,
-        qr_url=url_for("checkout.invoice_qr", bolt11=order["bolt11"]),
+        payable=payable,
+        qr_url=url_for("checkout.invoice_qr", bolt11=payable),
     )
 
 

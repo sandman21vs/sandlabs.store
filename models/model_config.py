@@ -7,6 +7,8 @@ DEFAULT_CONFIG = {
     "coinos_api_key": config.COINOS_API_KEY,
     "coinos_webhook_secret": config.COINOS_WEBHOOK_SECRET,
     "coinos_enabled": "1" if config.COINOS_ENABLED else "0",
+    "coinos_liquid": "0",
+    "coinos_onchain": "0",
     "whatsapp": "",
     "telegram": "",
 }
@@ -83,4 +85,6 @@ def get_coinos_config():
         "api_key": get_config("coinos_api_key"),
         "webhook_secret": get_config("coinos_webhook_secret"),
         "enabled": get_bool_config("coinos_enabled", config.COINOS_ENABLED),
+        "liquid": get_bool_config("coinos_liquid", False),
+        "onchain": get_bool_config("coinos_onchain", False),
     }
