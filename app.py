@@ -6,6 +6,7 @@ from flask import Flask, abort, redirect, request, session
 import config
 from i18n import init_app as init_i18n
 from init_db import init_db
+from services.service_security import require_pii_key
 from routes.routes_account import account
 from routes.routes_admin import admin
 from routes.routes_auth import auth
@@ -19,6 +20,11 @@ if not logging.getLogger().handlers:
         format="%(asctime)s %(name)s %(levelname)s %(message)s",
     )
 
+
+# Fail closed in production: refuse to serve without a dedicated PII secret so
+# customer data is never encrypted with the insecure dev fallback key.
+if os.environ.get("FLASK_ENV") == "production":
+    require_pii_key()
 
 app = Flask(__name__, static_url_path="")
 app.secret_key = config.SECRET_KEY

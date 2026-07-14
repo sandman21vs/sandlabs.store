@@ -1,6 +1,11 @@
 import os
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-in-production-please")
+# BIP39 mnemonic used as the master secret for PII encryption + blind indexes.
+# Preferred over SHIPPING_DATA_KEY; the latter is kept for backward compat and
+# as a dev fallback. Keep this out of the database and out of version control.
+MASTER_MNEMONIC = os.environ.get("MASTER_MNEMONIC", "")
+MASTER_MNEMONIC_PASSPHRASE = os.environ.get("MASTER_MNEMONIC_PASSPHRASE", "")
 SHIPPING_DATA_KEY = os.environ.get("SHIPPING_DATA_KEY", "")
 DATABASE_PATH = os.environ.get(
     "DATABASE_PATH",

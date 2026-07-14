@@ -1488,3 +1488,35 @@ git commit -m "Fase N: descricao curta do que foi feito"
 - **CSS:** NAO modificar `style.css` existente exceto para ADICIONAR novas classes. Usar design tokens existentes.
 - **JS:** Manter arquivos existentes funcionando. Novos arquivos em `static/js/`.
 - **Nomes de arquivo:** `model_*.py`, `routes_*.py`, `service_*.py` — consistente com FREESANDMANN.
+
+---
+
+## Criptografia de PII em repouso (Fase A — seed BIP39)
+
+`services/service_security.py` deriva todo o material de chave de um **segredo
+mestre único**: uma frase-semente BIP39 em `MASTER_MNEMONIC` (fallback para
+`SHIPPING_DATA_KEY`/`SECRET_KEY` em dev). Da semente saem, via HKDF-SHA256 com
+labels distintos:
+
+- **chave Fernet** para criptografar PII (nome, endereço, email, display name);
+- **chave HMAC** para *índices cegos* (`blind_index` / `email_blind_index`) —
+  permitem lookup/unicidade por igualdade sem guardar o valor em texto puro.
+
+Compatibilidade: um `MultiFernet([nova, legada])` ainda descriptografa dados
+escritos com o esquema anterior (Fernet de `SHA-256(SHIPPING_DATA_KEY)`); novas
+escritas usam a chave derivada da semente.
+
+Schema: `users` passou a `email_enc` / `email_bidx` (UNIQUE) / `display_name_enc`
+(sem coluna `email` em texto puro). `init_db._migrate_users_pii` reconstrói
+bancos legados preservando os ids. Login/registro buscam por `email_bidx`.
+
+`app.py` chama `require_pii_key()` quando `FLASK_ENV=production`, falhando
+fechado se nenhum segredo dedicado de PII estiver configurado.
+
+**Nota de segurança (honesta):** derivar a chave de uma seed BIP39 **não é mais
+seguro** que uma chave aleatória forte — a vantagem é usabilidade/backup para o
+operador. Criptografia em repouso protege contra **roubo do banco**, não contra
+um servidor comprometido (que precisa da chave em memória para descriptografar o
+endereço na hora de despachar). PII nunca deve ser logada em texto puro. A
+coluna `orders.notes` permanece sem uso; não deve receber PII sem passar a ser
+criptografada como os demais campos.

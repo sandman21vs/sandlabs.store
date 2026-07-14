@@ -229,11 +229,19 @@ def seeded_product(tmp_db, sample_product_data):
 def test_user(tmp_db):
     """Create a test user in the DB and return its id."""
     import db as db_mod
+    from services.service_security import email_blind_index, encrypt_value
     conn = db_mod.get_db()
     try:
         conn.execute(
-            "INSERT INTO users (id, email, display_name, password_hash) VALUES (?, ?, ?, ?)",
-            (1, "test@test.com", "Test User", "fakehash"),
+            "INSERT INTO users (id, email_enc, email_bidx, display_name_enc, password_hash) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (
+                1,
+                encrypt_value("test@test.com"),
+                email_blind_index("test@test.com"),
+                encrypt_value("Test User"),
+                "fakehash",
+            ),
         )
         conn.commit()
     finally:
@@ -246,17 +254,28 @@ def admin_user(tmp_db):
     """Create an admin user and return (id, email, password)."""
     from werkzeug.security import generate_password_hash
     import db as db_mod
+    from services.service_security import email_blind_index, encrypt_value
+    email = "admin@test.com"
     conn = db_mod.get_db()
     try:
         conn.execute(
-            "INSERT INTO users (email, display_name, password_hash, is_admin) VALUES (?,?,?,1)",
-            ("admin@test.com", "Admin", generate_password_hash("adminpass123")),
+            "INSERT INTO users (email_enc, email_bidx, display_name_enc, password_hash, is_admin) "
+            "VALUES (?, ?, ?, ?, 1)",
+            (
+                encrypt_value(email),
+                email_blind_index(email),
+                encrypt_value("Admin"),
+                generate_password_hash("adminpass123"),
+            ),
         )
         conn.commit()
-        row = conn.execute("SELECT id FROM users WHERE email='admin@test.com'").fetchone()
+        row = conn.execute(
+            "SELECT id FROM users WHERE email_bidx = ?",
+            (email_blind_index(email),),
+        ).fetchone()
     finally:
         conn.close()
-    return {"id": row["id"], "email": "admin@test.com", "password": "adminpass123"}
+    return {"id": row["id"], "email": email, "password": "adminpass123"}
 
 
 @pytest.fixture()

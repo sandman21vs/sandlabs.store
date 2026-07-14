@@ -36,10 +36,12 @@ class TestAdminSetup:
         assert resp.headers["Location"].endswith("/admin/")
 
         import db as db_mod
+        from services.service_security import email_blind_index
         conn = db_mod.get_db()
         try:
             user = conn.execute(
-                "SELECT * FROM users WHERE email='setup@test.com'"
+                "SELECT * FROM users WHERE email_bidx = ?",
+                (email_blind_index("setup@test.com"),),
             ).fetchone()
         finally:
             conn.close()

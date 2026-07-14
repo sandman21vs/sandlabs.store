@@ -253,7 +253,7 @@ def setup():
         session["user_id"] = user["id"]
         session["is_admin"] = True
         session["display_name"] = user.get("display_name", "")
-        logger.info("admin_setup_completed admin_user_id=%s email=%s", user["id"], email)
+        logger.info("admin_setup_completed admin_user_id=%s", user["id"])
         flash(translate("admin.setup.flash.completed"), "success")
         if coinos_enabled and request.form.get("coinos_webhook_secret", "").strip() == "":
             flash(translate("admin.setup.flash.webhook_generated"), "success")

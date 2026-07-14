@@ -80,15 +80,20 @@ def test_admin_bootstrap_creates_admin_user(tmp_path, monkeypatch):
     importlib.reload(init_db)
     init_db.init_db()
 
+    from services.service_security import decrypt_value, email_blind_index
+
     conn = db_mod.get_db()
     row = conn.execute(
-        "SELECT email, display_name, is_admin, password_hash FROM users WHERE email = ?",
-        ("owner@admin.local",),
+        "SELECT email_enc, email_bidx, display_name_enc, is_admin, password_hash "
+        "FROM users WHERE email_bidx = ?",
+        (email_blind_index("owner@admin.local"),),
     ).fetchone()
     conn.close()
 
     assert row is not None
-    assert row["email"] == "owner@admin.local"
-    assert row["display_name"] == "owner"
+    # Email is stored encrypted, never in plaintext.
+    assert row["email_enc"] != "owner@admin.local"
+    assert decrypt_value(row["email_enc"]) == "owner@admin.local"
+    assert decrypt_value(row["display_name_enc"]) == "owner"
     assert row["is_admin"] == 1
     assert row["password_hash"] != "admin-secret"

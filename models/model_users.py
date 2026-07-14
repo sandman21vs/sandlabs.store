@@ -1,7 +1,17 @@
 import sqlite3
 
 import db
+from services.service_security import (
+    decrypt_value,
+    email_blind_index,
+    encrypt_value,
+)
 from werkzeug.security import check_password_hash, generate_password_hash
+
+_USER_SELECT = (
+    "SELECT id, email_enc, display_name_enc, password_hash, is_admin, created_at "
+    "FROM users"
+)
 
 
 def _normalize_email(email):
@@ -11,9 +21,15 @@ def _normalize_email(email):
 def _row_to_user(row):
     if row is None:
         return None
-    user = dict(row)
-    user["is_admin"] = bool(user["is_admin"])
-    return user
+    raw = dict(row)
+    return {
+        "id": raw["id"],
+        "email": decrypt_value(raw.get("email_enc")),
+        "display_name": decrypt_value(raw.get("display_name_enc")),
+        "password_hash": raw["password_hash"],
+        "is_admin": bool(raw["is_admin"]),
+        "created_at": raw.get("created_at"),
+    }
 
 
 def _cleanup_old_attempts_conn(conn):
@@ -33,12 +49,13 @@ def create_user(email, password, display_name="", is_admin=False):
         with conn:
             cursor = conn.execute(
                 """
-                INSERT INTO users (email, display_name, password_hash, is_admin)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO users (email_enc, email_bidx, display_name_enc, password_hash, is_admin)
+                VALUES (?, ?, ?, ?, ?)
                 """,
                 (
-                    normalized_email,
-                    (display_name or "").strip(),
+                    encrypt_value(normalized_email),
+                    email_blind_index(normalized_email),
+                    encrypt_value((display_name or "").strip()),
                     generate_password_hash(password),
                     1 if is_admin else 0,
                 ),
@@ -67,12 +84,7 @@ def get_user_by_id(user_id):
     conn = db.get_db()
     try:
         row = conn.execute(
-            """
-            SELECT id, email, display_name, password_hash, is_admin, created_at
-            FROM users
-            WHERE id = ?
-            LIMIT 1
-            """,
+            f"{_USER_SELECT} WHERE id = ? LIMIT 1",
             (user_id,),
         ).fetchone()
         return _row_to_user(row)
@@ -81,18 +93,12 @@ def get_user_by_id(user_id):
 
 
 def get_user_by_email(email):
-    """SELECT por email."""
-    normalized_email = _normalize_email(email)
+    """SELECT pelo indice cego do email (email nunca fica em texto puro)."""
     conn = db.get_db()
     try:
         row = conn.execute(
-            """
-            SELECT id, email, display_name, password_hash, is_admin, created_at
-            FROM users
-            WHERE email = ?
-            LIMIT 1
-            """,
-            (normalized_email,),
+            f"{_USER_SELECT} WHERE email_bidx = ? LIMIT 1",
+            (email_blind_index(_normalize_email(email)),),
         ).fetchone()
         return _row_to_user(row)
     finally:
