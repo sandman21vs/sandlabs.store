@@ -15,17 +15,6 @@
     <section class="section">
       <div id="produtos-container" class="produtos-grid"></div>
     </section>
-
-    <div id="lightbox" class="lightbox" aria-hidden="true">
-      <div class="lightbox-inner">
-        <button class="close-btn" data-action="close" aria-label="{{ t('public.products.lightbox.close') }}">&times;</button>
-        <figure class="lightbox-figure">
-          <img id="imagemModal" alt="{{ t('public.products.lightbox.image_alt') }}">
-        </figure>
-        <button class="nav-btn prev-btn" data-action="prev" aria-label="{{ t('public.products.lightbox.previous') }}">&#10094;</button>
-        <button class="nav-btn next-btn" data-action="next" aria-label="{{ t('public.products.lightbox.next') }}">&#10095;</button>
-      </div>
-    </div>
 {% endblock %}
 
 {% block footer %}
@@ -34,8 +23,5 @@
 
 {% block scripts %}
   <script src="{{ url_for('static', filename='js/cupom.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/lightbox.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/color-selector.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/compras.js') }}"></script>
   <script src="{{ url_for('static', filename='js/render-produtos.js') }}"></script>
 {% endblock %}

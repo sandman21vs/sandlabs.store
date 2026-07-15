@@ -402,44 +402,8 @@ body.modal-open{
 }
 
 /* ===================== */
-/*         MODAL         */
+/*   OPÇÕES DE COMPRA    */
 /* ===================== */
-.modal{
-  position: fixed;
-  inset: 0;
-  display: none;                 /* será "block" ao abrir via JS */
-  overflow-y: auto;              /* rola o OVERLAY (não a página de fundo) */
-  -webkit-overflow-scrolling: touch;
-  background: rgba(10,10,12,.75);
-  z-index: 10050;                /* acima do lightbox (9000) */
-  padding: 24px 16px;            /* respiro nas bordas */
-}
-.modal-content{
-  width: min(680px, 92vw);
-  margin: clamp(16px, 6vh, 48px) auto;   /* centralização vertical flexível */
-  border-radius: 18px;
-  border: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-  backdrop-filter: blur(14px);
-  color: #fff;
-  box-shadow: var(--shadow);
-  position: relative;
-  padding: 22px;
-
-  /* Não trava a rolagem dentro da caixa; overlay cuida disso */
-  max-height: none;
-  overflow: visible;
-}
-/* Modal de compra: mais largo para caber 2 colunas (mídia + compra) */
-.modal-content.mc-wide{ width: min(960px, 94vw); }
-.modal .close{
-  position:absolute; top:10px; right:16px; font-size:28px; cursor:pointer; line-height:1;
-  background:transparent; border:none; color:#fff;
-}
-.modal img.demo{
-  display:block; margin:0 auto 14px; max-width:100%; height:auto;
-  border-radius:12px; border:1px solid var(--border)
-}
 .group{
   background:rgba(255,255,255,.05); border:1px solid var(--border);
   padding:12px; border-radius:12px; margin-bottom:12px
@@ -454,12 +418,11 @@ body.modal-open{
 .option-grid img{width:52px; height:52px; border-radius:10px; border:2px solid transparent; transition:border-color .2s, transform .2s}
 .option-grid input[type="radio"]{appearance:none; width:0; height:0}
 .option-grid input[type="radio"]:checked + img{border-color:var(--accent); transform:scale(1.02)}
-.modal input[type="text"], .modal input[type="number"]{
+.produto-detail input[type="text"], .produto-detail input[type="number"]{
   width:100%; padding:.7rem .85rem; border-radius:var(--radius-input); border:1px solid var(--border);
   background:var(--input-bg); color:#fff
 }
 .final-actions{display:flex; flex-direction:column; gap:10px; margin-top:.5rem}
-.final-actions-secondary{display:flex; gap:12px}
 .final-btn{
   flex:1 1 auto; padding:.8rem 1rem; border-radius:12px; font-weight:800;
   border:1px solid var(--border); background:#222; color:#fff; min-height:var(--tap);
@@ -525,21 +488,48 @@ body.modal-open{
 .mc-thumb.is-active{border-color:var(--accent)}
 /* Coluna de compra */
 .mc-buybox{display:flex; flex-direction:column; gap:var(--space-2)}
-.mc-buybox #mc-title{margin:0}
+.mc-buybox #mc-title, .mc-buybox .pd-title{margin:0}
 .mc-summary{color:var(--text-2); margin:0}
 .mc-price{display:flex; flex-direction:column; gap:.15rem}
 .mc-price p{margin:0; font-size:1.15rem}
 .mc-price strong{color:#fff}
 .mc-price .muted{font-size:.9rem}
-.mc-buybox #mc-form{display:flex; flex-direction:column; gap:0}
-/* Detalhes colapsáveis abaixo do grid (largura total) */
-.mc-details-wrap{margin-top:var(--space-3)}
-.mc-details-wrap:empty{display:none}
+.mc-buybox #mc-form, .mc-buybox form{display:flex; flex-direction:column; gap:0}
 
 @media (max-width: 768px){
   .mc-layout{grid-template-columns:1fr; gap:var(--space-3)}
   .mc-hero{aspect-ratio:16/10}
 }
+
+/* ===================== */
+/*  PÁGINA DE PRODUTO    */
+/* ===================== */
+.produto-detail{max-width:var(--maxw); margin:0 auto}
+.pd-back{max-width:var(--maxw); margin:0 auto var(--space-2)}
+.pd-back a{color:var(--text-2); font-weight:600}
+.pd-back a:hover{color:var(--accent)}
+.pd-title{font-size:clamp(1.4rem, 3vw, 2rem); line-height:1.2}
+/* Mídia fixa (sticky) ao rolar a caixa de compra no desktop */
+@media (min-width: 769px){
+  .produto-media{position:sticky; top:var(--space-4); align-self:start}
+}
+/* Seletor de quantidade */
+.pd-qty{display:flex; align-items:center; gap:.75rem; margin:var(--space-2) 0}
+.pd-qty-label{font-weight:700}
+.pd-qty-btn{
+  width:var(--tap); height:var(--tap); border-radius:10px; font-size:1.3rem; line-height:1;
+  border:1px solid var(--border); background:var(--input-bg); color:#fff; cursor:pointer;
+}
+.pd-qty-btn:hover{border-color:var(--accent)}
+.pd-qty-value{min-width:2ch; text-align:center; font-weight:800; font-size:1.1rem}
+/* Ações: comprar agora (grande) + adicionar ao carrinho */
+.pd-actions .pd-buy-now{font-size:1.1rem; padding:1rem}
+/* Descrição em largura total */
+.pd-desc{margin-top:var(--space-4); padding:var(--space-4)}
+.pd-desc-title{font-size:1.3rem; margin-bottom:var(--space-2)}
+.pd-desc-body{color:var(--text-2); line-height:1.7}
+.pd-desc-body :is(h1,h2,h3,h4){color:#fff; margin:var(--space-2) 0 .5rem}
+.pd-desc-body img{max-width:100%; height:auto; border-radius:12px}
 
 /* ===================== */
 /*       LIGHTBOX        */

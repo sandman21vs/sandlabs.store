@@ -13,15 +13,17 @@ def _read(relative_path):
 def test_product_cards_use_lazy_webp_thumbnails_with_original_fallback():
     home_js = _read("static/js/render-home.js")
     products_js = _read("static/js/render-produtos.js")
+    detail_js = _read("static/js/render-produto.js")
 
-    for source in (home_js, products_js):
+    for source in (home_js, products_js, detail_js):
         assert "thumb/${match[2]}.webp" in source
         assert "loading:" in source and "'lazy'" in source
         assert "decoding:" in source and "'async'" in source
         assert "addEventListener('error'" in source
 
-    assert "const fullPaths = imagens.map((src) => src)" in products_js
-    assert "lightbox.open(fullPaths, currentIndex)" in products_js
+    # The gallery (hero + thumbnail strip + lightbox) lives on the product page.
+    assert "const fullPaths = imagens.map((src) => src)" in detail_js
+    assert "lightbox.open(fullPaths, currentIndex)" in detail_js
 
 
 def test_lightbox_keeps_navigation_accessibility_and_adds_both_zoom_modes():

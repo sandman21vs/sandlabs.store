@@ -1,6 +1,6 @@
 import json
 
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, abort, jsonify, render_template
 
 from i18n import current_lang, localize_products
 from models.model_products import get_all_products, products_to_js_format
@@ -39,6 +39,22 @@ def produtos():
         ensure_ascii=False,
     )
     return render_template("produtos.html", active="produtos", products_json=products_json)
+
+
+@public.route("/produtos/<product_id>")
+def produto_detail(product_id):
+    products = localize_products(
+        products_to_js_format(get_all_products()), current_lang()
+    )
+    product = next((p for p in products if p.get("id") == product_id), None)
+    if product is None:
+        abort(404)
+    return render_template(
+        "produto.html",
+        active="produtos",
+        product_json=json.dumps(product, ensure_ascii=False),
+        products_json=json.dumps(products, ensure_ascii=False),
+    )
 
 
 @public.route("/sobre")

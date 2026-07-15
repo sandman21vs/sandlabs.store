@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ t('public.products.page_title') }}{% endblock %}
+{# Imagens dos produtos usam caminhos relativos (images/...). Como esta página
+   fica sob /produtos/<id>, um <base> garante que resolvam a partir da raiz. #}
+{% block head %}<base href="{{ url_for('public.index') }}">{% endblock %}
+{% block page_data %}
+  <script>
+    window.PRODUTO = {{ product_json|safe }};
+    window.PRODUTOS = {{ products_json|safe }};
+  </script>
+{% endblock %}
+
+{% block content %}
+    <section class="section">
+      <p class="pd-back">
+        <a href="{{ url_for('public.produtos') }}">&#8592; {{ t('public.products.detail.back') }}</a>
+      </p>
+
+      <div id="produto-detail"
+           class="produto-detail"
+           data-checkout-url="{{ url_for('checkout.checkout_page') }}"
+           data-cart-url="{{ url_for('cart.cart_page') }}"></div>
+    </section>
+
+    <div id="lightbox" class="lightbox" aria-hidden="true">
+      <div class="lightbox-inner">
+        <button class="close-btn" data-action="close" aria-label="{{ t('public.products.lightbox.close') }}">&times;</button>
+        <figure class="lightbox-figure">
+          <img id="imagemModal" alt="{{ t('public.products.lightbox.image_alt') }}">
+        </figure>
+        <button class="nav-btn prev-btn" data-action="prev" aria-label="{{ t('public.products.lightbox.previous') }}">&#10094;</button>
+        <button class="nav-btn next-btn" data-action="next" aria-label="{{ t('public.products.lightbox.next') }}">&#10095;</button>
+      </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <p class="muted">{{ t('public.products.footer.question') }} <a href="{{ url_for('public.suporte') }}">{{ t('public.products.footer.contact') }}</a>.</p>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/cupom.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/lightbox.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/color-selector.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/render-produto.js') }}"></script>
+{% endblock %}
