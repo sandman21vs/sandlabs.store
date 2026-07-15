@@ -15,7 +15,8 @@
       "terms": "Bedingungen",
       "support": "Support",
       "track_order": "Bestellung verfolgen",
-      "config": "Konfig"
+      "config": "Konfig",
+      "menu": "Menü"
     },
     "footer": {
       "tagline": "Durchgängig Open Source."

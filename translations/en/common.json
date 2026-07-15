@@ -15,7 +15,8 @@
       "terms": "Terms",
       "support": "Support",
       "track_order": "Track order",
-      "config": "Config"
+      "config": "Config",
+      "menu": "Menu"
     },
     "footer": {
       "tagline": "End-to-end open source."

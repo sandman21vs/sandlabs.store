@@ -15,7 +15,8 @@
       "terms": "Términos",
       "support": "Soporte",
       "track_order": "Rastrear pedido",
-      "config": "Config"
+      "config": "Config",
+      "menu": "Menú"
     },
     "footer": {
       "tagline": "Código abierto de punta a punta."
