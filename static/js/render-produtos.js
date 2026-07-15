@@ -244,35 +244,44 @@ function buildGallery(prod) {
   return g;
 }
 
-  /* Caixa de descrição + botão comprar */
-  function buildDescBox(prod) {
-    const box = el('div', { class:'desc-box' });
-    box.appendChild(el('h3', {}, t('public.products.info_about', 'Information about {name}').replace('{name}', prod.nome)));
-    box.appendChild(el('p', {}, prod.resumo));
-    box.insertAdjacentHTML('beforeend', priceListHTML(prod.preco));
 
-    const infoBtn = el('button', { class:'info-btn' }, t('public.products.info_button', '+ Details'));
-    const infoArea = el('div', { style:'display:none;margin-top:1rem' }, prod.detalhesHTML || '');
-    infoBtn.addEventListener('click', () => {
-      infoArea.style.display = (infoArea.style.display === 'none') ? 'block' : 'none';
+  /* Card compacto de produto (grid) — abre o detalhe/compra no modal */
+  function buildProductCard(prod) {
+    const card = el('article', { class:'card product-card hover-lift' });
+    if (prod.badge && prod.badge.text) {
+      card.appendChild(el('span', { class:'card-badge ' + (prod.badge.variant || 'neutral') }, prod.badge.text));
+    }
+    const media = el('div', { class:'card-media' });
+    const firstImg = (Array.isArray(prod.imagens) && prod.imagens[0]) || '';
+    const img = el('img', {
+      src: toThumbSrc(firstImg), alt: prod.nome,
+      loading:'lazy', decoding:'async'
     });
+    img.addEventListener('error', () => {
+      if (firstImg && img.getAttribute('src') !== firstImg) img.setAttribute('src', firstImg);
+    });
+    media.appendChild(img);
+    card.appendChild(media);
 
-    const buyBtn = el('button', { class:'buy-btn' }, prod.buyButtonText || t('public.products.buy_product', 'Buy {name}').replace('{name}', prod.nome));
-    buyBtn.addEventListener('click', () => openPurchaseModal(prod));
+    const body = el('div', { class:'card-body' });
+    body.appendChild(el('h3', { class:'card-title' }, prod.nome));
+    if (prod.resumo) body.appendChild(el('p', { class:'card-text' }, prod.resumo));
+    const price = Array.isArray(prod.preco) ? prod.preco[0] : null;
+    if (price) {
+      const pl = el('div', { class:'price-line' });
+      pl.appendChild(el('span', {}, price.label));
+      pl.appendChild(el('strong', {}, displayPrice(price)));
+      body.appendChild(pl);
+    }
+    const btn = el('button', { type:'button', class:'btn btn-accent product-card-btn' },
+      prod.buyButtonText || t('public.products.buy_product', 'Buy {name}').replace('{name}', prod.nome));
+    btn.addEventListener('click', () => openPurchaseModal(prod));
+    body.appendChild(btn);
+    card.appendChild(body);
 
-    box.appendChild(infoBtn);
-    box.appendChild(infoArea);
-    box.appendChild(buyBtn);
-    return box;
-  }
-
-  /* Seção completa do produto */
-  function sectionProduto(prod) {
-    const sec = el('section', { class:'produto-section' });
-    sec.appendChild(el('h3', {}, prod.nome));
-    sec.appendChild(buildGallery(prod));
-    sec.appendChild(buildDescBox(prod));
-    return sec;
+    media.style.cursor = 'pointer';
+    media.addEventListener('click', () => openPurchaseModal(prod));
+    return card;
   }
 
   /* ===== Modal de Compra (Genérico) ===================================== */
@@ -284,8 +293,8 @@ function buildGallery(prod) {
     modal.innerHTML = `
       <div class="modal-content">
         <button class="close" data-close aria-label="${t('public.products.lightbox.close', 'Close')}">&times;</button>
-        <img src="images/cor_exemplo.png" class="demo" alt="${t('public.products.modal.demo_alt', 'Demo')}">
         <h3 id="mc-title"></h3>
+        <div id="mc-detail" class="mc-detail"></div>
         <form id="mc-form"></form>
       </div>
     `;
@@ -319,11 +328,35 @@ function buildGallery(prod) {
     if (e.key === 'Escape') closePurchaseModal();
   }
 
+  function buildDetail(prod) {
+    const detail = el('div', { class:'mc-detail-inner' });
+    if (Array.isArray(prod.imagens) && prod.imagens.length) {
+      detail.appendChild(buildGallery(prod));
+    }
+    const info = el('div', { class:'mc-info' });
+    if (prod.resumo) info.appendChild(el('p', { class:'mc-summary' }, prod.resumo));
+    info.insertAdjacentHTML('beforeend', priceListHTML(prod.preco));
+    if (prod.detalhesHTML) {
+      const infoBtn = el('button', { type:'button', class:'info-btn' }, t('public.products.info_button', '+ Details'));
+      const infoArea = el('div', { class:'mc-details', style:'display:none;margin-top:1rem' }, prod.detalhesHTML);
+      infoBtn.addEventListener('click', () => {
+        infoArea.style.display = (infoArea.style.display === 'none') ? 'block' : 'none';
+      });
+      info.appendChild(infoBtn);
+      info.appendChild(infoArea);
+    }
+    detail.appendChild(info);
+    return detail;
+  }
+
   function openPurchaseModal(prod) {
     const modal = ensureModal();
     const title = modal.querySelector('#mc-title');
+    const detailBox = modal.querySelector('#mc-detail');
     const form  = modal.querySelector('#mc-form');
-    title.textContent = t('public.products.modal.options_for', 'Options for {name}').replace('{name}', prod.nome);
+    title.textContent = prod.nome;
+    detailBox.innerHTML = '';
+    detailBox.appendChild(buildDetail(prod));
     form.innerHTML = '';
 
     /* Monta os grupos de opções conforme definição do produto */
@@ -466,7 +499,7 @@ function buildGallery(prod) {
     if (cont) {
       cont.innerHTML = '';
       (window.PRODUTOS || []).forEach(prod => {
-        cont.appendChild(sectionProduto(prod));
+        cont.appendChild(buildProductCard(prod));
       });
     }
   }

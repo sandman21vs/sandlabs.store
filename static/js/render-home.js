@@ -37,7 +37,7 @@
   function buildCard(prod){
     const a = el('article','',null);
     a.className = 'card product soft-shadow hover-lift';
-    a.addEventListener('click',()=>location.href='produtos.html');
+    a.addEventListener('click',()=>location.href='/produtos');
 
     // badge (selo de promoção/novo/etc)
     if (prod.badge && prod.badge.text){
