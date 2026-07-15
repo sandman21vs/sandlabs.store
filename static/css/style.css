@@ -88,6 +88,12 @@ body.modal-open{
 .section-sub{color:var(--muted); margin-top:.5rem}
 .grid{display:grid; gap:var(--space-3)}
 .cards-3{grid-template-columns:repeat(3, minmax(0,1fr)); max-width:var(--maxw); margin:0 auto}
+.two-col{
+  display:grid; gap:var(--space-4);
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  max-width:var(--maxw); margin:0 auto;
+}
+@media (max-width: 768px){ .two-col{grid-template-columns:1fr} }
 
 /* ===================== */
 /*       HEADER          */
@@ -622,7 +628,10 @@ body.modal-open{
   border-color:rgba(255,56,56,.45);
   background:rgba(255,56,56,.12);
 }
-.orders-grid{display:grid; gap:var(--space-3)}
+.orders-grid{
+  display:grid; gap:var(--space-3);
+  grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));
+}
 .order-card{
   padding:var(--space-3);
   display:grid;
@@ -694,7 +703,15 @@ body.modal-open{
 /* ===================== */
 /*        CARRINHO       */
 /* ===================== */
-.cart-shell{max-width:var(--maxw); margin:0 auto}
+.cart-shell{
+  max-width:var(--maxw); margin:0 auto;
+  display:grid;
+  grid-template-columns:minmax(0, 1.6fr) minmax(280px, .85fr);
+  gap:var(--space-3);
+  align-items:start;
+}
+.cart-empty{grid-column:1 / -1}
+.cart-summary{position:sticky; top:1rem}
 .cart-list{display:grid; gap:var(--space-3)}
 .cart-item{padding:var(--space-3)}
 .cart-item-main{
@@ -706,7 +723,7 @@ body.modal-open{
 .cart-item-title{font-size:1.15rem; margin-bottom:.5rem}
 .cart-option-list{margin:.75rem 0 0 1rem; color:var(--text-3)}
 .cart-option-list li + li{margin-top:.35rem}
-.cart-item-meta{min-width:220px; text-align:right; color:var(--text-3)}
+.cart-item-meta{min-width:0; text-align:right; color:var(--text-3); white-space:nowrap}
 .cart-item-meta p + p{margin-top:.4rem}
 .cart-item-actions{
   display:flex; justify-content:space-between; align-items:center; gap:var(--space-2); margin-top:var(--space-3)
@@ -760,7 +777,7 @@ body.modal-open{
 textarea.form-input{min-height:120px;resize:vertical}
 .field-grid{
   display:grid;
-  grid-template-columns:1fr 180px;
+  grid-template-columns:minmax(0, 1fr) minmax(140px, 200px);
   gap:var(--space-2);
 }
 .checkout-shell{
@@ -945,9 +962,11 @@ textarea.form-input{min-height:120px;resize:vertical}
   .cart-qty-controls{justify-content:center}
   .field-grid,
   .checkout-shell,
-  .invoice-shell{
+  .invoice-shell,
+  .cart-shell{
     grid-template-columns:1fr;
   }
+  .cart-summary{position:static}
   .checkout-item,
   .order-card-head,
   .order-item-row{flex-direction:column}
