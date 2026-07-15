@@ -215,36 +215,6 @@
     }).join('');
   }
 
-  /* Galeria por produto */
-function buildGallery(prod) {
-  const g = el('div', { class:'galeria' });
-  const fullPaths = prod.imagens.map(src => src);
-  prod.imagens.forEach((src, i) => {
-    const thumbSrc = toThumbSrc(src);
-    const img = el('img', {
-      src: thumbSrc,
-      alt: `${prod.nome} ${i + 1}`,
-      loading: 'lazy',
-      decoding: 'async',
-      /* ajuda o browser a escolher o tamanho ideal da imagem em cada breakpoint */
-      sizes: '(min-width:1200px) 300px, (min-width:768px) 33vw, 50vw'
-    });
-    img.addEventListener('error', () => {
-      if (img.getAttribute('src') !== src) {
-        img.setAttribute('src', src);
-      }
-    });
-    img.addEventListener('click', () => {
-      if (window.lightbox && typeof lightbox.open === 'function') {
-        lightbox.open(fullPaths, i);
-      }
-    });
-    g.appendChild(img);
-  });
-  return g;
-}
-
-
   /* Card compacto de produto (grid) — abre o detalhe/compra no modal */
   function buildProductCard(prod) {
     const card = el('article', { class:'card product-card hover-lift' });
@@ -291,11 +261,18 @@ function buildGallery(prod) {
 
     modal = el('div', { id:'modal-compra', class:'modal', role:'dialog', 'aria-modal':'true' });
     modal.innerHTML = `
-      <div class="modal-content">
+      <div class="modal-content mc-wide">
         <button class="close" data-close aria-label="${t('public.products.lightbox.close', 'Close')}">&times;</button>
-        <h3 id="mc-title"></h3>
-        <div id="mc-detail" class="mc-detail"></div>
-        <form id="mc-form"></form>
+        <div class="mc-layout">
+          <div class="mc-media" id="mc-media"></div>
+          <div class="mc-buybox">
+            <h3 id="mc-title"></h3>
+            <p class="mc-summary" id="mc-summary" hidden></p>
+            <div class="mc-price" id="mc-price"></div>
+            <form id="mc-form"></form>
+          </div>
+        </div>
+        <div id="mc-details-wrap" class="mc-details-wrap"></div>
       </div>
     `;
     document.body.appendChild(modal);
@@ -328,35 +305,103 @@ function buildGallery(prod) {
     if (e.key === 'Escape') closePurchaseModal();
   }
 
-  function buildDetail(prod) {
-    const detail = el('div', { class:'mc-detail-inner' });
-    if (Array.isArray(prod.imagens) && prod.imagens.length) {
-      detail.appendChild(buildGallery(prod));
-    }
-    const info = el('div', { class:'mc-info' });
-    if (prod.resumo) info.appendChild(el('p', { class:'mc-summary' }, prod.resumo));
-    info.insertAdjacentHTML('beforeend', priceListHTML(prod.preco));
-    if (prod.detalhesHTML) {
-      const infoBtn = el('button', { type:'button', class:'info-btn' }, t('public.products.info_button', '+ Details'));
-      const infoArea = el('div', { class:'mc-details', style:'display:none;margin-top:1rem' }, prod.detalhesHTML);
-      infoBtn.addEventListener('click', () => {
-        infoArea.style.display = (infoArea.style.display === 'none') ? 'block' : 'none';
+  /* Mídia do modal: imagem principal grande + tira de miniaturas */
+  function buildMedia(prod) {
+    const media = el('div', { class:'mc-media-inner' });
+    const imagens = Array.isArray(prod.imagens) ? prod.imagens : [];
+    if (!imagens.length) return media;
+
+    const fullPaths = imagens.map((src) => src);
+    let currentIndex = 0;
+
+    const hero = el('img', {
+      class:'mc-hero',
+      src: toThumbSrc(imagens[0]),
+      alt: prod.nome,
+      loading:'lazy',
+      decoding:'async'
+    });
+    const setHero = (index) => {
+      currentIndex = index;
+      const src = imagens[index];
+      hero.src = toThumbSrc(src);
+      hero.dataset.full = src;
+    };
+    hero.addEventListener('error', () => {
+      const full = hero.dataset.full || imagens[currentIndex];
+      if (full && hero.getAttribute('src') !== full) hero.setAttribute('src', full);
+    });
+    hero.addEventListener('click', () => {
+      if (window.lightbox && typeof lightbox.open === 'function') {
+        lightbox.open(fullPaths, currentIndex);
+      }
+    });
+    setHero(0);
+    media.appendChild(hero);
+
+    if (imagens.length > 1) {
+      const strip = el('div', { class:'mc-thumbs' });
+      imagens.forEach((src, i) => {
+        const thumb = el('img', {
+          class:'mc-thumb' + (i === 0 ? ' is-active' : ''),
+          src: toThumbSrc(src),
+          alt: `${prod.nome} ${i + 1}`,
+          loading:'lazy',
+          decoding:'async'
+        });
+        thumb.addEventListener('error', () => {
+          if (thumb.getAttribute('src') !== src) thumb.setAttribute('src', src);
+        });
+        thumb.addEventListener('click', () => {
+          setHero(i);
+          strip.querySelectorAll('.mc-thumb').forEach((node) => node.classList.remove('is-active'));
+          thumb.classList.add('is-active');
+        });
+        strip.appendChild(thumb);
       });
-      info.appendChild(infoBtn);
-      info.appendChild(infoArea);
+      media.appendChild(strip);
     }
-    detail.appendChild(info);
-    return detail;
+
+    return media;
+  }
+
+  /* Preenche resumo, preço em destaque e o "+ Detalhes" colapsável */
+  function fillBuyboxDetail(prod, els) {
+    if (els.summary) {
+      if (prod.resumo) {
+        els.summary.textContent = prod.resumo;
+        els.summary.hidden = false;
+      } else {
+        els.summary.hidden = true;
+      }
+    }
+    if (els.price) els.price.innerHTML = priceListHTML(prod.preco);
+    if (els.detailsWrap) {
+      els.detailsWrap.innerHTML = '';
+      if (prod.detalhesHTML) {
+        const infoBtn = el('button', { type:'button', class:'info-btn' }, t('public.products.info_button', '+ Details'));
+        const infoArea = el('div', { class:'mc-details', style:'display:none;margin-top:1rem' }, prod.detalhesHTML);
+        infoBtn.addEventListener('click', () => {
+          infoArea.style.display = (infoArea.style.display === 'none') ? 'block' : 'none';
+        });
+        els.detailsWrap.appendChild(infoBtn);
+        els.detailsWrap.appendChild(infoArea);
+      }
+    }
   }
 
   function openPurchaseModal(prod) {
     const modal = ensureModal();
     const title = modal.querySelector('#mc-title');
-    const detailBox = modal.querySelector('#mc-detail');
+    const media = modal.querySelector('#mc-media');
+    const summary = modal.querySelector('#mc-summary');
+    const price = modal.querySelector('#mc-price');
+    const detailsWrap = modal.querySelector('#mc-details-wrap');
     const form  = modal.querySelector('#mc-form');
     title.textContent = prod.nome;
-    detailBox.innerHTML = '';
-    detailBox.appendChild(buildDetail(prod));
+    media.innerHTML = '';
+    media.appendChild(buildMedia(prod));
+    fillBuyboxDetail(prod, { summary, price, detailsWrap });
     form.innerHTML = '';
 
     /* Monta os grupos de opções conforme definição do produto */
@@ -443,7 +488,8 @@ function buildGallery(prod) {
 
     /* Ações finais */
     const actions = el('div', { class:'final-actions' });
-    const bCart   = el('button', { type:'button', class:'final-btn final-btn-accent' }, t('public.products.actions.add_to_cart', 'Add to cart'));
+    const bCart   = el('button', { type:'button', class:'final-btn final-btn-accent final-btn-primary' }, t('public.products.actions.add_to_cart', 'Add to cart'));
+    const secondary = el('div', { class:'final-actions-secondary' });
     const bWhats  = el('button', { type:'button', class:'final-btn' }, t('public.products.actions.whatsapp', 'WhatsApp'));
     const bTele   = el('button',  { type:'button', class:'final-btn' }, t('public.products.actions.telegram', 'Telegram'));
     bCart.addEventListener('click', async () => {
@@ -473,8 +519,9 @@ function buildGallery(prod) {
       if (typeof finalizeCompra === 'function') finalizeCompra(form, prod.id, 'tele');
     });
     actions.appendChild(bCart);
-    actions.appendChild(bWhats);
-    actions.appendChild(bTele);
+    secondary.appendChild(bWhats);
+    secondary.appendChild(bTele);
+    actions.appendChild(secondary);
     form.appendChild(actions);
 
     /* Exibe o modal e bloqueia rolagem do fundo */

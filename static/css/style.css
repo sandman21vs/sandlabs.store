@@ -430,6 +430,8 @@ body.modal-open{
   max-height: none;
   overflow: visible;
 }
+/* Modal de compra: mais largo para caber 2 colunas (mídia + compra) */
+.modal-content.mc-wide{ width: min(960px, 94vw); }
 .modal .close{
   position:absolute; top:10px; right:16px; font-size:28px; cursor:pointer; line-height:1;
   background:transparent; border:none; color:#fff;
@@ -456,11 +458,13 @@ body.modal-open{
   width:100%; padding:.7rem .85rem; border-radius:var(--radius-input); border:1px solid var(--border);
   background:var(--input-bg); color:#fff
 }
-.final-actions{display:flex; justify-content:center; gap:12px; margin-top:.25rem; flex-wrap:wrap}
+.final-actions{display:flex; flex-direction:column; gap:10px; margin-top:.5rem}
+.final-actions-secondary{display:flex; gap:12px}
 .final-btn{
-  flex:1 1 180px; padding:.8rem 1rem; border-radius:12px; font-weight:800;
-  border:1px solid var(--border); background:#222; color:#fff
+  flex:1 1 auto; padding:.8rem 1rem; border-radius:12px; font-weight:800;
+  border:1px solid var(--border); background:#222; color:#fff; min-height:var(--tap);
 }
+.final-btn-primary{width:100%; font-size:1.02rem}
 .final-btn-accent{background:linear-gradient(135deg, var(--accent), var(--accent-2)); border-color:transparent}
 
 /* ===================== */
@@ -493,11 +497,49 @@ body.modal-open{
 .product-card .price-line{margin-top:auto; padding-top:.35rem}
 .product-card-btn{width:100%; margin-top:.5rem}
 
-/* Detalhe do produto dentro do modal */
-.mc-detail-inner{display:grid; gap:var(--space-3); margin-bottom:var(--space-3)}
-.mc-summary{color:var(--text-2); margin-bottom:.5rem}
-.mc-info p{margin-bottom:.35rem}
-.mc-detail .galeria{gap:var(--space-1)}
+/* ===================== */
+/*  MODAL DE COMPRA 2-COL */
+/* ===================== */
+.mc-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);
+  gap:var(--space-4);
+  align-items:start;
+}
+/* Coluna de mídia */
+.mc-media-inner{display:flex; flex-direction:column; gap:var(--space-2)}
+.mc-hero{
+  width:100%; aspect-ratio:4/3; object-fit:cover; display:block;
+  border-radius:14px; border:1px solid var(--border); cursor:pointer;
+  background:var(--input-bg);
+  transition:transform .2s, box-shadow .2s, border-color .2s;
+}
+.mc-hero:hover{box-shadow:var(--shadow-sm); border-color:rgba(255,255,255,.2)}
+.mc-thumbs{display:flex; gap:var(--space-1); flex-wrap:wrap}
+.mc-thumb{
+  width:64px; height:64px; object-fit:cover; border-radius:10px;
+  border:2px solid transparent; cursor:pointer;
+  transition:border-color .2s, transform .2s; background:var(--input-bg);
+}
+.mc-thumb:hover{transform:translateY(-2px)}
+.mc-thumb.is-active{border-color:var(--accent)}
+/* Coluna de compra */
+.mc-buybox{display:flex; flex-direction:column; gap:var(--space-2)}
+.mc-buybox #mc-title{margin:0}
+.mc-summary{color:var(--text-2); margin:0}
+.mc-price{display:flex; flex-direction:column; gap:.15rem}
+.mc-price p{margin:0; font-size:1.15rem}
+.mc-price strong{color:#fff}
+.mc-price .muted{font-size:.9rem}
+.mc-buybox #mc-form{display:flex; flex-direction:column; gap:0}
+/* Detalhes colapsáveis abaixo do grid (largura total) */
+.mc-details-wrap{margin-top:var(--space-3)}
+.mc-details-wrap:empty{display:none}
+
+@media (max-width: 768px){
+  .mc-layout{grid-template-columns:1fr; gap:var(--space-3)}
+  .mc-hero{aspect-ratio:16/10}
+}
 
 /* ===================== */
 /*       LIGHTBOX        */

@@ -20,8 +20,8 @@ def test_product_cards_use_lazy_webp_thumbnails_with_original_fallback():
         assert "decoding:" in source and "'async'" in source
         assert "addEventListener('error'" in source
 
-    assert "const fullPaths = prod.imagens.map(src => src)" in products_js
-    assert "lightbox.open(fullPaths, i)" in products_js
+    assert "const fullPaths = imagens.map((src) => src)" in products_js
+    assert "lightbox.open(fullPaths, currentIndex)" in products_js
 
 
 def test_lightbox_keeps_navigation_accessibility_and_adds_both_zoom_modes():
