@@ -43,6 +43,7 @@ from services.service_qr import get_invoice_qr_response
 from services.service_pdf import build_order_pdf
 from services.service_coupons import evaluate_coupon
 from services.service_shipping import get_country_zone, get_shipping_options
+from services import service_swisspost
 from services.service_btc_price import chf_to_sats
 from models.model_coupons import increment_usage as increment_coupon_usage
 
@@ -183,6 +184,7 @@ def _render_checkout(error=None, form_data=None, status_code=200):
         shipping_zone=get_country_zone(preview_country),
         has_unpriced_items=_has_unpriced_items(items),
         payment_methods=get_enabled_methods(),
+        address_check_enabled=service_swisspost.is_enabled(),
         error=error,
     ), status_code)
     return _no_store(response)
@@ -254,6 +256,52 @@ def _public_url(endpoint, **values):
         origin = f"{parsed.scheme}://{parsed.netloc}"
         return f"{origin}{path}"
     return path
+
+
+_ADDRESS_CHECKS_KEY = "address_checks"
+_MAX_ADDRESS_CHECKS_PER_SESSION = 30
+_MAX_ADDRESS_FIELD_LENGTH = 120
+
+
+@checkout.route("/api/shipping/validate-address", methods=["POST"])
+def shipping_validate_address():
+    """Advisory Swiss address check; never blocks the order.
+
+    Request JSON: ``country``, ``street``, ``house_number``, ``postal_code``,
+    ``city``. Responds ``{"ok": true, "checked": false}`` when nothing was
+    checked (non-Swiss address, integration off, incomplete input, lookup
+    failed or per-session limit reached), otherwise ``checked: true`` with
+    ``status`` (``valid`` / ``corrected`` / ``unknown``) and ``suggestion``.
+    """
+    data = request.get_json(silent=True) or {}
+    not_checked = jsonify({"ok": True, "checked": False})
+
+    if str(data.get("country") or "").strip().upper() != "CH":
+        return not_checked
+    fields = {
+        key: str(data.get(key) or "").strip()
+        for key in ("street", "house_number", "postal_code", "city")
+    }
+    if any(not value or len(value) > _MAX_ADDRESS_FIELD_LENGTH for value in fields.values()):
+        return not_checked
+    if not service_swisspost.is_enabled():
+        return not_checked
+
+    # Each lookup spends our Swiss Post quota, so cap it per browser session.
+    used = int(session.get(_ADDRESS_CHECKS_KEY) or 0)
+    if used >= _MAX_ADDRESS_CHECKS_PER_SESSION:
+        return not_checked
+    session[_ADDRESS_CHECKS_KEY] = used + 1
+
+    result = service_swisspost.validate_address(**fields)
+    if result is None:
+        return not_checked
+    return jsonify({
+        "ok": True,
+        "checked": True,
+        "status": result["status"],
+        "suggestion": result["suggestion"],
+    })
 
 
 @checkout.route("/api/shipping/calculate", methods=["POST"])

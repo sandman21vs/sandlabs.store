@@ -26,6 +26,8 @@ rules for people and AI agents.
   webhook.
 - PDF receipt with a tracking QR code.
 - Server-side discount coupons.
+- Optional Swiss address validation at checkout through the Swiss Post Digital
+  Commerce API.
 - Admin panel: products, orders, tracking codes, coupons, shipping rates and
   integration settings.
 

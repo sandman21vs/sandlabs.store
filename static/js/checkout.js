@@ -154,6 +154,98 @@
     });
   }
 
+  // Advisory Swiss address check (only present when the integration is on).
+  var validateUrl = page.dataset.validateUrl;
+  var addressBox = document.getElementById('address-check');
+  var addressText = document.getElementById('address-check-text');
+  var addressApply = document.getElementById('address-check-apply');
+  var addressFields = {
+    street: document.getElementById('shipping_street'),
+    house_number: document.getElementById('shipping_house_number'),
+    postal_code: document.getElementById('shipping_postal_code'),
+    city: document.getElementById('shipping_city')
+  };
+  var lastAddressKey = '';
+  var pendingSuggestion = null;
+
+  function tr(key, fallback) {
+    return window.t ? window.t(key, fallback) : fallback;
+  }
+
+  function showAddressCheck(kind, message, suggestion) {
+    if (!addressBox) return;
+    pendingSuggestion = suggestion || null;
+    addressBox.hidden = !message;
+    addressBox.className = 'address-check' + (kind ? ' is-' + kind : '');
+    addressText.textContent = message || '';
+    addressApply.hidden = !pendingSuggestion;
+  }
+
+  async function checkAddress() {
+    if (!validateUrl || !addressBox) return;
+    var payload = { country: (countryInput.value || '').trim().toUpperCase() };
+    Object.keys(addressFields).forEach(function (key) {
+      payload[key] = (addressFields[key].value || '').trim();
+    });
+    var complete = payload.street && payload.house_number && payload.postal_code && payload.city;
+    if (payload.country !== 'CH' || !complete) {
+      lastAddressKey = '';
+      showAddressCheck('', '');
+      return;
+    }
+    var key = JSON.stringify(payload);
+    if (key === lastAddressKey) return;
+    lastAddressKey = key;
+
+    var data = {};
+    try {
+      var response = await fetch(validateUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': window.CSRF_TOKEN || ''
+        },
+        body: JSON.stringify(payload)
+      });
+      data = await response.json();
+    } catch (_error) {
+      data = {};
+    }
+    if (key !== lastAddressKey) return;  // the address changed while we waited
+    if (!data.ok || !data.checked) {
+      showAddressCheck('', '');
+      return;
+    }
+    if (data.status === 'valid') {
+      showAddressCheck('ok', tr('commerce.checkout.address_check.valid', 'Address confirmed by Swiss Post.'));
+    } else if (data.status === 'corrected' && data.suggestion) {
+      var s = data.suggestion;
+      showAddressCheck(
+        'warn',
+        tr('commerce.checkout.address_check.suggestion', 'Swiss Post suggests:') + ' ' +
+          s.street + ' ' + s.house_number + ', ' + s.postal_code + ' ' + s.city,
+        s
+      );
+    } else {
+      showAddressCheck('warn', tr('commerce.checkout.address_check.unknown', 'Swiss Post could not confirm this address. Please double-check it.'));
+    }
+  }
+
+  if (validateUrl && addressBox) {
+    Object.keys(addressFields).forEach(function (key) {
+      if (addressFields[key]) addressFields[key].addEventListener('blur', checkAddress);
+    });
+    countryInput.addEventListener('blur', checkAddress);
+    addressApply.addEventListener('click', function () {
+      if (!pendingSuggestion) return;
+      Object.keys(addressFields).forEach(function (key) {
+        if (pendingSuggestion[key]) addressFields[key].value = pendingSuggestion[key];
+      });
+      lastAddressKey = '';
+      checkAddress();
+    });
+  }
+
   countryInput.addEventListener('change', updateShipping);
   countryInput.addEventListener('blur', updateShipping);
   if ((countryInput.value || '').trim().length >= 2) {

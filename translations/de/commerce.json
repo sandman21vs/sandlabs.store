@@ -70,6 +70,12 @@
           "exhausted": "Nutzungslimit des Gutscheins erreicht.",
           "not_applicable": "Gutschein für diese Bestellung nicht anwendbar."
         }
+      },
+      "address_check": {
+        "valid": "Adresse von der Schweizerischen Post bestätigt.",
+        "suggestion": "Die Schweizerische Post schlägt vor:",
+        "use_suggestion": "Vorschlag übernehmen",
+        "unknown": "Die Schweizerische Post konnte diese Adresse nicht bestätigen. Bitte vor dem Fortfahren prüfen."
       }
     },
     "payment": {

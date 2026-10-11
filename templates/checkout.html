@@ -12,6 +12,7 @@
     id="checkout-page"
     class="checkout-shell"
     data-shipping-url="{{ url_for('checkout.shipping_calculate') }}"
+    {% if address_check_enabled %}data-validate-url="{{ url_for('checkout.shipping_validate_address') }}"{% endif %}
     data-weight-grams="{{ total_weight_grams }}"
     data-products-total="{{ total_sats }}"
   >
@@ -132,6 +133,10 @@
         >
       </div>
 
+      <div class="address-check" id="address-check" role="status" hidden>
+        <p id="address-check-text"></p>
+        <button type="button" class="btn btn-sm" id="address-check-apply" hidden>{{ t('commerce.checkout.address_check.use_suggestion') }}</button>
+      </div>
       </section>
 
       <fieldset class="checkout-step checkout-shipping-options" id="checkout-shipping-options"

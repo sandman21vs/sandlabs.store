@@ -931,6 +931,14 @@ input[name="country"].input-code{text-transform:uppercase}
   color:var(--accent-text); font-size:var(--fz-1); font-weight:700;
 }
 .checkout-step-hint{margin:-.5rem 0 var(--space-2)}
+.address-check{
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.6rem;
+  margin-top:var(--space-1); padding:.6rem .8rem;
+  border-radius:var(--radius-sm); border:1px solid var(--border-strong);
+  background:var(--surface-2); font-size:var(--fz-1);
+}
+.address-check.is-ok{border-color:var(--ok-line); background:var(--ok-soft); color:var(--ok)}
+.address-check.is-warn{border-color:var(--warn-line); background:var(--warn-soft)}
 .checkout-shipping-options,
 .checkout-payment-methods{display:grid; gap:.5rem}
 .checkout-submit{min-height:52px; font-size:1.05rem}

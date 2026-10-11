@@ -29,6 +29,7 @@ from models.model_orders import (
 from routes.auth_utils import admin_required
 from services.service_images import ensure_thumbnail, get_images_base_dir
 from services.service_pricing import ADMIN_ENABLED_CURRENCIES
+from services import service_swisspost
 from services.service_shipping import default_rates_json
 
 logger = logging.getLogger(__name__)
@@ -472,6 +473,15 @@ def settings():
             set_config("dhl_api_key", dhl_key)
         set_config("dhl_api_url", request.form.get("dhl_api_url", "").strip())
         set_config("dhl_enabled", "1" if request.form.get("dhl_enabled") else "0")
+
+        # Swiss Post Digital Commerce API. The secret is write-only: it is only
+        # replaced when a new value is supplied.
+        swisspost_secret = request.form.get("swisspost_client_secret", "").strip()
+        if swisspost_secret:
+            set_config("swisspost_client_secret", swisspost_secret)
+        set_config("swisspost_client_id", request.form.get("swisspost_client_id", "").strip())
+        set_config("swisspost_enabled", "1" if request.form.get("swisspost_enabled") else "0")
+        service_swisspost.reset_token_cache()
 
         shipping_json = request.form.get("shipping_rates", "").strip()
         settings_saved = False

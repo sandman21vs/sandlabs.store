@@ -28,7 +28,7 @@ Rules for executing this plan are in `AGENTS.md`.
 - [x] **7. Swiss Post rates** — `feature/swisspost-01-rates` — [#7](https://github.com/sandman21vs/sandlabs.store/pull/7)
   PostPac Economy and Priority as separate options for Switzerland; remove the
   placeholder rate endpoint.
-- [ ] **8. Swiss Post address validation** — `feature/swisspost-02-address`
+- [x] **8. Swiss Post address validation** — `feature/swisspost-02-address` — [#8](https://github.com/sandman21vs/sandlabs.store/pull/8)
   Digital Commerce API client (OAuth2 client credentials) and non-blocking
   address validation for Swiss destinations at checkout.
 - [ ] **9. Swiss Post labels** — `feature/swisspost-03-labels`

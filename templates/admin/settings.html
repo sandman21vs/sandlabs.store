@@ -75,6 +75,25 @@
   </div>
 
   <div class="admin-card">
+    <h2 class="admin-card-title">{{ t('admin.settings.swisspost_title') }}</h2>
+    <p class="form-hint">{{ t('admin.settings.swisspost_hint') }}</p>
+    {{ check('swisspost_enabled', t('admin.settings.swisspost_enabled'), cfg.swisspost_enabled == '1') }}
+    <div class="form-row">
+      <div class="form-group">
+        <label for="swisspost_client_id">{{ t('admin.settings.swisspost_client_id') }}</label>
+        <input type="text" name="swisspost_client_id" id="swisspost_client_id" class="form-input input-code"
+               value="{{ cfg.swisspost_client_id }}" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="form-group">
+        <label for="swisspost_client_secret">{{ t('admin.settings.swisspost_client_secret') }}</label>
+        <input type="password" name="swisspost_client_secret" id="swisspost_client_secret" class="form-input"
+               placeholder="{{ t('admin.common.keep_current') }}" autocomplete="new-password">
+        {{ secret_state(cfg.swisspost_client_secret) }}
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card">
     <h2 class="admin-card-title">{{ t('admin.settings.rates_title') }}</h2>
     <p class="form-hint">{{ t('admin.settings.rates_hint') }}</p>
     <textarea name="shipping_rates" class="form-input textarea-code" spellcheck="false"

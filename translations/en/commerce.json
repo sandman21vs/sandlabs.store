@@ -70,6 +70,12 @@
           "exhausted": "Coupon usage limit reached.",
           "not_applicable": "Coupon not applicable to this order."
         }
+      },
+      "address_check": {
+        "valid": "Address confirmed by Swiss Post.",
+        "suggestion": "Swiss Post suggests:",
+        "use_suggestion": "Use suggestion",
+        "unknown": "Swiss Post could not confirm this address. Please check it before continuing."
       }
     },
     "payment": {

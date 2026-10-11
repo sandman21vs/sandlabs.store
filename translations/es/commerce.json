@@ -70,6 +70,12 @@
           "exhausted": "Límite de uso del cupón alcanzado.",
           "not_applicable": "Cupón no aplicable a este pedido."
         }
+      },
+      "address_check": {
+        "valid": "Dirección confirmada por Correos Suizos.",
+        "suggestion": "Correos Suizos sugiere:",
+        "use_suggestion": "Usar sugerencia",
+        "unknown": "Correos Suizos no pudo confirmar esta dirección. Revísala antes de continuar."
       }
     },
     "payment": {

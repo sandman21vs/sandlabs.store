@@ -104,7 +104,12 @@
       "dhl_url": "DHL API URL (optional)",
       "rates_title": "Shipping rate table (JSON)",
       "rates_hint": "Keys are the maximum weight in kg, values are in CHF. Zones: CH (Switzerland), EU (Europe/EEA/UK), WORLD (rest of the world). A zone may list brackets directly or service names, each with its own brackets; every service becomes a checkout option.",
-      "save": "Save settings"
+      "save": "Save settings",
+      "swisspost_title": "Swiss Post (Digital Commerce API)",
+      "swisspost_hint": "Optional. Validates Swiss addresses at checkout. Requires a Swiss Post business account and API credentials from developer.post.ch. The customer's name is never sent.",
+      "swisspost_enabled": "Swiss Post integration enabled",
+      "swisspost_client_id": "Client ID",
+      "swisspost_client_secret": "Client secret"
     },
     "setup": {
       "errors": {
