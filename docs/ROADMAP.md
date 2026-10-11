@@ -19,7 +19,7 @@ Rules for executing this plan are in `AGENTS.md`.
   tables and alerts; calmer background; focus and reduced-motion support.
 - [x] **4. Storefront** — `ui/03-storefront` — [#4](https://github.com/sandman21vs/sandlabs.store/pull/4)
   Header, footer, home, catalog, product, about, support, terms, error pages.
-- [ ] **5. Purchase flow** — `ui/04-purchase-flow`
+- [x] **5. Purchase flow** — `ui/04-purchase-flow` — [#5](https://github.com/sandman21vs/sandlabs.store/pull/5)
   Cart, checkout, payment, order lookup, account and auth pages. Presentation
   only; no pricing or payment logic changes.
 - [ ] **6. Admin** — `ui/05-admin`

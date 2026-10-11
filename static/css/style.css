@@ -105,6 +105,8 @@ body{
 }
 main{flex:1 0 auto; width:100%}
 h1,h2,h3,h4{line-height:1.2; letter-spacing:-.01em; font-weight:700; color:#fff}
+/* Author display rules must never un-hide an element marked hidden */
+[hidden]{display:none !important}
 img{max-width:100%}
 a{color:var(--accent-text); text-underline-offset:.18em}
 a:hover{color:#fff}
@@ -153,6 +155,7 @@ body.modal-open{
 .section-head{max-width:var(--maxw); margin:0 auto var(--space-4); text-align:center}
 .section-title{font-size:var(--fz-5)}
 .section-sub{color:var(--muted); margin-top:.5rem}
+.section-action{margin-top:var(--space-2)}
 .page-center{text-align:center; padding-top:var(--space-6); padding-bottom:var(--space-6)}
 .page-center .btn{margin-top:var(--space-4)}
 .grid{display:grid; gap:var(--space-3)}
@@ -241,6 +244,9 @@ input[type="radio"]{accent-color:var(--accent)}
 textarea.form-input{min-height:120px; resize:vertical}
 select.form-input{cursor:pointer}
 .form-hint{font-size:var(--fz-0); color:var(--muted); margin-top:.3rem}
+/* Codes (country, coupon, access token): monospace, no surprises from autocorrect */
+.input-code{font-family:var(--font-mono); letter-spacing:.04em}
+input[name="country"].input-code{text-transform:uppercase}
 .field-grid{
   display:grid;
   grid-template-columns:minmax(0, 1fr) minmax(140px, 200px);
@@ -405,7 +411,6 @@ select.form-input{cursor:pointer}
   font-size:.7rem; font-weight:800; line-height:1.4; text-align:center;
   display:inline-flex; align-items:center; justify-content:center;
 }
-.cart-badge[hidden]{display:none}
 .nav-extras{display:flex; align-items:center; gap:.5rem; margin-left:.5rem}
 .currency-switcher,
 .lang-switcher{display:flex; align-items:center}
@@ -863,6 +868,8 @@ select.form-input{cursor:pointer}
 .cart-summary-label{color:var(--muted); margin-bottom:.4rem}
 .cart-summary-total{font-size:clamp(1.6rem, 4vw, 2.1rem); margin-bottom:var(--space-2); font-variant-numeric:tabular-nums}
 .cart-actions{display:flex; gap:var(--space-1); flex-wrap:wrap; margin-top:var(--space-3)}
+.cart-actions .btn-ghost{flex:1 1 auto}
+.cart-clear-btn{color:var(--muted)}
 .cart-toast{
   position:fixed; right:18px; bottom:18px; z-index:10100;
   max-width:calc(100vw - 36px);
@@ -902,19 +909,34 @@ select.form-input{cursor:pointer}
   color:#fff;
 }
 
-.checkout-shipping-options,
-.checkout-payment-methods,
-.checkout-coupon{
-  border:1px solid var(--border);
-  border-radius:var(--radius-sm);
-  padding:var(--space-2);
-  margin-bottom:var(--space-2);
-  display:grid;
-  gap:.5rem;
+/* Numbered steps: address, shipping, payment, coupon */
+.checkout-form{counter-reset:checkout-step}
+.checkout-step{
+  border:0; min-width:0;
+  padding:0 0 var(--space-3);
+  margin:0 0 var(--space-3);
+  border-bottom:1px solid var(--border);
 }
-.checkout-shipping-options legend,
-.checkout-payment-methods legend,
-.checkout-coupon legend{padding:0 .35rem; font-weight:700}
+.checkout-step-title{
+  display:flex; align-items:center; gap:.6rem;
+  padding:0; margin-bottom:var(--space-2);
+  counter-increment:checkout-step;
+}
+.checkout-step-title::before{
+  content:counter(checkout-step);
+  flex:0 0 auto;
+  width:1.7rem; height:1.7rem; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:var(--accent-soft); border:1px solid var(--accent-line);
+  color:var(--accent-text); font-size:var(--fz-1); font-weight:700;
+}
+.checkout-step-hint{margin:-.5rem 0 var(--space-2)}
+.checkout-shipping-options,
+.checkout-payment-methods{display:grid; gap:.5rem}
+.checkout-submit{min-height:52px; font-size:1.05rem}
+.option-name{font-weight:600}
+.option-price{margin-left:auto; font-variant-numeric:tabular-nums; white-space:nowrap}
+.option-price small{color:var(--muted); font-size:var(--fz-0)}
 .shipping-option,
 .payment-method-option{
   display:flex; align-items:center; gap:.6rem;
@@ -984,6 +1006,11 @@ select.form-input{cursor:pointer}
   white-space:pre-wrap;
 }
 .invoice-actions{margin-top:var(--space-3); display:flex; gap:var(--space-1); flex-wrap:wrap}
+.token-box{margin-top:var(--space-3); display:grid; gap:.4rem}
+.token-box .mono-block{margin-top:0}
+.token-box p{font-size:var(--fz-1); color:var(--text-2)}
+.address-block{font-style:normal; line-height:1.7; color:var(--text-2)}
+.address-block strong{color:var(--text)}
 
 /* ===================== */
 /*      RESPONSIVE       */

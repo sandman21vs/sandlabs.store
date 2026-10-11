@@ -14,16 +14,16 @@
     data-check-url="{{ url_for('checkout.check_payment', order_id=order.id) }}"
     data-success-url="{{ order_detail_url }}"
   >
-    <article class="card glass invoice-card invoice-qr-card">
+    <article class="card invoice-card invoice-qr-card">
       <p class="order-label">{{ t('commerce.payment.order_label', id=order.id) }}</p>
       <h2 class="invoice-amount">{{ order.grand_total_sats }} sats</h2>
-      <p id="payment-status" class="invoice-status {{ 'invoice-paid' if order.payment_confirmed_at else '' }}">
+      <p id="payment-status" role="status" class="invoice-status {{ 'invoice-paid' if order.payment_confirmed_at else '' }}">
         {{ t('commerce.payment.status_paid') if order.payment_confirmed_at else t('commerce.payment.status_pending') }}
       </p>
       <img class="invoice-qr" src="{{ qr_url }}" alt="{{ t('commerce.payment.qr_alt') }}">
     </article>
 
-    <article class="card glass invoice-card">
+    <article class="card invoice-card">
       {% if order.payment_method in ('onchain', 'liquid') %}
       <h2 class="order-section-title">{{ t('commerce.payment.address_heading') }}</h2>
       <p class="muted">{{ t('commerce.payment.address_hint') }}</p>
@@ -37,10 +37,10 @@
         <a class="btn btn-ghost" href="{{ order_detail_url }}">{{ t('commerce.payment.view_order') }}</a>
       </div>
       {% if not order.user_id and order.access_token %}
-      <div class="group">
+      <div class="alert alert-warning token-box">
         <strong>{{ t('commerce.payment.access_token_label') }}</strong>
         <code class="mono-block">{{ order.access_token }}</code>
-        <p class="muted">{{ t('commerce.payment.access_token_hint') }}</p>
+        <p>{{ t('commerce.payment.access_token_hint') }}</p>
       </div>
       {% endif %}
     </article>

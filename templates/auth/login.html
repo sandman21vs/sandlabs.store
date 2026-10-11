@@ -4,14 +4,14 @@
 {% block content %}
     <section class="section">
       <div class="auth-shell">
-        <article class="card glass auth-card">
+        <article class="card auth-card">
           <div class="section-head auth-head">
             <h1 class="section-title">{{ t('auth.login.heading') }}</h1>
             <p class="section-sub">{{ t('auth.login.subtitle') }}</p>
           </div>
 
           {% if error %}
-            <div class="form-alert is-error">{{ error }}</div>
+            <div class="form-alert is-error" role="alert">{{ error }}</div>
           {% endif %}
 
           <form method="post" action="{{ url_for('auth.login') }}" class="form-stack">
@@ -20,12 +20,12 @@
 
             <label class="field">
               <span>{{ t('auth.login.fields.email') }}</span>
-              <input type="email" name="email" value="{{ (form_data or {}).get('email', '') }}" required>
+              <input type="email" name="email" value="{{ (form_data or {}).get('email', '') }}" autocomplete="email" required>
             </label>
 
             <label class="field">
               <span>{{ t('auth.login.fields.password') }}</span>
-              <input type="password" name="password" required>
+              <input type="password" name="password" autocomplete="current-password" required>
             </label>
 
             <button type="submit" class="btn btn-accent auth-submit">{{ t('auth.login.submit') }}</button>

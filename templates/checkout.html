@@ -15,20 +15,22 @@
     data-weight-grams="{{ total_weight_grams }}"
     data-products-total="{{ total_sats }}"
   >
-    <form method="post" action="{{ url_for('checkout.create_order') }}" class="card glass checkout-form">
+    <form method="post" action="{{ url_for('checkout.create_order') }}" class="card checkout-form">
       <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
 
-      <h2 class="order-section-title">{{ t('commerce.checkout.shipping_heading') }}</h2>
-      {% if not session.get('user_id') %}
-      <p class="muted">{{ t('commerce.checkout.guest_notice') }}</p>
-      {% endif %}
       {% if error %}
-      <div class="checkout-error">{{ error }}</div>
+      <div class="checkout-error" role="alert">{{ error }}</div>
       {% endif %}
       {% if has_unpriced_items %}
-      <div class="checkout-error">
+      <div class="checkout-error" role="alert">
         {{ t('commerce.checkout.errors.unpriced_items') }}
       </div>
+      {% endif %}
+
+      <section class="checkout-step">
+      <h2 class="order-section-title checkout-step-title">{{ t('commerce.checkout.shipping_heading') }}</h2>
+      {% if not session.get('user_id') %}
+      <p class="form-hint checkout-step-hint">{{ t('commerce.checkout.guest_notice') }}</p>
       {% endif %}
 
       <div class="field-grid">
@@ -39,6 +41,7 @@
             class="form-input"
             type="text"
             name="name"
+            autocomplete="name"
             value="{{ shipping_form.name }}"
             required
           >
@@ -47,12 +50,16 @@
           <label for="shipping_country">{{ t('commerce.checkout.fields.country') }}</label>
           <input
             id="shipping_country"
-            class="form-input"
+            class="form-input input-code"
             type="text"
             name="country"
             value="{{ shipping_form.country }}"
             placeholder="CH"
             maxlength="2"
+            pattern="[A-Za-z]{2}"
+            autocomplete="country"
+            autocapitalize="characters"
+            spellcheck="false"
             required
           >
         </div>
@@ -66,6 +73,7 @@
             class="form-input"
             type="text"
             name="street"
+            autocomplete="address-line1"
             value="{{ shipping_form.street }}"
             required
           >
@@ -77,6 +85,7 @@
             class="form-input"
             type="text"
             name="house_number"
+            autocomplete="off"
             value="{{ shipping_form.house_number }}"
             required
           >
@@ -91,6 +100,7 @@
             class="form-input"
             type="text"
             name="city"
+            autocomplete="address-level2"
             value="{{ shipping_form.city }}"
             required
           >
@@ -102,6 +112,7 @@
             class="form-input"
             type="text"
             name="postal_code"
+            autocomplete="postal-code"
             value="{{ shipping_form.postal_code }}"
             required
           >
@@ -115,21 +126,25 @@
           class="form-input"
           type="text"
           name="address_extra"
+          autocomplete="address-line2"
           value="{{ shipping_form.address_extra }}"
           placeholder="{{ t('commerce.checkout.fields.address_extra_placeholder') }}"
         >
       </div>
 
-      <fieldset class="form-group checkout-shipping-options" id="checkout-shipping-options"
+      </section>
+
+      <fieldset class="checkout-step checkout-shipping-options" id="checkout-shipping-options"
                 {% if not shipping_options or shipping_options|length <= 1 %}hidden{% endif %}>
-        <legend class="order-section-title">{{ t('commerce.checkout.shipping_option_heading') }}</legend>
+        <legend class="order-section-title checkout-step-title">{{ t('commerce.checkout.shipping_option_heading') }}</legend>
         {% for opt in shipping_options %}
         <label class="shipping-option">
           <input type="radio" name="shipping_choice"
                  data-carrier="{{ opt.carrier }}" data-service="{{ opt.service }}"
                  data-sats="{{ opt.price_sats }}" data-chf="{{ '%.2f'|format(opt.price_chf) }}"
                  {% if loop.first %}checked{% endif %}>
-          <span>{{ opt.carrier|upper }} · {{ opt.service }} — {{ opt.price_sats }} sats ({{ '%.2f'|format(opt.price_chf) }} CHF)</span>
+          <span class="option-name">{{ opt.carrier|upper }} · {{ opt.service }}</span>
+          <span class="option-price">{{ opt.price_sats }} sats <small>({{ '%.2f'|format(opt.price_chf) }} CHF)</small></span>
         </label>
         {% endfor %}
       </fieldset>
@@ -139,12 +154,12 @@
              value="{{ shipping_options[0].service if shipping_options else '' }}">
 
       {% if payment_methods and payment_methods|length > 1 %}
-      <fieldset class="form-group checkout-payment-methods">
-        <legend class="order-section-title">{{ t('commerce.checkout.payment_method_heading') }}</legend>
+      <fieldset class="checkout-step checkout-payment-methods">
+        <legend class="order-section-title checkout-step-title">{{ t('commerce.checkout.payment_method_heading') }}</legend>
         {% for method in payment_methods %}
         <label class="payment-method-option">
           <input type="radio" name="payment_method" value="{{ method }}" {% if loop.first %}checked{% endif %}>
-          <span>{{ t('commerce.payment.method.' ~ method) }}</span>
+          <span class="option-name">{{ t('commerce.payment.method.' ~ method) }}</span>
         </label>
         {% endfor %}
       </fieldset>
@@ -152,23 +167,24 @@
       <input type="hidden" name="payment_method" value="{{ payment_methods[0] }}">
       {% endif %}
 
-      <fieldset class="form-group checkout-coupon" id="checkout-coupon"
+      <fieldset class="checkout-step checkout-coupon" id="checkout-coupon"
                 data-apply-url="{{ url_for('checkout.apply_coupon') }}">
-        <legend class="order-section-title">{{ t('commerce.checkout.coupon.label') }}</legend>
+        <legend class="order-section-title checkout-step-title">{{ t('commerce.checkout.coupon.label') }}</legend>
         <div class="coupon-row">
-          <input type="text" name="cupom" id="coupon-code"
+          <input type="text" name="cupom" id="coupon-code" class="form-input input-code"
+                 aria-label="{{ t('commerce.checkout.coupon.label') }}"
                  placeholder="{{ t('commerce.checkout.coupon.placeholder') }}" autocomplete="off">
           <button type="button" class="btn" id="coupon-apply">{{ t('commerce.checkout.coupon.apply') }}</button>
         </div>
-        <p class="coupon-feedback" id="coupon-feedback" hidden></p>
+        <p class="coupon-feedback" id="coupon-feedback" role="status" hidden></p>
       </fieldset>
 
-      <button type="submit" class="btn btn-accent" {% if has_unpriced_items %}disabled{% endif %}>
+      <button type="submit" class="btn btn-accent btn-block checkout-submit" {% if has_unpriced_items %}disabled{% endif %}>
         {{ t('commerce.checkout.pay_button') }}
       </button>
     </form>
 
-    <aside class="card glass checkout-summary">
+    <aside class="card checkout-summary">
       <h2 class="order-section-title">{{ t('commerce.checkout.summary_heading') }}</h2>
       <div class="checkout-items">
         {% for item in items %}
