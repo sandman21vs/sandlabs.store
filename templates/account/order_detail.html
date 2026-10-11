@@ -6,11 +6,11 @@
       <div class="section-head">
         <h1 class="section-title">{{ t('account.order_detail.heading', id=order.id) }}</h1>
         <p class="section-sub">{{ t('account.order_detail.subtitle') }}</p>
-        <a class="btn btn-accent" href="{{ url_for('checkout.order_pdf', order_id=order.id) }}">{{ t('account.order_detail.download_pdf') }}</a>
+        <a class="btn section-action" href="{{ url_for('checkout.order_pdf', order_id=order.id) }}">{{ t('account.order_detail.download_pdf') }}</a>
       </div>
 
       <div class="order-detail-shell stack-lg">
-        <article class="card glass order-detail-card">
+        <article class="card order-detail-card">
           <div class="order-card-head">
             <div>
               <p class="order-label">{{ t('account.order_detail.current_status') }}</p>
@@ -32,15 +32,18 @@
             <p><strong>{{ t('account.order_detail.payment_confirmed_at') }}:</strong> {{ order.payment_confirmed_at }}</p>
           {% endif %}
           {% if not order.user_id and order.access_token %}
-            <p><strong>{{ t('account.order_detail.access_token') }}:</strong> <code>{{ order.access_token }}</code></p>
-            <p class="muted">{{ t('account.order_detail.access_token_hint') }}</p>
+            <div class="alert alert-warning token-box">
+              <strong>{{ t('account.order_detail.access_token') }}</strong>
+              <code class="mono-block">{{ order.access_token }}</code>
+              <p>{{ t('account.order_detail.access_token_hint') }}</p>
+            </div>
           {% endif %}
         </article>
 
         {% if order.shipping_address_lines %}
-        <article class="card glass order-detail-card">
+        <article class="card order-detail-card">
           <h2 class="order-section-title">{{ t('account.order_detail.shipping_heading') }}</h2>
-          <address style="font-style:normal;line-height:1.7">
+          <address class="address-block">
             {% for line in order.shipping_address_lines %}
               {% if loop.first %}<strong>{{ line }}</strong>{% else %}{{ line }}{% endif %}{% if not loop.last %}<br>{% endif %}
             {% endfor %}
@@ -48,7 +51,7 @@
         </article>
         {% endif %}
 
-        <article class="card glass order-detail-card">
+        <article class="card order-detail-card">
           <h2 class="order-section-title">{{ t('account.order_detail.items_heading') }}</h2>
           {% if order["items"] %}
             <div class="order-items">

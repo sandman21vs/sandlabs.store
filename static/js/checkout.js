@@ -62,11 +62,18 @@
       radio.addEventListener('change', function () {
         applyOption(opt.price_sats, opt.price_chf, opt.carrier, opt.service);
       });
-      var span = document.createElement('span');
-      span.textContent = (opt.carrier || '').toUpperCase() + ' · ' + opt.service +
-        ' — ' + opt.price_sats + ' sats (' + Number(opt.price_chf).toFixed(2) + ' CHF)';
+      var name = document.createElement('span');
+      name.className = 'option-name';
+      name.textContent = (opt.carrier || '').toUpperCase() + ' · ' + opt.service;
+      var price = document.createElement('span');
+      price.className = 'option-price';
+      price.textContent = opt.price_sats + ' sats ';
+      var fiat = document.createElement('small');
+      fiat.textContent = '(' + Number(opt.price_chf).toFixed(2) + ' CHF)';
+      price.appendChild(fiat);
       label.appendChild(radio);
-      label.appendChild(span);
+      label.appendChild(name);
+      label.appendChild(price);
       optionsBox.appendChild(label);
     });
     optionsBox.hidden = options.length <= 1;

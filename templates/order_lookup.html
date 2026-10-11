@@ -8,9 +8,9 @@
     <p class="section-sub">{{ t('account.order_lookup.subtitle') }}</p>
   </div>
 
-  <form method="post" action="{{ url_for('checkout.order_lookup') }}" class="card glass auth-card">
+  <form method="post" action="{{ url_for('checkout.order_lookup') }}" class="card auth-card">
     <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
-    {% if error %}<div class="checkout-error">{{ error }}</div>{% endif %}
+    {% if error %}<div class="checkout-error" role="alert">{{ error }}</div>{% endif %}
 
     <div class="form-group">
       <label for="lookup_order_id">{{ t('account.order_lookup.order_id') }}</label>
@@ -19,10 +19,10 @@
     </div>
     <div class="form-group">
       <label for="lookup_access_token">{{ t('account.order_lookup.access_token') }}</label>
-      <input id="lookup_access_token" class="form-input" type="text" name="access_token"
+      <input id="lookup_access_token" class="form-input input-code" type="text" name="access_token" spellcheck="false"
              value="" autocomplete="off" required>
     </div>
-    <button type="submit" class="btn btn-accent">{{ t('account.order_lookup.submit') }}</button>
+    <button type="submit" class="btn btn-accent btn-block">{{ t('account.order_lookup.submit') }}</button>
   </form>
 </section>
 {% endblock %}
