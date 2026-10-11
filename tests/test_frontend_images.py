@@ -52,3 +52,13 @@ def test_lightbox_keeps_navigation_accessibility_and_adds_both_zoom_modes():
 
     for selector in (".lightbox-zoom", ".lightbox-highres", ".zoom-lens"):
         assert selector in style_css
+
+
+def test_templates_carry_no_inline_styles():
+    """Styling lives in static/css; templates must not embed it (AGENTS.md)."""
+    offenders = []
+    for path in sorted((ROOT / "templates").rglob("*.html")):
+        source = path.read_text(encoding="utf-8")
+        if ' style="' in source or "<style" in source:
+            offenders.append(str(path.relative_to(ROOT)))
+    assert offenders == []

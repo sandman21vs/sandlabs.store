@@ -28,12 +28,12 @@
 </div>
 
 {% if stats.by_status %}
-<div class="admin-card" style="margin-bottom:var(--space-3)">
-  <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">{{ t('admin.dashboard.status_breakdown') }}</h3>
-  <div style="display:flex;flex-wrap:wrap;gap:.75rem">
+<div class="admin-card">
+  <h2 class="admin-card-title">{{ t('admin.dashboard.status_breakdown') }}</h2>
+  <div class="status-tiles">
     {% for status, data in stats.by_status.items() %}
-    <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:.5rem 1rem;text-align:center;min-width:100px">
-      <div style="font-size:1.3rem;font-weight:700">{{ data.count }}</div>
+    <div class="status-tile">
+      <div class="status-tile-count">{{ data.count }}</div>
       <span class="badge badge-{{ status }}">{{ status }}</span>
     </div>
     {% endfor %}
@@ -42,13 +42,13 @@
 {% endif %}
 
 <div class="admin-card">
-  <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">{{ t('admin.dashboard.recent_orders') }}</h3>
+  <h2 class="admin-card-title">{{ t('admin.dashboard.recent_orders') }}</h2>
   {% if recent_orders %}
+  <div class="admin-table-wrap">
   <table class="admin-table">
     <thead>
       <tr>
         <th>#</th>
-        <th>Data</th>
         <th>{{ t('admin.dashboard.table.date') }}</th>
         <th>{{ t('admin.dashboard.table.total_sats') }}</th>
         <th>{{ t('admin.dashboard.table.status') }}</th>
@@ -60,13 +60,14 @@
       <tr>
         <td>#{{ o.id }}</td>
         <td class="muted">{{ o.created_at[:10] if o.created_at else '—' }}</td>
-        <td>{{ "{:,}".format(o.total_sats) }}</td>
+        <td class="num">{{ "{:,}".format(o.total_sats) }}</td>
         <td><span class="badge badge-{{ o.status }}">{{ o.status }}</span></td>
-        <td><a href="{{ url_for('admin.order_detail', order_id=o.id) }}" class="btn btn-ghost btn-sm">Ver</a></td>
+        <td><a href="{{ url_for('admin.order_detail', order_id=o.id) }}" class="btn btn-ghost btn-sm">{{ t('admin.common.view') }}</a></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  </div>
   {% else %}
   <p class="muted">{{ t('admin.dashboard.empty_orders') }}</p>
   {% endif %}
