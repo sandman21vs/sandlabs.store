@@ -26,7 +26,13 @@
           {% endif %}
           <p class="muted">{{ t('account.order_detail.country', value=order.shipping_country or 'CH') }}</p>
           {% if order.shipping_tracking %}
-            <p><strong>{{ t('account.order_detail.tracking') }}:</strong> {{ order.shipping_tracking }}</p>
+            <p><strong>{{ t('account.order_detail.tracking') }}:</strong>
+              {% if order.shipping_carrier == 'post' %}
+              <a href="{{ order.shipping_tracking|swisspost_tracking_url }}" target="_blank" rel="noopener">{{ order.shipping_tracking }}</a>
+              {% else %}
+              {{ order.shipping_tracking }}
+              {% endif %}
+            </p>
           {% endif %}
           {% if order.payment_confirmed_at %}
             <p><strong>{{ t('account.order_detail.payment_confirmed_at') }}:</strong> {{ order.payment_confirmed_at }}</p>

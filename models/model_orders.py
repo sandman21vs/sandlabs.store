@@ -34,7 +34,8 @@ SELECT
     o.discount_sats,
     o.notes,
     o.created_at,
-    o.updated_at
+    o.updated_at,
+    (o.shipping_label_enc IS NOT NULL AND o.shipping_label_enc != '') AS has_shipping_label
 FROM orders o
 """
 
@@ -58,6 +59,7 @@ def _normalize_order(order):
         normalized["total_sats"] - normalized["discount_sats"],
     ) + normalized["shipping_sats"]
     normalized["access_token"] = decrypt_value(normalized.get("access_token"))
+    normalized["has_shipping_label"] = bool(normalized.get("has_shipping_label"))
     normalized["shipping_name"] = decrypt_value(normalized.get("shipping_name_enc"))
     normalized["shipping_street"] = decrypt_value(normalized.get("shipping_street_enc"))
     normalized["shipping_house_number"] = decrypt_value(normalized.get("shipping_house_number_enc"))
@@ -314,6 +316,65 @@ def set_order_tracking(order_id, tracking_code):
             return cursor.rowcount > 0
     finally:
         conn.close()
+
+
+def set_order_label(order_id, label):
+    """Store a shipping label for an order, encrypted at rest.
+
+    ``label`` is a JSON-serialisable dict (document, type, tracking code, test
+    flag). It carries the recipient's name and address, so it is PII.
+    """
+    conn = db.get_db()
+    try:
+        with conn:
+            cursor = conn.execute(
+                """
+                UPDATE orders
+                SET shipping_label_enc = ?, updated_at = datetime('now')
+                WHERE id = ?
+                """,
+                (encrypt_value(json.dumps(label)), order_id),
+            )
+            return cursor.rowcount > 0
+    finally:
+        conn.close()
+
+
+def get_order_label(order_id):
+    """Return the stored shipping label dict for an order, or None."""
+    conn = db.get_db()
+    try:
+        row = conn.execute(
+            "SELECT shipping_label_enc FROM orders WHERE id = ?",
+            (order_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    if row is None or not row["shipping_label_enc"]:
+        return None
+    try:
+        label = json.loads(decrypt_value(row["shipping_label_enc"]))
+    except (TypeError, ValueError):
+        return None
+    return label if isinstance(label, dict) else None
+
+
+def get_order_weight_grams(order_id):
+    """Total weight of an order's items, from the current product weights."""
+    conn = db.get_db()
+    try:
+        row = conn.execute(
+            """
+            SELECT COALESCE(SUM(oi.quantity * COALESCE(p.weight_grams, 0)), 0) AS grams
+            FROM order_items oi
+            LEFT JOIN products p ON p.id = oi.product_id
+            WHERE oi.order_id = ?
+            """,
+            (order_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    return int(row["grams"] or 0)
 
 
 def delete_order(order_id):

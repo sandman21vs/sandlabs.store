@@ -1632,8 +1632,26 @@ off or a call fails, so checkout never depends on it.
   placed. Lookups are capped per browser session because each one spends API
   quota.
 
+- **Labels.** `generate_label(recipient, service_name, weight_grams, item_id)`
+  posts to `.../barcode/v1/generateAddressLabel` (scope `DCAPI_BARCODE_READ`)
+  and returns an A6 PDF plus the consignment number. It needs a franking
+  licence and a sender address (`swisspost_franking_license`,
+  `swisspost_sender_*`). Labels are SPECIMEN (`printPreview: true`, not billed)
+  unless `swisspost_label_live` is switched on.
+- **Admin.** `POST /admin/orders/<id>/label` creates a label for a paid order
+  with a Swiss destination; `GET` on the same path downloads it. The label
+  contains the recipient's name and address, so it is stored encrypted in
+  `orders.shipping_label_enc` (`model_orders.set_order_label`). A live label
+  writes its consignment number to `shipping_tracking`; a SPECIMEN does not.
+  Because a live label is billed, a second one is only requested with an
+  explicit `replace=1`.
+- **Tracking links.** Order pages link the tracking code to Swiss Post's
+  tracking site when the order's carrier is `post`
+  (`swisspost_tracking_url` template filter).
+
 Getting credentials requires a Swiss Post business customer login and an API
-subscription requested through <https://developer.post.ch>. The request and
+subscription requested through <https://developer.post.ch>; labels
+additionally need a franking licence. The request and
 response field names follow the public documentation and still need to be
 confirmed against the live service.
 

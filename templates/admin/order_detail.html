@@ -33,7 +33,13 @@
         {% endif %}
         {% if order.shipping_tracking %}
         <dt>{{ t('admin.order_detail.tracking') }}</dt>
-        <dd><strong>{{ order.shipping_tracking }}</strong></dd>
+        <dd>
+          {% if order.shipping_carrier == 'post' %}
+          <a href="{{ order.shipping_tracking|swisspost_tracking_url }}" target="_blank" rel="noopener"><strong>{{ order.shipping_tracking }}</strong></a>
+          {% else %}
+          <strong>{{ order.shipping_tracking }}</strong>
+          {% endif %}
+        </dd>
         {% endif %}
       </dl>
     </div>
@@ -70,6 +76,35 @@
         </div>
         <button type="submit" class="btn btn-accent btn-sm">{{ t('admin.order_detail.save_status') }}</button>
       </form>
+    </div>
+
+    <div class="admin-card">
+      <h2 class="admin-card-title">{{ t('admin.order_detail.label.title') }}</h2>
+      {% if order.shipping_service %}
+      <p class="form-hint">{{ order.shipping_carrier|upper }} · {{ order.shipping_service }}</p>
+      {% endif %}
+      {% if label %}
+      <p>
+        <span class="badge {{ 'badge-pending' if label.test else 'badge-active' }}">{{ t('admin.order_detail.label.test_badge') if label.test else t('admin.order_detail.label.live_badge') }}</span>
+        <span class="cell-mono">{{ label.ident_code }}</span>
+      </p>
+      {% endif %}
+      {% if label_block %}
+      <p class="muted">{{ t(label_block) }}</p>
+      {% endif %}
+      <div class="form-actions">
+        {% if label %}
+        <a href="{{ url_for('admin.order_label_download', order_id=order.id) }}" class="btn btn-sm">{{ t('admin.order_detail.label.download') }}</a>
+        {% endif %}
+        {% if not label_block %}
+        <form method="post" action="{{ url_for('admin.order_label_create', order_id=order.id) }}"
+              {% if label and not label.test %}onsubmit="return confirm('{{ t('admin.order_detail.label.confirm_replace') }}')"{% endif %}>
+          <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+          {% if label and not label.test %}<input type="hidden" name="replace" value="1">{% endif %}
+          <button type="submit" class="btn btn-accent btn-sm">{{ t('admin.order_detail.label.regenerate') if label else t('admin.order_detail.label.generate') }}</button>
+        </form>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>

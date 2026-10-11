@@ -109,7 +109,16 @@
       "swisspost_hint": "Opcional. Valida endereços suíços no checkout. Exige conta comercial nos Correios Suíços e credenciais de API obtidas em developer.post.ch. O nome do cliente nunca é enviado.",
       "swisspost_enabled": "Integração Swiss Post habilitada",
       "swisspost_client_id": "Client ID",
-      "swisspost_client_secret": "Client Secret"
+      "swisspost_client_secret": "Client Secret",
+      "swisspost_labels_title": "Etiquetas",
+      "swisspost_labels_hint": "Para gerar etiquetas no pedido são necessários a licença de franqueamento e o endereço do remetente.",
+      "swisspost_franking_license": "Licença de franqueamento",
+      "swisspost_sender_name": "Remetente (nome)",
+      "swisspost_sender_street": "Remetente (rua e número)",
+      "swisspost_sender_zip": "CEP",
+      "swisspost_sender_city": "Cidade",
+      "swisspost_label_live": "Gerar etiquetas reais (cobradas)",
+      "swisspost_label_live_hint": "Desligado, os Correios devolvem etiquetas SPECIMEN: não são cobradas e não podem ser postadas. Ligue somente depois de testar."
     },
     "setup": {
       "errors": {
@@ -199,7 +208,24 @@
         "subtotal": "Subtotal (sats)",
         "options": "Opções"
       },
-      "empty_items": "Nenhum item encontrado."
+      "empty_items": "Nenhum item encontrado.",
+      "label": {
+        "title": "Etiqueta Swiss Post",
+        "generate": "Gerar etiqueta",
+        "regenerate": "Gerar nova etiqueta",
+        "download": "Baixar etiqueta",
+        "test_badge": "Teste (SPECIMEN)",
+        "live_badge": "Real",
+        "confirm_replace": "Este pedido já tem uma etiqueta real. Gerar outra será cobrado novamente. Continuar?",
+        "not_configured": "Configure a integração Swiss Post, a licença de franqueamento e o remetente em Configurações.",
+        "swiss_only": "Etiquetas Swiss Post só estão disponíveis para destinos na Suíça.",
+        "unpaid": "A etiqueta só pode ser gerada depois do pagamento confirmado.",
+        "exists": "Este pedido já tem uma etiqueta real. Use “Gerar nova etiqueta” para substituí-la.",
+        "failed": "Não foi possível gerar a etiqueta. Confira as credenciais, a licença e o endereço.",
+        "created": "Etiqueta gerada e código de rastreio salvo no pedido.",
+        "created_test": "Etiqueta de teste (SPECIMEN) gerada. O código de rastreio não foi alterado.",
+        "missing": "Este pedido não tem etiqueta."
+      }
     },
     "product_form": {
       "title_new": "Novo produto",

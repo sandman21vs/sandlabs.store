@@ -1,8 +1,9 @@
 """Swiss Post Digital Commerce API client.
 
 Covers what the API actually offers for a shop: OAuth2 client-credentials
-tokens and address validation. It has no price endpoint; shipping prices come
-from the rate table in ``service_shipping``.
+tokens, address validation and address labels with a tracking code. It has no
+price endpoint; shipping prices come from the rate table in
+``service_shipping``.
 
 The integration is off unless ``swisspost_enabled`` is set and client
 credentials are stored (admin settings). Every public function returns
@@ -14,9 +15,15 @@ https://developer.post.ch/en/digital-commerce-api (read October 2026). They
 have not been exercised against the live service from this codebase yet.
 
 Privacy: address validation sends street, house number, postal code and city.
-The recipient's name is never sent, and no address data is logged.
+The recipient's name is never sent there. A label needs the full recipient
+address including the name. No address data is logged in either case.
+
+Labels cost money: outside test mode every generated label is a franked
+consignment billed to the franking licence.
 """
 
+import base64
+import binascii
 import json
 import logging
 import threading
@@ -31,6 +38,9 @@ logger = logging.getLogger(__name__)
 TOKEN_URL = "https://api.post.ch/OAuth/token"
 ADDRESS_VALIDATION_URL = "https://dcapi.apis.post.ch/address/v1/addresses/validation"
 SCOPE_ADDRESS_VALIDATE = "DCAPI_ADDRESS_VALIDATE"
+BARCODE_URL = "https://dcapi.apis.post.ch/barcode/v1/generateAddressLabel"
+SCOPE_BARCODE = "DCAPI_BARCODE_READ"
+LABEL_FILE_TYPE = "PDF"
 
 _TIMEOUT = 10
 _TOKEN_EXPIRY_MARGIN = 60  # refresh this many seconds before the token expires
@@ -180,3 +190,123 @@ def validate_address(street, house_number, postal_code, city):
     if all(_same(suggestion[key], entered[key]) for key in entered):
         return {"status": "valid", "suggestion": None}
     return {"status": "corrected", "suggestion": suggestion}
+
+
+def label_settings():
+    """Return the label configuration, or ``None`` when labels cannot be made.
+
+    Labels need the integration enabled plus a franking licence and a complete
+    sender address. ``test_mode`` is on unless ``swisspost_label_live`` was
+    switched on explicitly; in test mode Swiss Post returns SPECIMEN labels
+    that are not billed and cannot be posted.
+    """
+    if not is_enabled():
+        return None
+    settings = {
+        "franking_license": _clean(get_config("swisspost_franking_license")),
+        "sender_name": _clean(get_config("swisspost_sender_name")),
+        "sender_street": _clean(get_config("swisspost_sender_street")),
+        "sender_zip": _clean(get_config("swisspost_sender_zip")),
+        "sender_city": _clean(get_config("swisspost_sender_city")),
+    }
+    if not all(settings.values()):
+        return None
+    settings["test_mode"] = not get_bool_config("swisspost_label_live", False)
+    return settings
+
+
+def delivery_code(service_name):
+    """Map a checkout service name to the Swiss Post basic service code."""
+    return "PRI" if "priority" in (service_name or "").casefold() else "ECO"
+
+
+def generate_label(recipient, service_name, weight_grams, item_id):
+    """Create an A6 address label for a Swiss recipient.
+
+    ``recipient`` needs ``name``, ``street``, ``house_number``, ``postal_code``
+    and ``city``; ``address_extra`` is optional. Returns ``None`` when labels
+    are not configured, the recipient is incomplete or the request fails.
+    Otherwise::
+
+        {"ident_code": str, "document": bytes, "file_type": "PDF", "test": bool}
+
+    In test mode the label is a SPECIMEN and ``ident_code`` is not a usable
+    tracking number.
+    """
+    settings = label_settings()
+    if settings is None:
+        return None
+
+    to = {key: _clean(recipient.get(key)) for key in
+          ("name", "street", "house_number", "postal_code", "city", "address_extra")}
+    if not all(to[key] for key in ("name", "street", "house_number", "postal_code", "city")):
+        return None
+
+    recipient_block = {
+        "name1": to["name"],
+        "street": to["street"],
+        "houseNo": to["house_number"],
+        "zip": to["postal_code"],
+        "city": to["city"],
+        "country": "CH",
+    }
+    if to["address_extra"]:
+        recipient_block["name2"] = to["address_extra"]
+
+    result = _api_post(BARCODE_URL, SCOPE_BARCODE, {
+        "language": "DE",
+        "frankingLicense": settings["franking_license"],
+        "ppFranking": False,
+        "customer": {
+            "name1": settings["sender_name"],
+            "street": settings["sender_street"],
+            "zip": settings["sender_zip"],
+            "city": settings["sender_city"],
+            "country": "CH",
+        },
+        "labelDefinition": {
+            "labelLayout": "A6",
+            "printAddresses": "RECIPIENT_AND_CUSTOMER",
+            "imageFileType": LABEL_FILE_TYPE,
+            "imageResolution": 300,
+            "printPreview": settings["test_mode"],
+        },
+        "item": {
+            "itemID": str(item_id),
+            "recipient": recipient_block,
+            "attributes": {
+                "przl": [delivery_code(service_name)],
+                "weight": max(1, int(weight_grams or 0)),
+            },
+        },
+    })
+    if not isinstance(result, dict):
+        return None
+
+    item = result.get("item") or {}
+    labels = item.get("label") or []
+    ident_code = _clean(item.get("identCode"))
+    if not ident_code or not labels:
+        # Error details can echo the address, so only the fact is logged.
+        logger.error("Swiss Post label response had no label item_id=%s", item_id)
+        return None
+    try:
+        document = base64.b64decode(labels[0], validate=True)
+    except (binascii.Error, TypeError, ValueError):
+        logger.error("Swiss Post label was not valid base64 item_id=%s", item_id)
+        return None
+
+    return {
+        "ident_code": ident_code,
+        "document": document,
+        "file_type": LABEL_FILE_TYPE,
+        "test": settings["test_mode"],
+    }
+
+
+def tracking_url(tracking_code):
+    """Public Swiss Post tracking page for a consignment number."""
+    code = _clean(tracking_code)
+    if not code:
+        return ""
+    return "https://service.post.ch/ekp-web/ui/entry/search/" + urllib.parse.quote(code, safe="")

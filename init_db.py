@@ -384,6 +384,7 @@ def init_db():
         # and guest checkout (Fase F).
         _ensure_column(conn, "orders", "shipping_carrier", "shipping_carrier TEXT")
         _ensure_column(conn, "orders", "shipping_service", "shipping_service TEXT")
+        _ensure_column(conn, "orders", "shipping_label_enc", "shipping_label_enc TEXT")
         _ensure_column(conn, "orders", "payment_method", "payment_method TEXT")
         _ensure_column(conn, "orders", "invoice_type", "invoice_type TEXT")
         _ensure_column(conn, "orders", "btc_address", "btc_address TEXT")

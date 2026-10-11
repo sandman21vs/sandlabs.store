@@ -91,6 +91,36 @@
         {{ secret_state(cfg.swisspost_client_secret) }}
       </div>
     </div>
+
+    <h3 class="admin-card-title admin-subtitle">{{ t('admin.settings.swisspost_labels_title') }}</h3>
+    <p class="form-hint">{{ t('admin.settings.swisspost_labels_hint') }}</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="swisspost_franking_license">{{ t('admin.settings.swisspost_franking_license') }}</label>
+        <input type="text" name="swisspost_franking_license" id="swisspost_franking_license" class="form-input input-code"
+               value="{{ cfg.swisspost_franking_license }}" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="form-group">
+        <label for="swisspost_sender_name">{{ t('admin.settings.swisspost_sender_name') }}</label>
+        <input type="text" name="swisspost_sender_name" id="swisspost_sender_name" class="form-input" value="{{ cfg.swisspost_sender_name }}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="swisspost_sender_street">{{ t('admin.settings.swisspost_sender_street') }}</label>
+        <input type="text" name="swisspost_sender_street" id="swisspost_sender_street" class="form-input" value="{{ cfg.swisspost_sender_street }}">
+      </div>
+      <div class="form-group">
+        <label for="swisspost_sender_zip">{{ t('admin.settings.swisspost_sender_zip') }}</label>
+        <input type="text" name="swisspost_sender_zip" id="swisspost_sender_zip" class="form-input input-narrow" value="{{ cfg.swisspost_sender_zip }}">
+      </div>
+      <div class="form-group">
+        <label for="swisspost_sender_city">{{ t('admin.settings.swisspost_sender_city') }}</label>
+        <input type="text" name="swisspost_sender_city" id="swisspost_sender_city" class="form-input" value="{{ cfg.swisspost_sender_city }}">
+      </div>
+    </div>
+    {{ check('swisspost_label_live', t('admin.settings.swisspost_label_live'), cfg.swisspost_label_live == '1') }}
+    <p class="form-hint">{{ t('admin.settings.swisspost_label_live_hint') }}</p>
   </div>
 
   <div class="admin-card">

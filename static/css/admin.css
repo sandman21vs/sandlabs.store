@@ -52,6 +52,7 @@
   text-transform:uppercase; letter-spacing:.06em;
   margin-bottom:var(--space-2);
 }
+.admin-subtitle{margin-top:var(--space-3); padding-top:var(--space-2); border-top:1px solid var(--border)}
 .admin-card-head{display:flex; justify-content:space-between; align-items:center; gap:var(--space-2); margin-bottom:var(--space-2)}
 .admin-card-head .admin-card-title{margin-bottom:0}
 .admin-card-empty{text-align:center; padding:var(--space-4)}
