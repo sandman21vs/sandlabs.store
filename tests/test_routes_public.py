@@ -16,7 +16,19 @@ class TestPublicPages:
         resp = client.get("/produtos")
         assert resp.status_code == 200
         assert b"PRODUTOS" in resp.data
-        assert b"lightbox" in resp.data
+        assert b"produtos-container" in resp.data
+
+    def test_produto_detail_page(self, client, seeded_product):
+        resp = client.get("/produtos/test-product")
+        assert resp.status_code == 200
+        assert b"PRODUTO" in resp.data  # window.PRODUTO injected
+        assert b"Test Product" in resp.data
+        assert b"produto-detail" in resp.data
+        assert b"lightbox" in resp.data  # gallery lives on the detail page now
+
+    def test_produto_detail_unknown_returns_404(self, client, seeded_product):
+        resp = client.get("/produtos/does-not-exist")
+        assert resp.status_code == 404
 
     def test_sobre_page(self, client):
         resp = client.get("/sobre")

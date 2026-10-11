@@ -64,6 +64,12 @@
         "no_cart_price": "This product does not have a cart price configured yet.",
         "cart_unavailable": "Cart unavailable right now.",
         "add_to_cart_failed": "Could not add the product to the cart."
+      },
+      "detail": {
+        "back": "Back to products",
+        "buy_now": "Buy now",
+        "quantity": "Quantity",
+        "description": "Description"
       }
     },
     "about": {

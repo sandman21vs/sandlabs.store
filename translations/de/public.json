@@ -64,6 +64,12 @@
         "no_cart_price": "Für dieses Produkt ist noch kein Warenkorbpreis konfiguriert.",
         "cart_unavailable": "Warenkorb derzeit nicht verfügbar.",
         "add_to_cart_failed": "Das Produkt konnte nicht zum Warenkorb hinzugefügt werden."
+      },
+      "detail": {
+        "back": "Zurück zu den Produkten",
+        "buy_now": "Jetzt kaufen",
+        "quantity": "Menge",
+        "description": "Beschreibung"
       }
     },
     "about": {

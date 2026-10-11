@@ -23,7 +23,13 @@
       <img src="{{ url_for('static', filename='images/logo.png') }}" alt="{{ t('common.brand_logo_alt') }}" class="brand-logo"/>
       <span class="brand-name">{{ t('common.site_title') }}</span>
     </a>
-    <nav class="site-nav">
+    <button class="nav-toggle" id="nav-toggle" type="button"
+            aria-label="{{ t('common.nav.menu') }}" aria-expanded="false" aria-controls="site-nav">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <nav class="site-nav" id="site-nav">
       <a class="nav-link{{ ' active' if active == 'inicio' }}" href="{{ url_for('public.index') }}">{{ t('common.nav.home') }}</a>
       <a class="nav-link{{ ' active' if active == 'sobre' }}" href="{{ url_for('public.sobre') }}">{{ t('common.nav.about') }}</a>
       <a class="nav-link{{ ' active' if active == 'produtos' }}" href="{{ url_for('public.produtos') }}">{{ t('common.nav.products') }}</a>
@@ -43,17 +49,19 @@
       {% endif %}
       <a class="nav-link{{ ' active' if active == 'termos' }}" href="{{ url_for('public.termos') }}">{{ t('common.nav.terms') }}</a>
       <a class="nav-link{{ ' active' if active == 'suporte' }}" href="{{ url_for('public.suporte') }}">{{ t('common.nav.support') }}</a>
-      <div class="currency-switcher">
-        <select id="display-currency" aria-label="{{ t('common.currency.label') }}" title="{{ t('common.currency.label') }}">
-          {% for code in ['CHF', 'EUR', 'BRL', 'USD'] %}
-          <option value="{{ code }}">{{ code }}</option>
+      <div class="nav-extras">
+        <div class="currency-switcher">
+          <select id="display-currency" aria-label="{{ t('common.currency.label') }}" title="{{ t('common.currency.label') }}">
+            {% for code in ['CHF', 'EUR', 'BRL', 'USD'] %}
+            <option value="{{ code }}">{{ code }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="lang-switcher" aria-label="{{ t('common.language.label') }}">
+          {% for code in supported_langs %}
+          <a class="nav-link{{ ' active' if lang == code }}" href="{{ url_for('set_lang', lang=code) }}">{{ code|upper }}</a>
           {% endfor %}
-        </select>
-      </div>
-      <div class="lang-switcher" aria-label="{{ t('common.language.label') }}">
-        {% for code in supported_langs %}
-        <a class="nav-link{{ ' active' if lang == code }}" href="{{ url_for('set_lang', lang=code) }}">{{ code|upper }}</a>
-        {% endfor %}
+        </div>
       </div>
     </nav>
   </header>
@@ -100,6 +108,7 @@
   <script src="{{ url_for('static', filename='js/config-store.js') }}"></script>
   <script>window.CSRF_TOKEN = {{ session.get('csrf_token', '')|tojson }};</script>
   <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

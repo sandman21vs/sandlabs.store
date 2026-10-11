@@ -8,10 +8,10 @@
         <p class="section-sub">{{ t('public.terms.subtitle') }}</p>
       </div>
 
-      <div class="grid" style="max-width:var(--maxw);margin:0 auto;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4)">
+      <div class="two-col">
         <article class="card soft-shadow" style="padding:var(--space-4);">
           <h3 style="font-size:1.25rem;margin-bottom:.75rem">{{ t('public.terms.payments.title') }}</h3>
-          <ul style="color:#d6d6d6;line-height:1.7">
+          <ul style="color:var(--text-2);line-height:1.7">
             {% for item in t('public.terms.payments.items') %}
             <li>{{ item|safe }}</li>
             {% endfor %}
@@ -20,7 +20,7 @@
 
         <article class="card soft-shadow" style="padding:var(--space-4);">
           <h3 style="font-size:1.25rem;margin-bottom:.75rem">{{ t('public.terms.shipping.title') }}</h3>
-          <ul style="color:#d6d6d6;line-height:1.7">
+          <ul style="color:var(--text-2);line-height:1.7">
             {% for item in t('public.terms.shipping.items') %}
             <li>{{ item|safe }}</li>
             {% endfor %}
