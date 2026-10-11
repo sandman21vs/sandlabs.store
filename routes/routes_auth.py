@@ -1,20 +1,37 @@
+import hmac
+import logging
 from urllib.parse import urlsplit
 
-from flask import Blueprint, redirect, render_template, request, session, url_for
+from flask import Blueprint, abort, redirect, render_template, request, session, url_for
+
+import config
 
 from i18n import translate
 from models.model_cart import merge_cart
 from models.model_users import (
     cleanup_old_attempts,
+    create_google_user,
     create_user,
     get_user_by_email,
+    get_user_by_google_sub,
+    get_user_by_id,
     is_rate_limited,
+    link_google_account,
     record_login_attempt,
     verify_user,
 )
+from services import service_google_auth
 
+logger = logging.getLogger(__name__)
 
 auth = Blueprint("auth", __name__)
+
+_GOOGLE_SESSION_KEY = "google_oauth"
+
+
+@auth.context_processor
+def inject_google_login():
+    return {"google_login_enabled": service_google_auth.is_enabled()}
 
 
 def _client_ip():
@@ -102,6 +119,79 @@ def login():
 
     _login_user(user)
     return redirect(_redirect_target(next_url))
+
+
+def google_redirect_uri():
+    """Callback URL registered with Google.
+
+    Uses ``PUBLIC_BASE_URL`` when set, because behind a proxy or tunnel the
+    request host and scheme may not be the public ones Google must match.
+    """
+    path = url_for("auth.google_callback")
+    if config.PUBLIC_BASE_URL:
+        return f"{config.PUBLIC_BASE_URL}{path}"
+    return url_for("auth.google_callback", _external=True)
+
+
+def _google_login_failed(message_key, status=400):
+    return (
+        render_template("auth/login.html", active="login", error=translate(message_key)),
+        status,
+    )
+
+
+@auth.route("/auth/google")
+def google_start():
+    if not service_google_auth.is_enabled():
+        abort(404)
+    attempt = service_google_auth.new_login_attempt()
+    session[_GOOGLE_SESSION_KEY] = {**attempt, "next": request.args.get("next", "")}
+    return redirect(service_google_auth.authorization_url(google_redirect_uri(), attempt))
+
+
+@auth.route("/auth/google/callback")
+def google_callback():
+    if not service_google_auth.is_enabled():
+        abort(404)
+
+    # One attempt per round trip: the stored secrets are consumed here.
+    attempt = session.pop(_GOOGLE_SESSION_KEY, None)
+    state = request.args.get("state", "")
+    if not attempt or not state or not hmac.compare_digest(str(attempt.get("state", "")), state):
+        return _google_login_failed("auth.google.errors.failed")
+    if request.args.get("error"):
+        # The visitor cancelled or Google refused; nothing to exchange.
+        return _google_login_failed("auth.google.errors.failed")
+
+    identity = service_google_auth.exchange_code(
+        request.args.get("code", ""), google_redirect_uri(), attempt
+    )
+    if identity is None:
+        return _google_login_failed("auth.google.errors.failed")
+
+    user = get_user_by_google_sub(identity["sub"])
+    if user is None:
+        existing = get_user_by_email(identity["email"])
+        if existing is None:
+            user_id = create_google_user(identity["email"], identity["sub"], identity["name"])
+        elif existing["is_admin"]:
+            # Admin access must not hinge on a third-party account.
+            logger.warning("google_login_refused_admin user_id=%s", existing["id"])
+            return _google_login_failed("auth.google.errors.admin_password", 403)
+        else:
+            # Google vouches for the email, so this is its owner. The old
+            # password is dropped: it may have been set by someone else.
+            if not link_google_account(existing["id"], identity["sub"], replace_password=True):
+                return _google_login_failed("auth.google.errors.failed")
+            user_id = existing["id"]
+        user = get_user_by_id(user_id)
+    elif user["is_admin"]:
+        logger.warning("google_login_refused_admin user_id=%s", user["id"])
+        return _google_login_failed("auth.google.errors.admin_password", 403)
+
+    logger.info("google_login user_id=%s", user["id"])
+    _login_user(user)
+    return redirect(_redirect_target(attempt.get("next", "")))
 
 
 @auth.route("/auth/register", methods=["GET", "POST"])

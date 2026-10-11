@@ -21,6 +21,9 @@ DEFAULT_CONFIG = {
     "swisspost_sender_zip": "",
     "swisspost_sender_city": "",
     "swisspost_label_live": "0",
+    "google_login_enabled": "0",
+    "google_client_id": "",
+    "google_client_secret": "",
     "whatsapp": "",
     "telegram": "",
 }

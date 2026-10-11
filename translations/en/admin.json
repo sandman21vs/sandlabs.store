@@ -118,7 +118,12 @@
       "swisspost_sender_zip": "Postal code",
       "swisspost_sender_city": "City",
       "swisspost_label_live": "Generate real (billed) labels",
-      "swisspost_label_live_hint": "When off, Swiss Post returns SPECIMEN labels: they are not billed and cannot be posted. Switch on only after testing."
+      "swisspost_label_live_hint": "When off, Swiss Post returns SPECIMEN labels: they are not billed and cannot be posted. Switch on only after testing.",
+      "google_title": "Google sign-in",
+      "google_hint": "Optional. Create an OAuth client of type “Web application” in the Google Cloud Console and register this authorized redirect URI:",
+      "google_enabled": "Google sign-in enabled",
+      "google_client_id": "Client ID",
+      "google_client_secret": "Client secret"
     },
     "setup": {
       "errors": {

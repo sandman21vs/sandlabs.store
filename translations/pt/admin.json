@@ -118,7 +118,12 @@
       "swisspost_sender_zip": "CEP",
       "swisspost_sender_city": "Cidade",
       "swisspost_label_live": "Gerar etiquetas reais (cobradas)",
-      "swisspost_label_live_hint": "Desligado, os Correios devolvem etiquetas SPECIMEN: não são cobradas e não podem ser postadas. Ligue somente depois de testar."
+      "swisspost_label_live_hint": "Desligado, os Correios devolvem etiquetas SPECIMEN: não são cobradas e não podem ser postadas. Ligue somente depois de testar.",
+      "google_title": "Login com Google",
+      "google_hint": "Opcional. Crie um cliente OAuth do tipo “Aplicativo da Web” no Google Cloud Console e cadastre este URI de redirecionamento autorizado:",
+      "google_enabled": "Login com Google habilitado",
+      "google_client_id": "Client ID",
+      "google_client_secret": "Client Secret"
     },
     "setup": {
       "errors": {

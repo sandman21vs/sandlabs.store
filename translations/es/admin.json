@@ -118,7 +118,12 @@
       "swisspost_sender_zip": "Código postal",
       "swisspost_sender_city": "Ciudad",
       "swisspost_label_live": "Generar etiquetas reales (facturadas)",
-      "swisspost_label_live_hint": "Desactivado, Correos Suizos devuelve etiquetas SPECIMEN: no se facturan y no se pueden enviar. Actívalo solo después de probar."
+      "swisspost_label_live_hint": "Desactivado, Correos Suizos devuelve etiquetas SPECIMEN: no se facturan y no se pueden enviar. Actívalo solo después de probar.",
+      "google_title": "Inicio de sesión con Google",
+      "google_hint": "Opcional. Crea un cliente OAuth de tipo “Aplicación web” en Google Cloud Console y registra este URI de redireccionamiento autorizado:",
+      "google_enabled": "Inicio de sesión con Google habilitado",
+      "google_client_id": "Client ID",
+      "google_client_secret": "Client Secret"
     },
     "setup": {
       "errors": {
