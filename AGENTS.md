@@ -1,13 +1,76 @@
 # sandlabs.store Contributor and AI Operating Rules
 
 This file is the canonical operating policy for everyone contributing to this
-repository, including AI agents. `CLAUDE.md` provides Claude-specific context
-and defers to this document for all shared rules.
+repository, including AI agents. `CLAUDE.md` only adds Claude-specific
+shortcuts and defers to this document for all shared rules.
 
 `sandlabs.store` is a Flask 3 + SQLite e-commerce app that sells hardware and
 settles payments in Bitcoin (Lightning / Liquid / on-chain) through Coinos.
 Data lives in SQLite (`data/sandlabs.db`); there is no ORM and no frontend
 build step.
+
+## How work lands: everything through pull requests
+
+`main` only changes through pull requests that the maintainer reviews and
+merges. This applies to humans and agents alike.
+
+1. **Plan.** Non-trivial work starts from a plan the maintainer approved. The
+   active plan and its checklist live in `docs/ROADMAP.md`.
+2. **Branch.** One branch per phase, created from an up-to-date `main` or from
+   the previous phase's branch when the work is stacked. Prefixes: `feature/`,
+   `fix/`, `ui/`, `chore/`, `docs/`.
+3. **Commit.** Small, focused commits in
+   [Conventional Commits](https://www.conventionalcommits.org/) style
+   (`feat(checkout): ...`, `fix(i18n): ...`), after the relevant tests pass.
+4. **Push and open a PR.** One PR per phase, using
+   `.github/pull_request_template.md`. Open it as a draft when it is not ready
+   for review.
+5. **Review and merge.** The maintainer reviews and merges. Address review
+   feedback with new commits on the same branch.
+
+### What agents may do without asking
+
+When executing an approved plan, an agent may create the phase branch, commit
+to it, push it, and open or update its pull request.
+
+### What agents must never do
+
+- Commit or push to `main`, or merge any pull request.
+- Force-push, rewrite published history, or delete remote branches.
+- Change repository settings, branch protection, secrets, or CI permissions.
+- Start work that is outside the approved plan without asking first.
+- Add AI attribution: no `Co-Authored-By` trailers for AI tools and no
+  "generated with" lines in commits or pull requests.
+
+### Stacked pull requests
+
+- Each PR targets the branch of the phase it builds on and says so in its
+  description (`Base: <branch>`, `Stack: 3/9`).
+- Keep one concern per PR. A reviewer should be able to read it in one sitting.
+- If a phase cannot reach green tests, stop the stack there: open that PR as a
+  draft with the diagnosis and do not build dependent phases on top of it.
+- Do not overwrite or discard unrelated work in a dirty worktree.
+
+### Pull request description
+
+Every PR states:
+
+- **What and why** — the change and the problem it solves.
+- **How it was tested** — the exact command and its result (for example
+  `python -m pytest tests/ -q` → `273 passed`).
+- **Visual evidence** — for UI changes, which pages were checked, at which
+  viewport widths and in which languages.
+- **Risk and rollback** — what could break, and whether reverting the PR is
+  enough.
+
+### Definition of done
+
+- Tests added or updated for every behavior change; the full suite passes.
+- User-facing copy exists in all four languages.
+- `README.md` and `ARCHITECTURE.md` updated when setup, deployment, security,
+  integrations, routes, or persisted-data behavior changed.
+- `docs/ROADMAP.md` ticked for the finished phase.
+- CI is green on the PR.
 
 ## Language and documentation
 
@@ -19,9 +82,10 @@ build step.
   languages: `pt` (default), `en`, `es`, and `de` (see `SUPPORTED_LANGS` in
   `i18n.py`). `translations/<lang>/*.json` and any user-facing PT/EN/ES/DE copy
   are exceptions to the English technical-language rule.
-- Update `README.md` and `ARCHITECTURE.md` (and any security documentation)
-  whenever a change affects setup, deployment, security, integrations, routes,
-  or persisted-data behavior.
+- Do not hardcode user-facing strings in templates or JavaScript; add a key to
+  every `translations/<lang>/` file instead.
+- Finished plans and briefs move to `docs/archive/`. They are history, not
+  instructions.
 
 ## Architecture and product safeguards
 
@@ -33,28 +97,44 @@ build step.
   exempt), `login_required` / `admin_required` boundaries, i18n detection and
   fallbacks (`i18n.py`), HTML sanitization, and financial/accounting behavior
   (all money is handled in satoshis end-to-end).
-- Treat Coinos credentials, wallet addresses, payment webhooks, invoice
-  hashes, balances, the PII encryption key/seed, and encrypted customer data
-  as security-sensitive. Coinos logic lives in `services/service_coinos.py`;
-  at-rest encryption lives in `services/service_security.py`. Do not weaken
-  their validation, authorization, audit, or error-handling behavior.
+- Prices are server-authoritative. The browser may display and choose, but the
+  server recomputes every amount it charges.
+- Treat Coinos credentials, carrier API credentials, wallet addresses, payment
+  webhooks, invoice hashes, balances, the PII encryption key/seed, and
+  encrypted customer data as security-sensitive. Coinos logic lives in
+  `services/service_coinos.py`; at-rest encryption lives in
+  `services/service_security.py`. Do not weaken their validation,
+  authorization, audit, or error-handling behavior.
 - Personally identifiable information (shipping name/address, customer email,
-  display name, order notes) is stored encrypted at rest. Never persist PII in
-  plaintext columns and never log decrypted PII.
-- Do not create real invoices, trigger payments, or use production payment
-  credentials unless the task explicitly requests it.
+  display name, order notes, shipping labels) is stored encrypted at rest.
+  Never persist PII in plaintext columns and never log decrypted PII.
+- Send third parties only the PII a feature strictly needs.
+- Do not create real invoices, trigger payments, buy shipping labels, or use
+  production credentials unless the task explicitly requests it. External
+  services are mocked in tests.
+
+## Frontend
+
+- No build step and no external CDNs: styles, scripts, and fonts are served
+  from `static/`.
+- Reuse the design tokens and components in `static/css/style.css` (and
+  `static/css/admin.css` for the admin). Do not add inline `style=""`
+  attributes or per-template `<style>` blocks.
+- Every page must work from 375 px wide upward, be keyboard-navigable, and
+  keep visible focus states.
 
 ## Validation
 
 - Add or update tests for every behavior change (`tests/`, pytest).
-- Run the relevant tests, and run the full suite when practical:
+- Run the relevant tests while iterating and the full suite before pushing:
 
   ```bash
   python -m pytest tests/ -q
   ```
 
 - There is no frontend build step. Validate template, JavaScript, and
-  translation changes with the applicable tests and lightweight syntax checks.
+  translation changes with the applicable tests, and check UI changes in a
+  browser against a local instance with a throwaway database.
 - Database schema changes go through the idempotent migration mechanism in
   `init_db.py` (`_ensure_column` and dedicated migration helpers), never
   destructive rewrites.
@@ -76,24 +156,6 @@ build step.
   handle authentication, permissions, CSRF, payments, wallets, backups,
   secrets, database migrations, destructive operations, commits, pushes, pull
   requests, deployments, and credential changes.
-
-## Git workflow
-
-- Before starting a new feature or an independently scoped change, consider
-  whether a dedicated branch would improve isolation. If it would, suggest a
-  specific `feature/<topic>` branch name and ask for approval before creating
-  or switching to it.
-- Do not create or switch branches automatically. Continue on the current
-  branch only when it is not `main` and the work fits that branch's scope. Do
-  not implement new work directly on `main`; request approval for a feature
-  branch instead.
-- Create approved feature branches from an up-to-date `main` branch.
-- Never commit or push directly to `main`. Integrate work through a reviewed
-  pull request.
-- Local commits on a feature branch are allowed after relevant validation
-  passes. Do not push or create/update a pull request unless explicitly asked.
-- Keep changes focused; do not overwrite or discard unrelated work in a dirty
-  worktree.
 
 ## Secrets, local state, and operations
 

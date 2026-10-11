@@ -17,7 +17,7 @@ When a phase is finished (its tests pass and it is committed), do all three:
 
 1. Change its checkbox below from `[ ]` to `[x]` and append the commit hash.
 2. Use a commit message `feat(<area>): ... (Fase X)`.
-3. Keep the phase's brief in `docs/briefs/` up to date if the approach changed.
+3. Keep the phase's brief in `docs/archive/briefs/` up to date if the approach changed.
 
 This checklist **is** the "tik de ok" the user asked for.
 
@@ -148,19 +148,19 @@ produce a stored per-order address and confirm via polling.
 
 ## Fase D — Frete híbrido DHL + Swiss Post
 
-See `docs/briefs/brief-D-frete.md`. Orchestrator in `services/service_shipping.py`
+See `docs/archive/briefs/brief-D-frete.md`. Orchestrator in `services/service_shipping.py`
 with the current static table as fallback; real carrier APIs only when
 credentials are configured; return multiple options to the checkout.
 
 ## Fase E — Imagens: thumbnail leve → alta resolução com lupa
 
-See `docs/briefs/brief-E-imagens.md`. Cards use webp thumbnails (lazy); extend
+See `docs/archive/briefs/brief-E-imagens.md`. Cards use webp thumbnails (lazy); extend
 the existing `static/js/lightbox.js` to load the high-res original with a zoom
 lens.
 
 ## Fase F — PDF do pedido + checkout convidado
 
-- **F-pdf** (delegable): see `docs/briefs/brief-F-pdf.md`. Add `fpdf2`, new
+- **F-pdf** (delegable): see `docs/archive/briefs/brief-F-pdf.md`. Add `fpdf2`, new
   `services/service_pdf.py` `build_order_pdf(order) -> bytes`, embed a tracking
   QR via `service_qr.py`. Pure function + test only.
 - **F-core** (brain-owned): relax `login_required` on checkout to allow guest
@@ -170,7 +170,7 @@ lens.
 
 ## Fase G — Multi-moeda: USD + switcher
 
-See `docs/briefs/brief-G-moeda.md`. Enable USD in `ADMIN_ENABLED_CURRENCIES`
+See `docs/archive/briefs/brief-G-moeda.md`. Enable USD in `ADMIN_ENABLED_CURRENCIES`
 (`services/service_pricing.py`) and add a display-currency switcher
 (CHF/EUR/BRL/USD); settlement stays in sats.
 
