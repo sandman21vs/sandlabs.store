@@ -15,6 +15,12 @@ DEFAULT_CONFIG = {
     "swisspost_enabled": "0",
     "swisspost_client_id": "",
     "swisspost_client_secret": "",
+    "swisspost_franking_license": "",
+    "swisspost_sender_name": "",
+    "swisspost_sender_street": "",
+    "swisspost_sender_zip": "",
+    "swisspost_sender_city": "",
+    "swisspost_label_live": "0",
     "whatsapp": "",
     "telegram": "",
 }

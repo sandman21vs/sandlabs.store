@@ -109,7 +109,16 @@
       "swisspost_hint": "Optional. Prüft Schweizer Adressen im Checkout. Erfordert ein Geschäftskonto bei der Schweizerischen Post und API-Zugangsdaten von developer.post.ch. Der Name des Kunden wird nie übermittelt.",
       "swisspost_enabled": "Swiss-Post-Integration aktiviert",
       "swisspost_client_id": "Client-ID",
-      "swisspost_client_secret": "Client-Secret"
+      "swisspost_client_secret": "Client-Secret",
+      "swisspost_labels_title": "Etiketten",
+      "swisspost_labels_hint": "Für Etiketten aus der Bestellung werden die Frankierlizenz und die Absenderadresse benötigt.",
+      "swisspost_franking_license": "Frankierlizenz",
+      "swisspost_sender_name": "Absender (Name)",
+      "swisspost_sender_street": "Absender (Strasse und Nummer)",
+      "swisspost_sender_zip": "PLZ",
+      "swisspost_sender_city": "Ort",
+      "swisspost_label_live": "Echte (verrechnete) Etiketten erzeugen",
+      "swisspost_label_live_hint": "Ausgeschaltet liefert die Post SPECIMEN-Etiketten: Sie werden nicht verrechnet und können nicht aufgegeben werden. Erst nach dem Testen einschalten."
     },
     "setup": {
       "errors": {
@@ -199,7 +208,24 @@
         "subtotal": "Zwischensumme (sats)",
         "options": "Optionen"
       },
-      "empty_items": "Keine Positionen gefunden."
+      "empty_items": "Keine Positionen gefunden.",
+      "label": {
+        "title": "Swiss-Post-Etikette",
+        "generate": "Etikette erzeugen",
+        "regenerate": "Neue Etikette erzeugen",
+        "download": "Etikette herunterladen",
+        "test_badge": "Test (SPECIMEN)",
+        "live_badge": "Echt",
+        "confirm_replace": "Diese Bestellung hat bereits eine echte Etikette. Eine weitere wird erneut verrechnet. Fortfahren?",
+        "not_configured": "Richte die Swiss-Post-Integration, die Frankierlizenz und den Absender in den Einstellungen ein.",
+        "swiss_only": "Swiss-Post-Etiketten gibt es nur für Ziele in der Schweiz.",
+        "unpaid": "Eine Etikette kann erst nach bestätigter Zahlung erzeugt werden.",
+        "exists": "Diese Bestellung hat bereits eine echte Etikette. Mit „Neue Etikette erzeugen“ ersetzen.",
+        "failed": "Die Etikette konnte nicht erzeugt werden. Prüfe Zugangsdaten, Lizenz und Adresse.",
+        "created": "Etikette erzeugt und Sendungsnummer in der Bestellung gespeichert.",
+        "created_test": "Test-Etikette (SPECIMEN) erzeugt. Die Sendungsnummer wurde nicht geändert.",
+        "missing": "Diese Bestellung hat keine Etikette."
+      }
     },
     "product_form": {
       "title_new": "Neues Produkt",

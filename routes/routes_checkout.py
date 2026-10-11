@@ -48,6 +48,8 @@ from services.service_btc_price import chf_to_sats
 from models.model_coupons import increment_usage as increment_coupon_usage
 
 checkout = Blueprint("checkout", __name__)
+# Used by the customer and admin order pages to link a Swiss Post tracking code.
+checkout.add_app_template_filter(service_swisspost.tracking_url, "swisspost_tracking_url")
 logger = logging.getLogger(__name__)
 _GUEST_ORDER_ACCESS_KEY = "guest_order_ids"
 _MAX_REMEMBERED_GUEST_ORDERS = 20

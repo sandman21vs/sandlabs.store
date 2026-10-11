@@ -109,7 +109,16 @@
       "swisspost_hint": "Opcional. Valida direcciones suizas en el checkout. Requiere una cuenta comercial de Correos Suizos y credenciales de API de developer.post.ch. El nombre del cliente nunca se envía.",
       "swisspost_enabled": "Integración Swiss Post habilitada",
       "swisspost_client_id": "Client ID",
-      "swisspost_client_secret": "Client Secret"
+      "swisspost_client_secret": "Client Secret",
+      "swisspost_labels_title": "Etiquetas",
+      "swisspost_labels_hint": "Para generar etiquetas en el pedido se necesitan la licencia de franqueo y la dirección del remitente.",
+      "swisspost_franking_license": "Licencia de franqueo",
+      "swisspost_sender_name": "Remitente (nombre)",
+      "swisspost_sender_street": "Remitente (calle y número)",
+      "swisspost_sender_zip": "Código postal",
+      "swisspost_sender_city": "Ciudad",
+      "swisspost_label_live": "Generar etiquetas reales (facturadas)",
+      "swisspost_label_live_hint": "Desactivado, Correos Suizos devuelve etiquetas SPECIMEN: no se facturan y no se pueden enviar. Actívalo solo después de probar."
     },
     "setup": {
       "errors": {
@@ -199,7 +208,24 @@
         "subtotal": "Subtotal (sats)",
         "options": "Opciones"
       },
-      "empty_items": "No se encontraron artículos."
+      "empty_items": "No se encontraron artículos.",
+      "label": {
+        "title": "Etiqueta Swiss Post",
+        "generate": "Generar etiqueta",
+        "regenerate": "Generar nueva etiqueta",
+        "download": "Descargar etiqueta",
+        "test_badge": "Prueba (SPECIMEN)",
+        "live_badge": "Real",
+        "confirm_replace": "Este pedido ya tiene una etiqueta real. Generar otra se facturará de nuevo. ¿Continuar?",
+        "not_configured": "Configura la integración Swiss Post, la licencia de franqueo y el remitente en Configuración.",
+        "swiss_only": "Las etiquetas Swiss Post solo están disponibles para destinos en Suiza.",
+        "unpaid": "La etiqueta solo se puede generar después de confirmar el pago.",
+        "exists": "Este pedido ya tiene una etiqueta real. Usa “Generar nueva etiqueta” para reemplazarla.",
+        "failed": "No se pudo generar la etiqueta. Revisa las credenciales, la licencia y la dirección.",
+        "created": "Etiqueta generada y código de seguimiento guardado en el pedido.",
+        "created_test": "Etiqueta de prueba (SPECIMEN) generada. El código de seguimiento no se modificó.",
+        "missing": "Este pedido no tiene etiqueta."
+      }
     },
     "product_form": {
       "title_new": "Nuevo producto",

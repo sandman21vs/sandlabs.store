@@ -31,7 +31,7 @@ Rules for executing this plan are in `AGENTS.md`.
 - [x] **8. Swiss Post address validation** — `feature/swisspost-02-address` — [#8](https://github.com/sandman21vs/sandlabs.store/pull/8)
   Digital Commerce API client (OAuth2 client credentials) and non-blocking
   address validation for Swiss destinations at checkout.
-- [ ] **9. Swiss Post labels** — `feature/swisspost-03-labels`
+- [x] **9. Swiss Post labels** — `feature/swisspost-03-labels` — [#9](https://github.com/sandman21vs/sandlabs.store/pull/9)
   Label generation from the admin order page, encrypted label storage,
   automatic tracking code, tracking link for customers.
 

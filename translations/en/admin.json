@@ -109,7 +109,16 @@
       "swisspost_hint": "Optional. Validates Swiss addresses at checkout. Requires a Swiss Post business account and API credentials from developer.post.ch. The customer's name is never sent.",
       "swisspost_enabled": "Swiss Post integration enabled",
       "swisspost_client_id": "Client ID",
-      "swisspost_client_secret": "Client secret"
+      "swisspost_client_secret": "Client secret",
+      "swisspost_labels_title": "Labels",
+      "swisspost_labels_hint": "Generating labels on an order requires the franking licence and the sender address.",
+      "swisspost_franking_license": "Franking licence",
+      "swisspost_sender_name": "Sender (name)",
+      "swisspost_sender_street": "Sender (street and number)",
+      "swisspost_sender_zip": "Postal code",
+      "swisspost_sender_city": "City",
+      "swisspost_label_live": "Generate real (billed) labels",
+      "swisspost_label_live_hint": "When off, Swiss Post returns SPECIMEN labels: they are not billed and cannot be posted. Switch on only after testing."
     },
     "setup": {
       "errors": {
@@ -199,7 +208,24 @@
         "subtotal": "Subtotal (sats)",
         "options": "Options"
       },
-      "empty_items": "No items found."
+      "empty_items": "No items found.",
+      "label": {
+        "title": "Swiss Post label",
+        "generate": "Generate label",
+        "regenerate": "Generate new label",
+        "download": "Download label",
+        "test_badge": "Test (SPECIMEN)",
+        "live_badge": "Live",
+        "confirm_replace": "This order already has a real label. Generating another one will be billed again. Continue?",
+        "not_configured": "Configure the Swiss Post integration, the franking licence and the sender in Settings.",
+        "swiss_only": "Swiss Post labels are only available for destinations in Switzerland.",
+        "unpaid": "A label can only be generated after payment is confirmed.",
+        "exists": "This order already has a real label. Use “Generate new label” to replace it.",
+        "failed": "The label could not be generated. Check the credentials, the licence and the address.",
+        "created": "Label generated and tracking code saved on the order.",
+        "created_test": "Test (SPECIMEN) label generated. The tracking code was not changed.",
+        "missing": "This order has no label."
+      }
     },
     "product_form": {
       "title_new": "New product",

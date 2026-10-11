@@ -3,13 +3,14 @@
 All routes require an authenticated admin user (is_admin=1).
 Use /admin/setup to create the first admin account.
 """
+import base64
 import json
 import logging
 import os
 import secrets
 
-from flask import (Blueprint, current_app, flash, redirect, render_template,
-                   request, session, url_for)
+from flask import (Blueprint, current_app, flash, make_response, redirect,
+                   render_template, request, session, url_for)
 from werkzeug.utils import secure_filename
 
 import db
@@ -23,6 +24,9 @@ from models.model_products import (create_product, delete_product,
 from models.model_products import _PRODUCT_SELECT, _row_to_product, _load_related_records
 from models.model_orders import (
     get_order as get_order_record,
+    get_order_label,
+    get_order_weight_grams,
+    set_order_label,
     set_order_tracking,
     update_order_status,
 )
@@ -396,10 +400,104 @@ def order_detail(order_id):
         flash(translate("admin.orders.flash.not_found"), "error")
         return redirect(url_for("admin.orders"))
     items = order.get("items", [])
+    label = get_order_label(order_id) if order.get("has_shipping_label") else None
     return render_template("admin/order_detail.html",
                            order=order,
                            items=items,
+                           label=label,
+                           label_block=_label_block_reason(order),
                            valid_statuses=sorted(VALID_STATUSES))
+
+
+# A label is a franked consignment, so only paid orders may get one.
+_LABEL_STATUSES = {"paid", "processing", "shipped"}
+
+
+def _label_block_reason(order):
+    """Translation key explaining why no label can be made, or None."""
+    if service_swisspost.label_settings() is None:
+        return "admin.order_detail.label.not_configured"
+    if (order.get("shipping_country") or "").upper() != "CH":
+        return "admin.order_detail.label.swiss_only"
+    if order.get("status") not in _LABEL_STATUSES:
+        return "admin.order_detail.label.unpaid"
+    return None
+
+
+@admin.route("/orders/<int:order_id>/label", methods=["POST"])
+@admin_required
+def order_label_create(order_id):
+    order = get_order_record(order_id)
+    if not order:
+        flash(translate("admin.orders.flash.not_found"), "error")
+        return redirect(url_for("admin.orders"))
+    back = redirect(url_for("admin.order_detail", order_id=order_id))
+
+    block = _label_block_reason(order)
+    if block:
+        flash(translate(block), "error")
+        return back
+
+    # A real label is billed; never buy a second one without an explicit request.
+    existing = get_order_label(order_id)
+    if existing and not existing.get("test") and request.form.get("replace") != "1":
+        flash(translate("admin.order_detail.label.exists"), "error")
+        return back
+
+    result = service_swisspost.generate_label(
+        recipient={
+            "name": order.get("shipping_name"),
+            "street": order.get("shipping_street"),
+            "house_number": order.get("shipping_house_number"),
+            "postal_code": order.get("shipping_postal_code"),
+            "city": order.get("shipping_city"),
+            "address_extra": order.get("shipping_address_extra"),
+        },
+        service_name=order.get("shipping_service"),
+        weight_grams=get_order_weight_grams(order_id),
+        item_id=order_id,
+    )
+    if result is None:
+        logger.warning("admin_order_label_failed order_id=%s admin_user_id=%s", order_id, session.get("user_id"))
+        flash(translate("admin.order_detail.label.failed"), "error")
+        return back
+
+    set_order_label(order_id, {
+        "document": base64.b64encode(result["document"]).decode("ascii"),
+        "file_type": result["file_type"],
+        "ident_code": result["ident_code"],
+        "test": result["test"],
+    })
+    if not result["test"]:
+        set_order_tracking(order_id, result["ident_code"])
+    logger.info(
+        "admin_order_label_created order_id=%s test=%s admin_user_id=%s",
+        order_id,
+        "1" if result["test"] else "0",
+        session.get("user_id"),
+    )
+    flash(
+        translate("admin.order_detail.label.created_test" if result["test"] else "admin.order_detail.label.created"),
+        "success",
+    )
+    return back
+
+
+@admin.route("/orders/<int:order_id>/label")
+@admin_required
+def order_label_download(order_id):
+    label = get_order_label(order_id)
+    try:
+        document = base64.b64decode(label["document"], validate=True)
+    except (TypeError, KeyError, ValueError):
+        flash(translate("admin.order_detail.label.missing"), "error")
+        return redirect(url_for("admin.order_detail", order_id=order_id))
+
+    response = make_response(document)
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = f'attachment; filename="label-{order_id}.pdf"'
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 @admin.route("/orders/<int:order_id>/status", methods=["POST"])
@@ -481,6 +579,9 @@ def settings():
             set_config("swisspost_client_secret", swisspost_secret)
         set_config("swisspost_client_id", request.form.get("swisspost_client_id", "").strip())
         set_config("swisspost_enabled", "1" if request.form.get("swisspost_enabled") else "0")
+        for key in ("franking_license", "sender_name", "sender_street", "sender_zip", "sender_city"):
+            set_config(f"swisspost_{key}", request.form.get(f"swisspost_{key}", "").strip())
+        set_config("swisspost_label_live", "1" if request.form.get("swisspost_label_live") else "0")
         service_swisspost.reset_token_cache()
 
         shipping_json = request.form.get("shipping_rates", "").strip()
