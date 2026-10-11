@@ -91,7 +91,10 @@
         "lightning": "Lightning",
         "liquid": "Liquid",
         "onchain": "Bitcoin on-chain"
-      }
+      },
+      "confirmed": "Payment confirmed!",
+      "copied": "Copied!",
+      "copy": "Copy"
     },
     "api": {
       "errors": {

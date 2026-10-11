@@ -19,13 +19,13 @@ PRODUCTS = [
         "details_html": """
 <h4>Documentação do Dispositivo JADE DIY</h4>
 <p><strong>Introdução:</strong> dispositivo seguro e transparente.</p>
-<p><strong>Por que hardware open source?</strong> <a href="https://plebs.substack.com/p/hard-wallets-seguras" target="_blank">Artigo</a></p>
+<p><strong>Por que hardware open source?</strong> <a href="https://plebs.substack.com/p/hard-wallets-seguras" target="_blank" rel="noopener">Artigo</a></p>
 <p><strong>Conectividade:</strong> GreenWallet • SideSwap • Sparrow • Electrum</p>
 <p><strong>Atualizações:</strong> via navegador / binários Sandmann / compilação GitHub</p>
 <p><strong>Bateria:</strong> interna (indicação limitada)</p>
 <p><strong>Segurança:</strong> Secure-element virtual Oracle</p>
-<p>Tutorial: <a href="https://www.youtube.com/watch?v=k-maFZiKSw4" target="_blank">YouTube</a></p>
-<p><a href="https://docs.google.com/document/d/1Bf8O-R478woq8z7Z8DnN9XlfGf9B3GT8rn0qgJiAUHM/edit?usp=sharing" target="_blank">Documentação completa</a></p>
+<p>Tutorial: <a href="https://www.youtube.com/watch?v=k-maFZiKSw4" target="_blank" rel="noopener">YouTube</a></p>
+<p><a href="https://docs.google.com/document/d/1Bf8O-R478woq8z7Z8DnN9XlfGf9B3GT8rn0qgJiAUHM/edit?usp=sharing" target="_blank" rel="noopener">Documentação completa</a></p>
 """.strip(),
         "images": [
             "images/jade1.png",
@@ -73,12 +73,12 @@ PRODUCTS = [
         "summary": "Chave de segurança FIDO-U2F / FIDO2 baseada no RP2040 (USB-C).",
         "details_html": """
 <h4>Detalhes Técnicos</h4>
-<p>• Projeto 100% open-source — código, esquemas e guias em <a href="https://github.com/polhenarejos/pico-fido" target="_blank">github.com/polhenarejos/pico-fido</a>.</p>
+<p>• Projeto 100% open-source — código, esquemas e guias em <a href="https://github.com/polhenarejos/pico-fido" target="_blank" rel="noopener">github.com/polhenarejos/pico-fido</a>.</p>
 <p>• Compatível: Google, Proton Mail, Microsoft Outlook, GitHub, X/Twitter…</p>
 <p>• FIDO2 dispensa SMS/app 2FA; chaves ficam no dispositivo.</p>
 <p>• USB-C fêmea; alimentação do host (cabo não incluído).</p>
 <p>• Conectividade: Android • Linux • Windows (iOS/macOS não testados).</p>
-<p>• <a href="https://docs.google.com/document/d/1JIE_6lNlFsk-TwPceDngePEg8G9fe3FKINjHCGeSUgg/edit?usp=drive_link" target="_blank">Documentação completa</a>.</p>
+<p>• <a href="https://docs.google.com/document/d/1JIE_6lNlFsk-TwPceDngePEg8G9fe3FKINjHCGeSUgg/edit?usp=drive_link" target="_blank" rel="noopener">Documentação completa</a>.</p>
 """.strip(),
         "images": [
             "images/pico1.png",
@@ -111,9 +111,9 @@ PRODUCTS = [
         "summary": "CASE para NerdMiner (TTGO T-Display). *Não inclui bateria nem placa.",
         "details_html": """
 <p>• ~55 KH/s (info do projeto) • Stratum / pools self-custody.<br>
-• Firmware: <a href="https://github.com/BitMaker-hub/NerdMiner_v2" target="_blank">GitHub</a>.<br>
-• USB-C 5 V • Tutorial: <a href="https://www.youtube.com/watch?v=Cq0y1034oq8" target="_blank">YouTube</a>.</p>
-<p><strong>TTGO T-Display:</strong> <a href="https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner" target="_blank">Comprar no AliExpress</a></p>
+• Firmware: <a href="https://github.com/BitMaker-hub/NerdMiner_v2" target="_blank" rel="noopener">GitHub</a>.<br>
+• USB-C 5 V • Tutorial: <a href="https://www.youtube.com/watch?v=Cq0y1034oq8" target="_blank" rel="noopener">YouTube</a>.</p>
+<p><strong>TTGO T-Display:</strong> <a href="https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner" target="_blank" rel="noopener">Comprar no AliExpress</a></p>
 <p><em>APENAS CASE — sem bateria.</em></p>
 """.strip(),
         "images": [
@@ -148,10 +148,10 @@ PRODUCTS = [
         "details_html": """
 <p><strong>Como usar:</strong> sobre base firme, perfure cada letra (estilete, agulha grossa ou punção).</p>
 <p><strong>Utilidade:</strong> gravação física, offline e resistente ao fogo/água das 24 palavras da seed BIP-39.</p>
-<p>Tutorial: <a href="https://stackbit.me/tutorial-stackbit-1248/" target="_blank">Vídeo oficial (Stackbit)</a></p>
+<p>Tutorial: <a href="https://stackbit.me/tutorial-stackbit-1248/" target="_blank" rel="noopener">Vídeo oficial (Stackbit)</a></p>
 <p style="font-size:.9rem;color:#ccc">
-  Design original por <a href="https://twitter.com/valandro" target="_blank">@Valandro</a>.
-  Versão em aço inox na <a href="https://stackbit.me/tutorial-stackbit-1248/#loja" target="_blank">loja do autor</a>.
+  Design original por <a href="https://twitter.com/valandro" target="_blank" rel="noopener">@Valandro</a>.
+  Versão em aço inox na <a href="https://stackbit.me/tutorial-stackbit-1248/#loja" target="_blank" rel="noopener">loja do autor</a>.
 </p>
 """.strip(),
         "images": [
@@ -179,9 +179,9 @@ PRODUCTS = [
         "details_html": """
 <h4>Detalhes Técnicos</h4>
 <p>Inclui bateria e box de proteção (placa não inclusa).</p>
-<p>Tutorial: <a href="https://www.youtube.com/watch?v=V48RpmuZEwI" target="_blank">YouTube</a></p>
-<p>Placa referência Yahboom: <a href="https://de.aliexpress.com/item/1005005585064305.html" target="_blank">AliExpress</a></p>
-<p>Documentação: <a href="https://docs.google.com/document/d/1s70HUmdX3XX08GbINxEAay5eK_D3c4RLReKuautZYB4/edit?usp=sharing" target="_blank">Google Docs</a></p>
+<p>Tutorial: <a href="https://www.youtube.com/watch?v=V48RpmuZEwI" target="_blank" rel="noopener">YouTube</a></p>
+<p>Placa referência Yahboom: <a href="https://de.aliexpress.com/item/1005005585064305.html" target="_blank" rel="noopener">AliExpress</a></p>
+<p>Documentação: <a href="https://docs.google.com/document/d/1s70HUmdX3XX08GbINxEAay5eK_D3c4RLReKuautZYB4/edit?usp=sharing" target="_blank" rel="noopener">Google Docs</a></p>
 <p>Encomenda completa: ~25 dias • R$ 775 + R$ 89 (box)</p>
 """.strip(),
         "images": [
@@ -260,8 +260,8 @@ PRODUCTS = [
         "details_html": """
 <p><strong>Compatibilidade:</strong> TTGO T-Display.</p>
 <p><strong>Observação:</strong> produto se refere apenas ao <em>case</em>; a placa TTGO não está inclusa.</p>
-<p><strong>TTGO T-Display (referência):</strong> <a href="https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner" target="_blank">AliExpress</a></p>
-<p><strong>Montagem (vídeo):</strong> <a href="https://youtu.be/S5LI_bG9f1U" target="_blank">YouTube</a></p>
+<p><strong>TTGO T-Display (referência):</strong> <a href="https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner" target="_blank" rel="noopener">AliExpress</a></p>
+<p><strong>Montagem (vídeo):</strong> <a href="https://youtu.be/S5LI_bG9f1U" target="_blank" rel="noopener">YouTube</a></p>
 """.strip(),
         "images": [
             "images/jadecase2.png",
@@ -305,9 +305,9 @@ PRODUCTS = [
         "details_html": """
 <p><strong>Compatibilidade:</strong> TTGO T-Display (Jade DIY).</p>
 <p><strong>Observação:</strong> produto se refere apenas ao <em>case</em> sem bateria; a placa TTGO não está inclusa.</p>
-<p><strong>TTGO T-Display (referência):</strong> <a href="https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner" target="_blank">AliExpress</a></p>
-<p><strong>Documentação Jade DIY:</strong> <a href="https://docs.google.com/document/d/1Bf8O-R478woq8z7Z8DnN9XlfGf9B3GT8rn0qgJiAUHM/edit?usp=sharing" target="_blank">Google Docs</a></p>
-<p><strong>Montagem (vídeo):</strong> <a href="https://youtu.be/S5LI_bG9f1U" target="_blank">YouTube</a></p>
+<p><strong>TTGO T-Display (referência):</strong> <a href="https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner" target="_blank" rel="noopener">AliExpress</a></p>
+<p><strong>Documentação Jade DIY:</strong> <a href="https://docs.google.com/document/d/1Bf8O-R478woq8z7Z8DnN9XlfGf9B3GT8rn0qgJiAUHM/edit?usp=sharing" target="_blank" rel="noopener">Google Docs</a></p>
+<p><strong>Montagem (vídeo):</strong> <a href="https://youtu.be/S5LI_bG9f1U" target="_blank" rel="noopener">YouTube</a></p>
 """.strip(),
         "images": [
             "images/jade2.png",
@@ -351,8 +351,8 @@ PRODUCTS = [
         "details_html": """
 <p><strong>Compatibilidade:</strong> TTGO T-Display.</p>
 <p><strong>Observação:</strong> produto refere-se apenas ao <em>case</em> sem bateria; a placa TTGO não está inclusa.</p>
-<p><strong>TTGO T-Display (referência de compra):</strong> <a href="https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner" target="_blank">AliExpress</a></p>
-<p><strong>Montagem (vídeo):</strong> <a href="https://youtu.be/S5LI_bG9f1U" target="_blank">YouTube</a></p>
+<p><strong>TTGO T-Display (referência de compra):</strong> <a href="https://pt.aliexpress.com/item/1005005970553639.html?channel=twinner" target="_blank" rel="noopener">AliExpress</a></p>
+<p><strong>Montagem (vídeo):</strong> <a href="https://youtu.be/S5LI_bG9f1U" target="_blank" rel="noopener">YouTube</a></p>
 """.strip(),
         "images": [
             "images/jade2.png",

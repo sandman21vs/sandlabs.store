@@ -6,6 +6,7 @@
     var successUrl = container.dataset.successUrl;
     var status = document.getElementById('payment-status');
     var pollInterval = 2000;
+    function tr(key, fallback){ return (typeof window.t === 'function') ? window.t(key, fallback) : fallback; }
 
     var timer = setInterval(function(){
         fetch(checkUrl)
@@ -13,7 +14,7 @@
         .then(function(data){
             if (data.paid) {
                 clearInterval(timer);
-                status.textContent = 'Pagamento confirmado!';
+                status.textContent = tr('commerce.payment.confirmed', 'Payment confirmed!');
                 status.className = 'invoice-status invoice-paid';
                 setTimeout(function(){
                     window.location.href = successUrl;
@@ -27,8 +28,8 @@
         copyBtn.addEventListener('click', function(){
             var bolt11 = document.getElementById('bolt11-text').textContent;
             navigator.clipboard.writeText(bolt11);
-            copyBtn.textContent = 'Copiado!';
-            setTimeout(function(){ copyBtn.textContent = 'Copiar'; }, 2000);
+            copyBtn.textContent = tr('commerce.payment.copied', 'Copied!');
+            setTimeout(function(){ copyBtn.textContent = tr('commerce.payment.copy', 'Copy'); }, 2000);
         });
     }
 })();

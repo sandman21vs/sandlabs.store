@@ -7,16 +7,16 @@
         <h1 class="section-title">{{ t('public.about.title') }}</h1>
         <p class="section-sub">{{ t('public.about.subtitle') }}</p>
       </div>
-      <div class="grid" style="max-width:var(--maxw);margin:0 auto;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4)">
+      <div class="two-col">
         <article class="card soft-shadow" style="padding:var(--space-4);">
           <h3 style="font-size:1.3rem;margin-bottom:.75rem">{{ t('public.about.manifesto.title') }}</h3>
-          <p style="color:#d6d6d6;margin-bottom:.75rem">{{ t('public.about.manifesto.paragraph_1') }}</p>
-          <p style="color:#d6d6d6">{{ t('public.about.manifesto.paragraph_2') }}</p>
+          <p style="color:var(--text-2);margin-bottom:.75rem">{{ t('public.about.manifesto.paragraph_1') }}</p>
+          <p style="color:var(--text-2)">{{ t('public.about.manifesto.paragraph_2') }}</p>
         </article>
 
         <article class="card soft-shadow" style="padding:var(--space-4);">
           <h3 style="font-size:1.3rem;margin-bottom:.75rem">{{ t('public.about.what.title') }}</h3>
-          <ul style="color:#d6d6d6;line-height:1.6">
+          <ul style="color:var(--text-2);line-height:1.6">
             {% for item in t('public.about.what.items') %}
             <li>{{ item|safe }}</li>
             {% endfor %}
