@@ -8,14 +8,14 @@ Rules for executing this plan are in `AGENTS.md`.
 
 ## Stack
 
-- [ ] **1. Agent governance** — `chore/agent-governance`
+- [x] **1. Agent governance** — `chore/agent-governance` — [#1](https://github.com/sandman21vs/sandlabs.store/pull/1)
   PR-based workflow in `AGENTS.md`, rewritten `README.md`, archived finished
   plans, PR template, CI.
-- [ ] **2. UI overhaul base** — `ui/01-overhaul-base`
+- [x] **2. UI overhaul base** — `ui/01-overhaul-base` — [#2](https://github.com/sandman21vs/sandlabs.store/pull/2)
   Bring the unmerged `feature/ui-ux-overhaul` work (tokens, mobile navigation,
   card grid, product page) into the stack.
-- [ ] **3. Design system** — `ui/02-design-system`
-  Revised tokens, self-hosted font, one set of buttons, forms, cards, badges,
+- [x] **3. Design system** — `ui/02-design-system` — [#3](https://github.com/sandman21vs/sandlabs.store/pull/3)
+  Revised tokens, system font stack, one set of buttons, forms, cards, badges,
   tables and alerts; calmer background; focus and reduced-motion support.
 - [ ] **4. Storefront** — `ui/03-storefront`
   Header, footer, home, catalog, product, about, support, terms, error pages.
