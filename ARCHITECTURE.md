@@ -1580,26 +1580,33 @@ admin em `/admin/settings`. Referência de implementação: `~/prometeu/coinos_c
 
 ---
 
-## Frete híbrido (Fase D — DHL + Swiss Post com fallback)
+## Shipping
 
-`services/service_shipping.py::get_shipping_options(weight_grams, country)` é o
-orquestrador: coleta cotações ao vivo dos providers habilitados
-(`service_shipping_dhl.py`, `service_shipping_post.py`) e, se nenhum responder,
-cai numa **única opção da tabela estática** (`calculate_shipping_chf`). Cada
-opção é `{carrier, service, price_chf, source}` (`source` ∈ `dhl`/`post`/`table`),
-ordenada por preço.
+`services/service_shipping.py::get_shipping_options(weight_grams, country)`
+returns the options offered at checkout, cheapest first. Each option is
+`{carrier, service, price_chf, source}`.
 
-Os providers só chamam a API real quando há credenciais no admin
-(`dhl_enabled`+`dhl_api_key`+`dhl_api_url`, idem `post_*`); em ausência/erro/
-timeout retornam `None` sem lançar exceção. **APIs de cotação real exigem contas
-comerciais** das transportadoras — configure em `/admin/settings`.
+- **Rate table (always offered).** Stored as JSON in the `shipping_rates`
+  config key and edited in `/admin/settings`. Zones are `CH`, `EU` and `WORLD`
+  (`get_country_zone`). A zone maps weight brackets (maximum kg) to CHF prices,
+  either directly (one service named `PostPac`) or per service name, in which
+  case every service becomes its own option. The defaults offer **PostPac
+  Economy** and **PostPac Priority** for Switzerland at Swiss Post list prices.
+  Swiss Post has no price API, so these prices are maintained by hand.
+- **Live DHL quotes (optional).** `service_shipping_dhl.py` adds quotes when
+  `dhl_enabled` and `dhl_api_key` are set. On missing credentials, errors or
+  timeouts it returns `None` and the table options remain.
 
-No checkout, o preço é **autoritativo no servidor**: `routes_checkout._resolve_shipping`
-recalcula as opções e escolhe a transportadora pedida (ou a mais barata),
-gravando `shipping_carrier`/`shipping_service` no pedido. O endpoint
-`/api/shipping/calculate` devolve `options` (lista) além de `shipping_chf`/
-`shipping_sats`/`zone` (compat). O `checkout.js` renderiza o seletor quando há
-mais de uma opção.
+At startup `init_db` removes a stored `shipping_rates` value only when it still
+equals the pre-Economy/Priority default, so untouched installs get the new
+table and edited tables are never overwritten.
+
+Prices are server-authoritative: `routes_checkout._resolve_shipping` recomputes
+the options, honors the requested carrier and service when they match an
+available option (otherwise the cheapest), and stores `shipping_carrier` /
+`shipping_service` on the order. `POST /api/shipping/calculate` returns the
+`options` list plus `shipping_chf` / `shipping_sats` / `zone` for the cheapest
+one. `checkout.js` shows the selector when there is more than one option.
 
 ---
 

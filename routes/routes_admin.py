@@ -29,17 +29,13 @@ from models.model_orders import (
 from routes.auth_utils import admin_required
 from services.service_images import ensure_thumbnail, get_images_base_dir
 from services.service_pricing import ADMIN_ENABLED_CURRENCIES
+from services.service_shipping import default_rates_json
 
 logger = logging.getLogger(__name__)
 admin = Blueprint("admin", __name__, url_prefix="/admin")
 
 ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 
-_DEFAULT_SHIPPING_RATES = json.dumps({
-    "CH":    {"2": 7.0, "10": 9.5, "30": 16.0},
-    "EU":    {"2": 20.0, "5": 30.0, "10": 45.0, "30": 80.0},
-    "WORLD": {"2": 30.0, "5": 50.0, "10": 75.0, "30": 120.0},
-}, indent=2, ensure_ascii=False)
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -469,26 +465,22 @@ def settings():
         set_config("coinos_liquid", "1" if request.form.get("coinos_liquid") else "0")
         set_config("coinos_onchain", "1" if request.form.get("coinos_onchain") else "0")
 
-        # Live shipping providers (DHL / Swiss Post). API keys are only
-        # overwritten when a new value is supplied; URLs and flags always sync.
+        # Live shipping provider (DHL). The API key is only overwritten when a
+        # new value is supplied; the URL and flag always sync.
         dhl_key = request.form.get("dhl_api_key", "").strip()
         if dhl_key:
             set_config("dhl_api_key", dhl_key)
         set_config("dhl_api_url", request.form.get("dhl_api_url", "").strip())
         set_config("dhl_enabled", "1" if request.form.get("dhl_enabled") else "0")
-        post_key = request.form.get("post_api_key", "").strip()
-        if post_key:
-            set_config("post_api_key", post_key)
-        set_config("post_api_url", request.form.get("post_api_url", "").strip())
-        set_config("post_enabled", "1" if request.form.get("post_enabled") else "0")
 
         shipping_json = request.form.get("shipping_rates", "").strip()
         settings_saved = False
         try:
-            json.loads(shipping_json)
+            if not isinstance(json.loads(shipping_json), dict):
+                raise ValueError("shipping rates must be a JSON object")
             set_config("shipping_rates", shipping_json)
             settings_saved = True
-        except json.JSONDecodeError:
+        except ValueError:
             logger.warning("admin_settings_invalid_shipping_json admin_user_id=%s", session.get("user_id"))
             flash(translate("admin.settings.errors.invalid_shipping_json"), "error")
 
@@ -502,7 +494,7 @@ def settings():
         return redirect(url_for("admin.settings"))
 
     cfg = current_cfg
-    cfg["shipping_rates"] = get_config("shipping_rates", _DEFAULT_SHIPPING_RATES)
+    cfg["shipping_rates"] = get_config("shipping_rates", default_rates_json())
     return render_template("admin/settings.html", cfg=cfg)
 
 

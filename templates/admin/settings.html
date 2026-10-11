@@ -59,32 +59,17 @@
   <div class="admin-card">
     <h2 class="admin-card-title">{{ t('admin.settings.live_title') }}</h2>
     <p class="form-hint">{{ t('admin.settings.live_hint') }}</p>
-    <div class="admin-grid-2">
-      <div>
-        {{ check('dhl_enabled', t('admin.settings.dhl_enabled'), cfg.dhl_enabled == '1') }}
-        <div class="form-group">
-          <label for="dhl_api_key">{{ t('admin.settings.dhl_key') }}</label>
-          <input type="password" name="dhl_api_key" id="dhl_api_key" class="form-input"
-                 placeholder="{{ t('admin.common.keep_current') }}" autocomplete="new-password">
-          {{ secret_state(cfg.dhl_api_key) }}
-        </div>
-        <div class="form-group">
-          <label for="dhl_api_url">{{ t('admin.settings.dhl_url') }}</label>
-          <input type="text" name="dhl_api_url" id="dhl_api_url" class="form-input" value="{{ cfg.dhl_api_url }}" placeholder="https://api.dhl.com/rates">
-        </div>
+    {{ check('dhl_enabled', t('admin.settings.dhl_enabled'), cfg.dhl_enabled == '1') }}
+    <div class="form-row">
+      <div class="form-group">
+        <label for="dhl_api_key">{{ t('admin.settings.dhl_key') }}</label>
+        <input type="password" name="dhl_api_key" id="dhl_api_key" class="form-input"
+               placeholder="{{ t('admin.common.keep_current') }}" autocomplete="new-password">
+        {{ secret_state(cfg.dhl_api_key) }}
       </div>
-      <div>
-        {{ check('post_enabled', t('admin.settings.post_enabled'), cfg.post_enabled == '1') }}
-        <div class="form-group">
-          <label for="post_api_key">{{ t('admin.settings.post_key') }}</label>
-          <input type="password" name="post_api_key" id="post_api_key" class="form-input"
-                 placeholder="{{ t('admin.common.keep_current') }}" autocomplete="new-password">
-          {{ secret_state(cfg.post_api_key) }}
-        </div>
-        <div class="form-group">
-          <label for="post_api_url">{{ t('admin.settings.post_url') }}</label>
-          <input type="text" name="post_api_url" id="post_api_url" class="form-input" value="{{ cfg.post_api_url }}" placeholder="https://api.post.ch/rates">
-        </div>
+      <div class="form-group">
+        <label for="dhl_api_url">{{ t('admin.settings.dhl_url') }}</label>
+        <input type="text" name="dhl_api_url" id="dhl_api_url" class="form-input" value="{{ cfg.dhl_api_url }}" placeholder="https://api.dhl.com/rates">
       </div>
     </div>
   </div>
