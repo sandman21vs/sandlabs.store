@@ -57,6 +57,26 @@
   </div>
 
   <div class="admin-card">
+    <h2 class="admin-card-title">{{ t('admin.settings.google_title') }}</h2>
+    <p class="form-hint">{{ t('admin.settings.google_hint') }}</p>
+    <code class="mono-block">{{ google_redirect_uri }}</code>
+    {{ check('google_login_enabled', t('admin.settings.google_enabled'), cfg.google_login_enabled == '1') }}
+    <div class="form-row">
+      <div class="form-group">
+        <label for="google_client_id">{{ t('admin.settings.google_client_id') }}</label>
+        <input type="text" name="google_client_id" id="google_client_id" class="form-input input-code"
+               value="{{ cfg.google_client_id }}" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="form-group">
+        <label for="google_client_secret">{{ t('admin.settings.google_client_secret') }}</label>
+        <input type="password" name="google_client_secret" id="google_client_secret" class="form-input"
+               placeholder="{{ t('admin.common.keep_current') }}" autocomplete="new-password">
+        {{ secret_state(cfg.google_client_secret) }}
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card">
     <h2 class="admin-card-title">{{ t('admin.settings.live_title') }}</h2>
     <p class="form-hint">{{ t('admin.settings.live_hint') }}</p>
     {{ check('dhl_enabled', t('admin.settings.dhl_enabled'), cfg.dhl_enabled == '1') }}

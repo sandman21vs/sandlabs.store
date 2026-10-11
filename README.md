@@ -20,6 +20,7 @@ rules for people and AI agents.
 
 - Product catalog with image galleries, WebP thumbnails and a zoom lightbox.
 - Cart for anonymous sessions and logged-in customers.
+- Customer accounts with email and password, plus optional sign-in with Google.
 - Checkout with or without an account; guest orders are tracked with an order
   number plus access token at `/orders/lookup`.
 - Per-order invoice or address with QR code, payment polling and a Coinos

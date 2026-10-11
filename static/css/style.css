@@ -805,6 +805,16 @@ input[name="country"].input-code{text-transform:uppercase}
 .auth-card{max-width:460px}
 .auth-head{margin-bottom:var(--space-3)}
 .auth-submit{width:100%}
+/* Google's sign-in button: neutral surface, their logo, no restyling of the mark */
+.btn-google{background:#fff; border-color:#dadce0; color:#1f1f1f; font-weight:600}
+.btn-google:hover{background:#f2f2f2; color:#1f1f1f}
+.btn-google-logo{width:18px; height:18px; flex:0 0 auto}
+.auth-divider{
+  display:flex; align-items:center; gap:.75rem;
+  margin:var(--space-2) 0; color:var(--muted); font-size:var(--fz-1);
+}
+.auth-divider::before,
+.auth-divider::after{content:""; flex:1; border-top:1px solid var(--border)}
 .auth-helper{margin-top:var(--space-3); color:var(--muted); text-align:center}
 .auth-helper a{color:#fff}
 .orders-grid{
@@ -1014,6 +1024,7 @@ input[name="country"].input-code{text-transform:uppercase}
   white-space:pre-wrap;
 }
 .invoice-actions{margin-top:var(--space-3); display:flex; gap:var(--space-1); flex-wrap:wrap}
+.admin-card .mono-block{margin:var(--space-1) 0 var(--space-2)}
 .token-box{margin-top:var(--space-3); display:grid; gap:.4rem}
 .token-box .mono-block{margin-top:0}
 .token-box p{font-size:var(--fz-1); color:var(--text-2)}

@@ -31,6 +31,7 @@ from models.model_orders import (
     update_order_status,
 )
 from routes.auth_utils import admin_required
+from routes.routes_auth import google_redirect_uri
 from services.service_images import ensure_thumbnail, get_images_base_dir
 from services.service_pricing import ADMIN_ENABLED_CURRENCIES
 from services import service_swisspost
@@ -572,6 +573,13 @@ def settings():
         set_config("dhl_api_url", request.form.get("dhl_api_url", "").strip())
         set_config("dhl_enabled", "1" if request.form.get("dhl_enabled") else "0")
 
+        # Google sign-in. The client secret is write-only.
+        google_secret = request.form.get("google_client_secret", "").strip()
+        if google_secret:
+            set_config("google_client_secret", google_secret)
+        set_config("google_client_id", request.form.get("google_client_id", "").strip())
+        set_config("google_login_enabled", "1" if request.form.get("google_login_enabled") else "0")
+
         # Swiss Post Digital Commerce API. The secret is write-only: it is only
         # replaced when a new value is supplied.
         swisspost_secret = request.form.get("swisspost_client_secret", "").strip()
@@ -606,7 +614,11 @@ def settings():
 
     cfg = current_cfg
     cfg["shipping_rates"] = get_config("shipping_rates", default_rates_json())
-    return render_template("admin/settings.html", cfg=cfg)
+    return render_template(
+        "admin/settings.html",
+        cfg=cfg,
+        google_redirect_uri=google_redirect_uri(),
+    )
 
 
 def _coupon_form_values(form):

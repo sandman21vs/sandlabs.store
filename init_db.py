@@ -370,6 +370,11 @@ def init_db():
     try:
         conn.executescript(SCHEMA)
         _migrate_users_pii(conn)
+        _ensure_column(conn, "users", "google_sub_bidx", "google_sub_bidx TEXT")
+        conn.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_sub "
+            "ON users(google_sub_bidx) WHERE google_sub_bidx IS NOT NULL"
+        )
         _ensure_column(conn, "product_prices", "pricing_mode", "pricing_mode TEXT")
         _ensure_column(conn, "product_prices", "currency_code", "currency_code TEXT")
         _ensure_column(conn, "product_prices", "amount_fiat", "amount_fiat TEXT")

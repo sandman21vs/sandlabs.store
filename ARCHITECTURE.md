@@ -1610,6 +1610,32 @@ one. `checkout.js` shows the selector when there is more than one option.
 
 ---
 
+## Sign in with Google
+
+Optional, off by default. `services/service_google_auth.py` implements the
+OpenID Connect authorization-code flow; `routes/routes_auth.py` exposes
+`GET /auth/google` (start) and `GET /auth/google/callback`.
+
+- **Configuration.** `google_login_enabled`, `google_client_id` and
+  `google_client_secret` in `/admin/settings` (the secret is write-only). The
+  settings page shows the redirect URI to register in the Google Cloud Console.
+  It is built from `PUBLIC_BASE_URL` when set, so it stays correct behind a
+  proxy or tunnel.
+- **Flow.** Each attempt stores a fresh `state`, `nonce` and PKCE verifier in
+  the session and consumes them in the callback. The code is exchanged
+  server-side; the ID token's issuer, audience, expiry, nonce and
+  `email_verified` are checked before anything is trusted.
+- **Accounts.** Users are matched by the blind index of Google's account id
+  (`users.google_sub_bidx`); the id and the email are never stored in the
+  clear. A first sign-in creates a customer account with a random password.
+  If a password account already uses that verified email, it is linked and
+  its old password is replaced, because registration does not verify emails
+  and the password may have been set by someone else.
+- **Admins.** Administrator accounts cannot be created through, linked to or
+  signed in with Google; they use email and password only.
+
+---
+
 ## Swiss Post Digital Commerce API
 
 `services/service_swisspost.py` talks to Swiss Post. It is off unless

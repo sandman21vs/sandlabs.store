@@ -34,6 +34,9 @@ Rules for executing this plan are in `AGENTS.md`.
 - [x] **9. Swiss Post labels** — `feature/swisspost-03-labels` — [#9](https://github.com/sandman21vs/sandlabs.store/pull/9)
   Label generation from the admin order page, encrypted label storage,
   automatic tracking code, tracking link for customers.
+- [x] **10. Google sign-in** — `feature/google-login` — [#10](https://github.com/sandman21vs/sandlabs.store/pull/10)
+  Optional "Continue with Google" on the login and registration pages (OpenID
+  Connect with state, nonce and PKCE); admin accounts stay password-only.
 
 ## Notes
 

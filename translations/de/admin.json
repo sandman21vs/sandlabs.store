@@ -118,7 +118,12 @@
       "swisspost_sender_zip": "PLZ",
       "swisspost_sender_city": "Ort",
       "swisspost_label_live": "Echte (verrechnete) Etiketten erzeugen",
-      "swisspost_label_live_hint": "Ausgeschaltet liefert die Post SPECIMEN-Etiketten: Sie werden nicht verrechnet und können nicht aufgegeben werden. Erst nach dem Testen einschalten."
+      "swisspost_label_live_hint": "Ausgeschaltet liefert die Post SPECIMEN-Etiketten: Sie werden nicht verrechnet und können nicht aufgegeben werden. Erst nach dem Testen einschalten.",
+      "google_title": "Google-Anmeldung",
+      "google_hint": "Optional. Erstelle in der Google Cloud Console einen OAuth-Client vom Typ „Webanwendung“ und trage diese autorisierte Weiterleitungs-URI ein:",
+      "google_enabled": "Google-Anmeldung aktiviert",
+      "google_client_id": "Client-ID",
+      "google_client_secret": "Client-Secret"
     },
     "setup": {
       "errors": {
