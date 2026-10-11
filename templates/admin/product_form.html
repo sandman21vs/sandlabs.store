@@ -1,15 +1,15 @@
 {% extends "admin/base_admin.html" %}
 {% set admin_section = "products" %}
-{% block title %}{{ 'Editar' if action == 'edit' else 'Novo' }} Produto — Admin{% endblock %}
+{% block title %}{{ t('admin.product_form.title_edit') if action == 'edit' else t('admin.product_form.title_new') }} — Admin{% endblock %}
 
 {% block admin_content %}
 <div class="admin-header">
-  <h1>{{ 'Editar' if action == 'edit' else 'Novo produto' }}{% if product %}: {{ product.name }}{% endif %}</h1>
-  <a href="{{ url_for('admin.products') }}" class="btn btn-ghost btn-sm">← Voltar</a>
+  <h1>{{ t('admin.product_form.title_edit') if action == 'edit' else t('admin.product_form.title_new') }}{% if product %}: {{ product.name }}{% endif %}</h1>
+  <a href="{{ url_for('admin.products') }}" class="btn btn-ghost btn-sm">&larr; {{ t('admin.common.back') }}</a>
 </div>
 
 {% if error %}
-<div class="flash-msg flash-error">{{ error }}</div>
+<div class="flash-msg flash-error" role="alert">{{ error }}</div>
 {% endif %}
 
 <form method="post" enctype="multipart/form-data"
@@ -19,65 +19,64 @@
   <input type="hidden" name="existing_images_json" id="existing_images_json"
          value="{{ product.images | tojson if product else '[]' }}">
 
-  <div style="display:grid;grid-template-columns:2fr 1fr;gap:var(--space-3);align-items:start">
+  <div class="admin-grid-main">
 
     {# Left column: main fields #}
-    <div>
+    <div class="admin-stack">
       {% if action == 'new' %}
-      <div class="admin-card" style="margin-bottom:var(--space-2)">
+      <div class="admin-card">
         <div class="form-group">
-          <label>ID do produto (slug único)</label>
-          <input class="form-input" type="text" name="id"
-                 placeholder="ex: jade, pico, sandseed" required pattern="[a-z0-9\-]+"
-                 title="Apenas letras minúsculas, números e hífen">
-          <span class="form-hint">Usado na URL e como chave no banco. Não pode ser alterado depois.</span>
+          <label for="pf_id">{{ t('admin.product_form.id_label') }}</label>
+          <input class="form-input input-code" type="text" name="id" id="pf_id"
+                 placeholder="jade, pico, sandseed" required pattern="[a-z0-9\-]+"
+                 title="{{ t('admin.product_form.id_title') }}">
+          <span class="form-hint">{{ t('admin.product_form.id_hint') }}</span>
         </div>
       </div>
       {% endif %}
 
-      <div class="admin-card" style="margin-bottom:var(--space-2)">
-        <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Informações básicas</h3>
+      <div class="admin-card">
+        <h2 class="admin-card-title">{{ t('admin.product_form.basics_title') }}</h2>
         <div class="form-group">
-          <label>Nome</label>
-          <input class="form-input" type="text" name="name" required
+          <label for="pf_name">{{ t('admin.product_form.name') }}</label>
+          <input class="form-input" type="text" name="name" id="pf_name" required
                  value="{{ product.name if product else '' }}">
         </div>
         <div class="form-group">
-          <label>Resumo</label>
-          <input class="form-input" type="text" name="summary"
+          <label for="pf_summary">{{ t('admin.product_form.summary') }}</label>
+          <input class="form-input" type="text" name="summary" id="pf_summary"
                  value="{{ product.summary if product else '' }}">
         </div>
         <div class="form-group">
-          <label>Detalhes (HTML)</label>
-          <textarea class="form-input" name="details_html" style="min-height:150px">{{ product.details_html if product else '' }}</textarea>
+          <label for="pf_details">{{ t('admin.product_form.details') }}</label>
+          <textarea class="form-input textarea-code" name="details_html" id="pf_details" spellcheck="false">{{ product.details_html if product else '' }}</textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Texto do botão de compra</label>
-            <input class="form-input" type="text" name="buy_button_text"
+            <label for="pf_buy">{{ t('admin.product_form.buy_button') }}</label>
+            <input class="form-input" type="text" name="buy_button_text" id="pf_buy"
                    value="{{ product.buy_button_text if product else 'Comprar' }}">
           </div>
           <div class="form-group">
-            <label>Peso (gramas)</label>
-            <input class="form-input" type="number" name="weight_grams" min="0"
+            <label for="pf_weight">{{ t('admin.product_form.weight') }}</label>
+            <input class="form-input" type="number" name="weight_grams" id="pf_weight" min="0"
                    value="{{ product.weight_grams if product else 200 }}">
           </div>
           <div class="form-group">
-            <label>Ordem (sort)</label>
-            <input class="form-input" type="number" name="sort_order"
+            <label for="pf_sort">{{ t('admin.product_form.sort') }}</label>
+            <input class="form-input" type="number" name="sort_order" id="pf_sort"
                    value="{{ product.sort_order if product else 0 }}">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Badge texto</label>
-            <input class="form-input" type="text" name="badge_text"
-                   placeholder="Novo, Promo, Popular..."
+            <label for="pf_badge">{{ t('admin.product_form.badge_text') }}</label>
+            <input class="form-input" type="text" name="badge_text" id="pf_badge"
                    value="{{ product.badge_text or '' if product else '' }}">
           </div>
           <div class="form-group">
-            <label>Badge variante</label>
-            <select class="form-input" name="badge_variant">
+            <label for="pf_badge_variant">{{ t('admin.product_form.badge_variant') }}</label>
+            <select class="form-input" name="badge_variant" id="pf_badge_variant">
               <option value="">—</option>
               {% for v in ['new', 'promo', 'neutral'] %}
               <option value="{{ v }}" {{ 'selected' if product and product.badge_variant == v }}>{{ v }}</option>
@@ -85,76 +84,74 @@
             </select>
           </div>
         </div>
-        <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
-          <input type="checkbox" class="form-input" name="allow_addon_seed" id="allow_addon_seed"
+        <div class="check-row">
+          <input type="checkbox" name="allow_addon_seed" id="allow_addon_seed"
                  {{ 'checked' if product and product.allow_addon_seed }}>
-          <label for="allow_addon_seed" style="margin-bottom:0">Allow addon seed</label>
+          <label for="allow_addon_seed">{{ t('admin.product_form.allow_addon') }}</label>
         </div>
-        <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
-          <input type="checkbox" class="form-input" name="active" id="active"
+        <div class="check-row">
+          <input type="checkbox" name="active" id="active"
                  {{ 'checked' if not product or product.active }}>
-          <label for="active" style="margin-bottom:0">Produto ativo (visível na loja)</label>
+          <label for="active">{{ t('admin.product_form.active') }}</label>
         </div>
       </div>
 
       {# Prices #}
-      <div class="admin-card" style="margin-bottom:var(--space-2)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-          <h3 style="font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Preços</h3>
-          <button type="button" class="btn btn-ghost btn-sm" onclick="addPriceRow()">+ Adicionar preço</button>
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <h2 class="admin-card-title">{{ t('admin.product_form.prices_title') }}</h2>
+          <button type="button" class="btn btn-sm" onclick="addPriceRow()">+ {{ t('admin.product_form.add_price') }}</button>
         </div>
         <div id="prices-list"></div>
-        <p class="form-hint">Cada preço pode ser definido em sats ou em CHF. Preços fiat são convertidos para sats no carrinho e no checkout usando a cotação BTC atual.</p>
+        <p class="form-hint">{{ t('admin.product_form.prices_hint') }}</p>
       </div>
 
       {# Options #}
-      <div class="admin-card" style="margin-bottom:var(--space-2)">
-        <h3 style="margin-bottom:.5rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Opções (JSON)</h3>
-        <textarea class="form-input" name="options_json" id="options_json"
-                  style="min-height:160px;font-family:monospace;font-size:.82rem"
+      <div class="admin-card">
+        <h2 class="admin-card-title">{{ t('admin.product_form.options_title') }}</h2>
+        <textarea class="form-input textarea-code" name="options_json" id="options_json" spellcheck="false"
+                  aria-label="{{ t('admin.product_form.options_title') }}"
                   placeholder='[{"type":"colorPair","title":"Cores","inputs":[{"name":"bodyColor","label":"Corpo"},{"name":"capColor","label":"Tampa"}]}]'
         >{{ product.options | tojson(indent=2) if product else '[]' }}</textarea>
-        <span class="form-hint">Array JSON de opções. Tipos: colorPair, colorSingle, seedPack.</span>
+        <span class="form-hint">{{ t('admin.product_form.options_hint') }}</span>
       </div>
     </div>
 
     {# Right column: images #}
-    <div>
-      <div class="admin-card" style="margin-bottom:var(--space-2)">
-        <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Imagens</h3>
+    <div class="admin-stack">
+      <div class="admin-card">
+        <h2 class="admin-card-title">{{ t('admin.product_form.images_title') }}</h2>
 
         {% if product and product.images %}
-        <div id="existing-images" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem">
+        <div id="existing-images" class="image-list">
           {% for img in product.images %}
-          <div style="position:relative;display:inline-block" data-img="{{ img.filename }}">
-            <img src="{{ url_for('static', filename=img.filename) }}"
-                 style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border)"
-                 onerror="this.style.display='none'">
-            <button type="button" onclick="removeExistingImage(this)"
-                    style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--accent);border:none;color:#fff;cursor:pointer;font-size:.75rem;line-height:1">×</button>
+          <div class="image-tile" data-img="{{ img.filename }}">
+            <img src="{{ url_for('static', filename=img.filename) }}" alt="" onerror="this.hidden=true">
+            <button type="button" class="image-remove" onclick="removeExistingImage(this)"
+                    aria-label="{{ t('admin.product_form.remove_image') }}">&times;</button>
           </div>
           {% endfor %}
         </div>
         {% endif %}
 
         <div class="form-group">
-          <label>Fazer upload (PNG/JPG/WebP)</label>
-          <input type="file" name="product_images" multiple accept="image/png,image/jpeg,image/webp"
-                 class="form-input" style="padding:.4rem">
+          <label for="pf_upload">{{ t('admin.product_form.upload') }}</label>
+          <input type="file" name="product_images" id="pf_upload" multiple accept="image/png,image/jpeg,image/webp"
+                 class="form-input">
         </div>
         <div class="form-group">
-          <label>Ou caminhos de imagens existentes (um por linha)</label>
-          <textarea class="form-input" name="image_paths" rows="4"
+          <label for="pf_paths">{{ t('admin.product_form.paths') }}</label>
+          <textarea class="form-input" name="image_paths" id="pf_paths" rows="4"
                     placeholder="images/jade1.png&#10;images/jade2.png"></textarea>
-          <span class="form-hint">Relativo à pasta static/</span>
+          <span class="form-hint">{{ t('admin.product_form.paths_hint') }}</span>
         </div>
       </div>
 
-      <div style="display:flex;gap:.5rem;flex-direction:column">
+      <div class="form-actions-stack">
         <button type="submit" class="btn btn-accent">
-          {{ 'Salvar alterações' if action == 'edit' else 'Criar produto' }}
+          {{ t('admin.product_form.save') if action == 'edit' else t('admin.product_form.create') }}
         </button>
-        <a href="{{ url_for('admin.products') }}" class="btn btn-ghost">Cancelar</a>
+        <a href="{{ url_for('admin.products') }}" class="btn btn-ghost">{{ t('admin.common.cancel') }}</a>
       </div>
     </div>
   </div>
@@ -164,6 +161,11 @@
 {% block scripts %}
 <script>
 // ─── Prices management ───────────────────────────────────────────────────────
+const PF_TEXT = {
+  label: {{ t('admin.product_form.price_label')|tojson }},
+  value: {{ t('admin.product_form.price_value')|tojson }},
+  remove: {{ t('admin.product_form.remove_price')|tojson }},
+};
 let prices = {{ (product.prices | tojson) if product else '[]' }};
 const PRICE_CURRENCIES = Array.from(new Set(
   {{ price_currencies|list|tojson }}.concat(
@@ -215,18 +217,18 @@ function renderPrices() {
       `<option value="${currency}" ${currency === (p.currency_code || 'SATS') ? 'selected' : ''}>${currency}</option>`
     )).join('');
     const valueInput = (p.currency_code || 'SATS') === 'SATS'
-      ? `<input class="form-input" type="number" min="1" step="1" placeholder="Sats" value="${p.amount_sats || ''}"
+      ? `<input class="form-input" type="number" min="1" step="1" placeholder="sats" aria-label="${PF_TEXT.value}" value="${p.amount_sats || ''}"
              oninput="updatePriceAmount(${i}, 'amount_sats', this.value)">`
-      : `<input class="form-input" type="number" min="0" step="0.01" placeholder="Valor em ${(p.currency_code || 'CHF')}" value="${p.amount_fiat || ''}"
+      : `<input class="form-input" type="number" min="0" step="0.01" placeholder="${PF_TEXT.value} (${(p.currency_code || 'CHF')})" aria-label="${PF_TEXT.value}" value="${p.amount_fiat || ''}"
              oninput="updatePriceAmount(${i}, 'amount_fiat', this.value)">`;
     list.innerHTML += `
-    <div style="display:grid;grid-template-columns:1.4fr .8fr 1fr 1fr auto;gap:.5rem;margin-bottom:.5rem;align-items:center">
-      <input class="form-input" placeholder="Label (ex: Com bateria)" value="${p.label||''}"
+    <div class="price-row">
+      <input class="form-input" placeholder="${PF_TEXT.label}" aria-label="${PF_TEXT.label}" value="${p.label||''}"
              oninput="prices[${i}].label=this.value;syncPrices()">
       <select class="form-input" onchange="setPriceCurrency(${i}, this.value)">${currencyOptions}</select>
       ${valueInput}
       <input class="form-input" data-price-preview="${i}" value="${formatPreview(p)}" readonly>
-      <button type="button" class="btn btn-danger btn-sm" onclick="removePrice(${i})">×</button>
+      <button type="button" class="btn btn-danger btn-sm" aria-label="${PF_TEXT.remove}" onclick="removePrice(${i})">×</button>
     </div>`;
   });
 }

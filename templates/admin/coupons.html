@@ -12,75 +12,76 @@
   <h1>{{ t('admin.coupons.heading') }}</h1>
 </div>
 
-<div class="admin-card" style="margin-bottom:var(--space-2)">
-  <h2 style="margin-top:0">{{ t('admin.coupons.new_heading') }}</h2>
-  <form method="post" action="{{ url_for('admin.coupon_new') }}"
-        style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:end">
+<div class="admin-card">
+  <h2 class="admin-card-title">{{ t('admin.coupons.new_heading') }}</h2>
+  <form method="post" action="{{ url_for('admin.coupon_new') }}" class="inline-form">
     <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
-    <label>{{ t('admin.coupons.code') }}<br>
-      <input type="text" name="code" class="form-input" required style="text-transform:uppercase"></label>
-    <label>{{ t('admin.coupons.type') }}<br>
+    <label>{{ t('admin.coupons.code') }}
+      <input type="text" name="code" class="form-input input-code input-upper" required></label>
+    <label>{{ t('admin.coupons.type') }}
       <select name="discount_type" class="form-input">{{ type_options('percent') }}</select></label>
-    <label>{{ t('admin.coupons.value') }}<br>
-      <input type="number" name="discount_value" class="form-input" min="1" required></label>
-    <label>{{ t('admin.coupons.expires_at') }}<br>
+    <label>{{ t('admin.coupons.value') }}
+      <input type="number" name="discount_value" class="form-input input-narrow" min="1" required></label>
+    <label>{{ t('admin.coupons.expires_at') }}
       <input type="date" name="expires_at" class="form-input"></label>
-    <label>{{ t('admin.coupons.max_uses') }}<br>
-      <input type="number" name="max_uses" class="form-input" min="0"></label>
-    <label style="display:flex;align-items:center;gap:.35rem">
-      <input type="checkbox" name="active" checked> {{ t('admin.coupons.active') }}</label>
-    <button type="submit" class="btn btn-accent btn-sm">{{ t('admin.coupons.create') }}</button>
+    <label>{{ t('admin.coupons.max_uses') }}
+      <input type="number" name="max_uses" class="form-input input-narrow" min="0"
+             placeholder="{{ t('admin.coupons.unlimited') }}"></label>
+    <div class="check-row">
+      <input type="checkbox" name="active" id="coupon_new_active" checked>
+      <label for="coupon_new_active">{{ t('admin.coupons.active') }}</label>
+    </div>
+    <button type="submit" class="btn btn-accent">{{ t('admin.coupons.create') }}</button>
   </form>
 </div>
 
 <div class="admin-card">
   {% if coupons %}
+  <div class="admin-table-wrap">
   <table class="admin-table">
     <thead>
       <tr>
         <th>{{ t('admin.coupons.code') }}</th>
-        <th>{{ t('admin.coupons.type') }}</th>
-        <th>{{ t('admin.coupons.value') }}</th>
-        <th>{{ t('admin.coupons.expires_at') }}</th>
         <th>{{ t('admin.coupons.used') }}</th>
-        <th>{{ t('admin.coupons.active') }}</th>
         <th>{{ t('admin.coupons.actions') }}</th>
       </tr>
     </thead>
     <tbody>
       {% for c in coupons %}
       <tr>
-        <td style="font-family:monospace"><strong>{{ c.code }}</strong></td>
-        <td colspan="6" style="padding:0">
-          <form method="post" action="{{ url_for('admin.coupon_edit', coupon_id=c.id) }}"
-                style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;padding:.4rem .6rem">
-            <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
-            <select name="discount_type" class="form-input" style="width:auto">{{ type_options(c.discount_type) }}</select>
-            <input type="number" name="discount_value" class="form-input" style="width:7rem" min="1" value="{{ c.discount_value }}">
-            <input type="date" name="expires_at" class="form-input" style="width:auto" value="{{ c.expires_at[:10] if c.expires_at else '' }}">
-            <input type="number" name="max_uses" class="form-input" style="width:6rem" min="0" value="{{ c.max_uses if c.max_uses is not none else '' }}"
-                   placeholder="{{ t('admin.coupons.unlimited') }}">
-            <span class="muted">{{ c.used_count }}</span>
-            <label style="display:flex;align-items:center;gap:.3rem">
-              <input type="checkbox" name="active" {{ 'checked' if c.active }}> {{ t('admin.coupons.active') }}</label>
-            <button type="submit" class="btn btn-ghost btn-sm">{{ t('admin.coupons.save') }}</button>
-          </form>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="7" style="text-align:right;border-top:none;padding-top:0">
-          <form method="post" action="{{ url_for('admin.coupon_delete', coupon_id=c.id) }}" style="display:inline"
-                onsubmit="return confirm('{{ t('admin.coupons.delete') }}?')">
-            <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
-            <button type="submit" class="btn btn-ghost btn-sm">{{ t('admin.coupons.delete') }}</button>
-          </form>
+        <td class="cell-mono"><strong>{{ c.code }}</strong></td>
+        <td class="num muted">{{ c.used_count }}</td>
+        <td>
+          <div class="actions-row">
+            <form method="post" action="{{ url_for('admin.coupon_edit', coupon_id=c.id) }}" class="inline-form">
+              <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+              <select name="discount_type" class="form-input" aria-label="{{ t('admin.coupons.type') }}">{{ type_options(c.discount_type) }}</select>
+              <input type="number" name="discount_value" class="form-input input-narrow" min="1" value="{{ c.discount_value }}"
+                     aria-label="{{ t('admin.coupons.value') }}">
+              <input type="date" name="expires_at" class="form-input" value="{{ c.expires_at[:10] if c.expires_at else '' }}"
+                     aria-label="{{ t('admin.coupons.expires_at') }}">
+              <input type="number" name="max_uses" class="form-input input-narrow" min="0" value="{{ c.max_uses if c.max_uses is not none else '' }}"
+                     placeholder="{{ t('admin.coupons.unlimited') }}" aria-label="{{ t('admin.coupons.max_uses') }}">
+              <div class="check-row">
+                <input type="checkbox" name="active" id="coupon_active_{{ c.id }}" {{ 'checked' if c.active }}>
+                <label for="coupon_active_{{ c.id }}">{{ t('admin.coupons.active') }}</label>
+              </div>
+              <button type="submit" class="btn btn-sm">{{ t('admin.coupons.save') }}</button>
+            </form>
+            <form method="post" action="{{ url_for('admin.coupon_delete', coupon_id=c.id) }}"
+                  onsubmit="return confirm('{{ t('admin.coupons.delete') }}?')">
+              <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+              <button type="submit" class="btn btn-danger btn-sm">{{ t('admin.coupons.delete') }}</button>
+            </form>
+          </div>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  </div>
   {% else %}
-  <p class="muted" style="text-align:center;padding:var(--space-4)">{{ t('admin.coupons.none') }}</p>
+  <p class="muted admin-card-empty">{{ t('admin.coupons.none') }}</p>
   {% endif %}
 </div>
 {% endblock %}

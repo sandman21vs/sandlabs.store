@@ -22,7 +22,7 @@ Rules for executing this plan are in `AGENTS.md`.
 - [x] **5. Purchase flow** — `ui/04-purchase-flow` — [#5](https://github.com/sandman21vs/sandlabs.store/pull/5)
   Cart, checkout, payment, order lookup, account and auth pages. Presentation
   only; no pricing or payment logic changes.
-- [ ] **6. Admin** — `ui/05-admin`
+- [x] **6. Admin** — `ui/05-admin` — [#6](https://github.com/sandman21vs/sandlabs.store/pull/6)
   `static/css/admin.css` replaces inline styles; hardcoded strings move to the
   translation catalogs; responsive tables.
 - [ ] **7. Swiss Post rates** — `feature/swisspost-01-rates`

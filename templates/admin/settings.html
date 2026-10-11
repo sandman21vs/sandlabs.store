@@ -1,108 +1,104 @@
 {% extends "admin/base_admin.html" %}
 {% set admin_section = "settings" %}
-{% block title %}Configurações — Admin{% endblock %}
+{% block title %}{{ t('admin.settings.title') }} — Admin{% endblock %}
+
+{% macro secret_state(value) %}
+<span class="form-hint">{{ t('admin.common.configured') if value else t('admin.common.not_configured') }}</span>
+{% endmacro %}
+
+{% macro check(name, label, checked) %}
+<div class="check-row">
+  <input type="checkbox" name="{{ name }}" id="{{ name }}" {{ 'checked' if checked }}>
+  <label for="{{ name }}">{{ label }}</label>
+</div>
+{% endmacro %}
 
 {% block admin_content %}
 <div class="admin-header">
-  <h1>Configurações</h1>
+  <h1>{{ t('admin.settings.title') }}</h1>
 </div>
-<p class="form-hint" style="margin:-.75rem 0 var(--space-3)">Os valores salvos aqui ficam persistidos no SQLite e passam a ter prioridade sobre os defaults do arquivo <code>.env</code>.</p>
+<p class="admin-intro">{{ t('admin.settings.intro') }}</p>
 
-<form method="post" action="{{ url_for('admin.settings') }}">
+<form method="post" action="{{ url_for('admin.settings') }}" class="admin-stack">
   <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);align-items:start">
-
-    {# Coinos / Lightning #}
+  <div class="admin-grid-2">
     <div class="admin-card">
-      <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Lightning / Coinos</h3>
+      <h2 class="admin-card-title">{{ t('admin.settings.coinos_title') }}</h2>
       <div class="form-group">
-        <label>Coinos API Key</label>
-        <input type="password" name="coinos_api_key" class="form-input"
-               placeholder="Deixe em branco para manter atual"
-               autocomplete="new-password">
-        <span class="form-hint">{{ '✓ Configurada' if cfg.coinos_api_key else '⚠ Não configurada' }}</span>
+        <label for="coinos_api_key">{{ t('admin.settings.api_key') }}</label>
+        <input type="password" name="coinos_api_key" id="coinos_api_key" class="form-input"
+               placeholder="{{ t('admin.common.keep_current') }}" autocomplete="new-password">
+        {{ secret_state(cfg.coinos_api_key) }}
       </div>
       <div class="form-group">
-        <label>Webhook Secret</label>
-        <input type="password" name="coinos_webhook_secret" class="form-input"
-               placeholder="Deixe em branco para manter atual"
-               autocomplete="new-password">
-        <span class="form-hint">{{ '✓ Configurado' if cfg.coinos_webhook_secret else '⚠ Não configurado' }}</span>
+        <label for="coinos_webhook_secret">{{ t('admin.settings.webhook_secret') }}</label>
+        <input type="password" name="coinos_webhook_secret" id="coinos_webhook_secret" class="form-input"
+               placeholder="{{ t('admin.common.keep_current') }}" autocomplete="new-password">
+        {{ secret_state(cfg.coinos_webhook_secret) }}
       </div>
-      <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
-        <input type="checkbox" name="coinos_enabled" id="coinos_enabled" class="form-input"
-               {{ 'checked' if cfg.coinos_enabled == '1' }}>
-        <label for="coinos_enabled" style="margin-bottom:0">Pagamentos Lightning habilitados</label>
-      </div>
-      <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
-        <input type="checkbox" name="coinos_liquid" id="coinos_liquid" class="form-input"
-               {{ 'checked' if cfg.coinos_liquid == '1' }}>
-        <label for="coinos_liquid" style="margin-bottom:0">Pagamentos Liquid habilitados</label>
-      </div>
-      <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
-        <input type="checkbox" name="coinos_onchain" id="coinos_onchain" class="form-input"
-               {{ 'checked' if cfg.coinos_onchain == '1' }}>
-        <label for="coinos_onchain" style="margin-bottom:0">Pagamentos Bitcoin on-chain habilitados</label>
-      </div>
+      {{ check('coinos_enabled', t('admin.settings.lightning_enabled'), cfg.coinos_enabled == '1') }}
+      {{ check('coinos_liquid', t('admin.settings.liquid_enabled'), cfg.coinos_liquid == '1') }}
+      {{ check('coinos_onchain', t('admin.settings.onchain_enabled'), cfg.coinos_onchain == '1') }}
     </div>
 
-    {# Contatos #}
     <div class="admin-card">
-      <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Contatos</h3>
+      <h2 class="admin-card-title">{{ t('admin.settings.contacts_title') }}</h2>
       <div class="form-group">
-        <label>WhatsApp (somente números, com DDI)</label>
-        <input type="text" name="whatsapp" class="form-input"
+        <label for="whatsapp">{{ t('admin.settings.whatsapp_label') }}</label>
+        <input type="text" name="whatsapp" id="whatsapp" class="form-input" inputmode="numeric"
                placeholder="5541999990000" value="{{ cfg.whatsapp }}">
       </div>
       <div class="form-group">
-        <label>Telegram (@username)</label>
-        <input type="text" name="telegram" class="form-input"
-               placeholder="SeuUsuario" value="{{ cfg.telegram }}">
+        <label for="telegram">{{ t('admin.settings.telegram_label') }}</label>
+        <input type="text" name="telegram" id="telegram" class="form-input" value="{{ cfg.telegram }}">
       </div>
     </div>
   </div>
 
-  {# Live shipping providers #}
-  <div class="admin-card" style="margin-top:var(--space-3)">
-    <h3 style="margin-bottom:.5rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Cotação ao vivo (DHL / Swiss Post)</h3>
-    <p class="form-hint" style="margin-bottom:.75rem">Opcional. Exige contas comerciais das transportadoras. Sem credenciais, o frete usa a tabela abaixo automaticamente.</p>
-    <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
-      <input type="checkbox" name="dhl_enabled" id="dhl_enabled" class="form-input" {{ 'checked' if cfg.dhl_enabled == '1' }}>
-      <label for="dhl_enabled" style="margin-bottom:0">DHL habilitado</label>
-    </div>
-    <div class="form-group">
-      <label>DHL API key</label>
-      <input type="password" name="dhl_api_key" class="form-input" placeholder="{{ '••••••••' if cfg.dhl_api_key else '' }}">
-    </div>
-    <div class="form-group">
-      <label>DHL API URL (opcional)</label>
-      <input type="text" name="dhl_api_url" class="form-input" value="{{ cfg.dhl_api_url }}" placeholder="https://api.dhl.com/rates">
-    </div>
-    <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
-      <input type="checkbox" name="post_enabled" id="post_enabled" class="form-input" {{ 'checked' if cfg.post_enabled == '1' }}>
-      <label for="post_enabled" style="margin-bottom:0">Swiss Post habilitado</label>
-    </div>
-    <div class="form-group">
-      <label>Swiss Post API key</label>
-      <input type="password" name="post_api_key" class="form-input" placeholder="{{ '••••••••' if cfg.post_api_key else '' }}">
-    </div>
-    <div class="form-group">
-      <label>Swiss Post API URL (opcional)</label>
-      <input type="text" name="post_api_url" class="form-input" value="{{ cfg.post_api_url }}" placeholder="https://api.post.ch/rates">
+  <div class="admin-card">
+    <h2 class="admin-card-title">{{ t('admin.settings.live_title') }}</h2>
+    <p class="form-hint">{{ t('admin.settings.live_hint') }}</p>
+    <div class="admin-grid-2">
+      <div>
+        {{ check('dhl_enabled', t('admin.settings.dhl_enabled'), cfg.dhl_enabled == '1') }}
+        <div class="form-group">
+          <label for="dhl_api_key">{{ t('admin.settings.dhl_key') }}</label>
+          <input type="password" name="dhl_api_key" id="dhl_api_key" class="form-input"
+                 placeholder="{{ t('admin.common.keep_current') }}" autocomplete="new-password">
+          {{ secret_state(cfg.dhl_api_key) }}
+        </div>
+        <div class="form-group">
+          <label for="dhl_api_url">{{ t('admin.settings.dhl_url') }}</label>
+          <input type="text" name="dhl_api_url" id="dhl_api_url" class="form-input" value="{{ cfg.dhl_api_url }}" placeholder="https://api.dhl.com/rates">
+        </div>
+      </div>
+      <div>
+        {{ check('post_enabled', t('admin.settings.post_enabled'), cfg.post_enabled == '1') }}
+        <div class="form-group">
+          <label for="post_api_key">{{ t('admin.settings.post_key') }}</label>
+          <input type="password" name="post_api_key" id="post_api_key" class="form-input"
+                 placeholder="{{ t('admin.common.keep_current') }}" autocomplete="new-password">
+          {{ secret_state(cfg.post_api_key) }}
+        </div>
+        <div class="form-group">
+          <label for="post_api_url">{{ t('admin.settings.post_url') }}</label>
+          <input type="text" name="post_api_url" id="post_api_url" class="form-input" value="{{ cfg.post_api_url }}" placeholder="https://api.post.ch/rates">
+        </div>
+      </div>
     </div>
   </div>
 
-  {# Shipping rates #}
-  <div class="admin-card" style="margin-top:var(--space-3)">
-    <h3 style="margin-bottom:.5rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Tabela de frete Post.ch (JSON) — fallback</h3>
-    <p class="form-hint" style="margin-bottom:.75rem">Chaves são peso máximo em kg, valores em CHF. Zonas: CH (Suíça), EU (Europa/EEA/UK), WORLD (resto).</p>
-    <textarea name="shipping_rates" class="form-input" style="min-height:200px;font-family:monospace;font-size:.85rem">{{ cfg.shipping_rates }}</textarea>
+  <div class="admin-card">
+    <h2 class="admin-card-title">{{ t('admin.settings.rates_title') }}</h2>
+    <p class="form-hint">{{ t('admin.settings.rates_hint') }}</p>
+    <textarea name="shipping_rates" class="form-input textarea-code" spellcheck="false"
+              aria-label="{{ t('admin.settings.rates_title') }}">{{ cfg.shipping_rates }}</textarea>
   </div>
 
-  <div style="margin-top:var(--space-3);display:flex;gap:.75rem">
-    <button type="submit" class="btn btn-accent">Salvar configurações</button>
-    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-ghost">Cancelar</a>
+  <div class="form-actions">
+    <button type="submit" class="btn btn-accent">{{ t('admin.settings.save') }}</button>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-ghost">{{ t('admin.common.cancel') }}</a>
   </div>
 </form>
 {% endblock %}

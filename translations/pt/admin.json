@@ -64,7 +64,18 @@
         "not_found": "Pedido nao encontrado.",
         "invalid_status": "Status invalido.",
         "status_updated": "Status atualizado para '{status}'."
-      }
+      },
+      "title": "Pedidos",
+      "all_statuses": "Todos os status",
+      "table": {
+        "date": "Data",
+        "session": "Sessão",
+        "total": "Total (sats)",
+        "shipping": "Frete (sats)",
+        "status": "Status"
+      },
+      "empty": "Nenhum pedido ainda.",
+      "empty_filtered": "Nenhum pedido com status “{status}”."
     },
     "settings": {
       "errors": {
@@ -74,7 +85,29 @@
       "flash": {
         "webhook_generated": "Webhook Secret do Coinos foi gerado automaticamente.",
         "saved": "Configuracoes salvas."
-      }
+      },
+      "title": "Configurações",
+      "intro": "Os valores salvos aqui ficam no banco de dados e têm prioridade sobre os padrões do arquivo .env.",
+      "coinos_title": "Pagamentos / Coinos",
+      "api_key": "Coinos API Key",
+      "webhook_secret": "Webhook Secret",
+      "lightning_enabled": "Pagamentos Lightning habilitados",
+      "liquid_enabled": "Pagamentos Liquid habilitados",
+      "onchain_enabled": "Pagamentos Bitcoin on-chain habilitados",
+      "contacts_title": "Contatos",
+      "whatsapp_label": "WhatsApp (somente números, com DDI)",
+      "telegram_label": "Telegram (nome de usuário)",
+      "live_title": "Cotação ao vivo (DHL / Swiss Post)",
+      "live_hint": "Opcional. Exige contas comerciais das transportadoras. Sem credenciais, o frete usa a tabela abaixo.",
+      "dhl_enabled": "DHL habilitado",
+      "dhl_key": "DHL API key",
+      "dhl_url": "DHL API URL (opcional)",
+      "post_enabled": "Swiss Post habilitado",
+      "post_key": "Swiss Post API key",
+      "post_url": "Swiss Post API URL (opcional)",
+      "rates_title": "Tabela de frete (JSON)",
+      "rates_hint": "Chaves são o peso máximo em kg, valores em CHF. Zonas: CH (Suíça), EU (Europa/EEE/Reino Unido), WORLD (resto do mundo).",
+      "save": "Salvar configurações"
     },
     "setup": {
       "errors": {
@@ -86,7 +119,20 @@
       "flash": {
         "completed": "Setup inicial concluido.",
         "webhook_generated": "Webhook Secret do Coinos foi gerado automaticamente."
-      }
+      },
+      "title": "Setup inicial",
+      "subtitle": "Crie a conta de administrador e, se quiser, já configure o Coinos.",
+      "account_title": "Conta admin",
+      "name": "Nome",
+      "email": "Email de login",
+      "password_title": "Senha inicial",
+      "password_hint": "A senha do administrador é definida aqui. Depois, o acesso ao painel usa o login normal.",
+      "password": "Senha",
+      "confirm": "Confirmar senha",
+      "coinos_hint": "Opcional. Pode ser alterado depois em Configurações.",
+      "secret_hint": "Se ficar vazio e o Coinos for habilitado, um secret é gerado automaticamente.",
+      "enable_lightning": "Habilitar pagamentos Lightning já no setup",
+      "submit": "Concluir setup inicial"
     },
     "coupons": {
       "sidebar_link": "Cupons",
@@ -117,6 +163,74 @@
         "invalid": "Dados do cupom inválidos.",
         "duplicate": "Já existe um cupom com esse código."
       }
+    },
+    "common": {
+      "back": "Voltar",
+      "cancel": "Cancelar",
+      "view": "Ver",
+      "filter": "Filtrar",
+      "clear": "Limpar",
+      "configured": "Configurado",
+      "not_configured": "Não configurado",
+      "keep_current": "Deixe em branco para manter o atual"
+    },
+    "order_detail": {
+      "heading": "Pedido #{id}",
+      "info_title": "Informações do pedido",
+      "date": "Data",
+      "total": "Produtos",
+      "shipping": "Frete",
+      "coupon": "Cupom",
+      "grand_total": "Total a pagar",
+      "invoice_hash": "Hash do invoice",
+      "tracking": "Rastreamento",
+      "address_title": "Endereço de envio",
+      "update_title": "Atualizar status",
+      "new_status": "Novo status",
+      "tracking_label": "Código de rastreamento (opcional)",
+      "save_status": "Salvar status",
+      "items_title": "Itens do pedido",
+      "col": {
+        "product": "Produto",
+        "qty": "Qtd",
+        "unit": "Preço unit. (sats)",
+        "subtotal": "Subtotal (sats)",
+        "options": "Opções"
+      },
+      "empty_items": "Nenhum item encontrado."
+    },
+    "product_form": {
+      "title_new": "Novo produto",
+      "title_edit": "Editar produto",
+      "id_label": "ID do produto (slug único)",
+      "id_title": "Apenas letras minúsculas, números e hífen",
+      "id_hint": "Usado na URL e como chave no banco. Não pode ser alterado depois.",
+      "basics_title": "Informações básicas",
+      "name": "Nome",
+      "summary": "Resumo",
+      "details": "Detalhes (HTML)",
+      "buy_button": "Texto do botão de compra",
+      "weight": "Peso (gramas)",
+      "sort": "Ordem",
+      "badge_text": "Texto do selo",
+      "badge_variant": "Variante do selo",
+      "allow_addon": "Permitir adicional SandSeed",
+      "active": "Produto ativo (visível na loja)",
+      "prices_title": "Preços",
+      "add_price": "Adicionar preço",
+      "prices_hint": "Cada preço pode ser definido em sats ou em moeda fiat. Preços fiat são convertidos para sats no carrinho e no checkout pela cotação atual do BTC.",
+      "price_label": "Rótulo (ex.: Com bateria)",
+      "price_value": "Valor",
+      "options_title": "Opções (JSON)",
+      "options_hint": "Array JSON de opções. Tipos: colorPair, colorSingle, seedPack.",
+      "images_title": "Imagens",
+      "upload": "Enviar arquivos (PNG/JPG/WebP)",
+      "paths": "Ou caminhos de imagens existentes (um por linha)",
+      "paths_hint": "Relativo à pasta static/",
+      "remove_image": "Remover imagem",
+      "remove_price": "Remover preço",
+      "save": "Salvar alterações",
+      "create": "Criar produto"
     }
   }
 }

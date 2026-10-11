@@ -1,0 +1,185 @@
+/* sandlabs.store — admin panel styles. Loaded after style.css and built on its tokens. */
+
+/* ===================== */
+/*        LAYOUT         */
+/* ===================== */
+.admin-layout{display:flex; min-height:calc(100vh - var(--header-h)); gap:0}
+.admin-sidebar{
+  width:220px; flex-shrink:0;
+  background:var(--surface-1);
+  border-right:1px solid var(--border);
+  padding:var(--space-3) var(--space-2);
+}
+.admin-sidebar nav{display:flex; flex-direction:column; gap:.2rem}
+.admin-sidebar .sidebar-title{
+  font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--muted); padding:.5rem .75rem; margin-top:.75rem;
+}
+.admin-sidebar .sidebar-title:first-child{margin-top:0}
+.admin-sidebar a{
+  display:block; padding:.5rem .75rem; border-radius:var(--radius-sm);
+  border:1px solid transparent;
+  color:var(--text-2); text-decoration:none; font-size:.95rem; font-weight:550;
+  transition:background var(--ease), color var(--ease);
+}
+.admin-sidebar a:hover{background:var(--neutral-soft); color:#fff}
+.admin-sidebar a.active{background:var(--accent-soft); color:var(--accent-text); border-color:var(--accent-line)}
+.admin-main{flex:1; padding:var(--space-4) var(--space-3); min-width:0}
+.admin-main > * + *{margin-top:var(--space-2)}
+.admin-header{
+  display:flex; align-items:center; justify-content:space-between; gap:var(--space-2); flex-wrap:wrap;
+  margin-bottom:var(--space-3);
+}
+.admin-header h1{font-size:var(--fz-4); display:flex; align-items:center; gap:.6rem; flex-wrap:wrap}
+.admin-intro{color:var(--muted); font-size:var(--fz-1); margin-top:calc(-1 * var(--space-2))}
+
+.admin-grid-2{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:var(--space-2); align-items:start}
+.admin-grid-main{display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:var(--space-2); align-items:start}
+.admin-stack{display:grid; gap:var(--space-2); align-content:start}
+
+/* ===================== */
+/*         CARDS         */
+/* ===================== */
+.admin-card{
+  background:var(--surface-1);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:var(--space-3);
+  min-width:0;
+}
+.admin-card-title{
+  font-size:var(--fz-0); font-weight:700; color:var(--muted);
+  text-transform:uppercase; letter-spacing:.06em;
+  margin-bottom:var(--space-2);
+}
+.admin-card-head{display:flex; justify-content:space-between; align-items:center; gap:var(--space-2); margin-bottom:var(--space-2)}
+.admin-card-head .admin-card-title{margin-bottom:0}
+.admin-card-empty{text-align:center; padding:var(--space-4)}
+.admin-card-empty .btn{margin-top:var(--space-2)}
+
+.admin-stats{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+  gap:var(--space-2);
+}
+.stat-card{
+  background:var(--surface-1); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:var(--space-3);
+}
+.stat-card .stat-val{font-size:var(--fz-4); font-weight:750; color:#fff; font-variant-numeric:tabular-nums}
+.stat-card .stat-label{font-size:var(--fz-1); color:var(--muted); margin-top:.15rem}
+.status-tiles{display:flex; flex-wrap:wrap; gap:.6rem}
+.status-tile{
+  min-width:104px; padding:.5rem 1rem; text-align:center;
+  background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm);
+}
+.status-tile-count{font-size:1.3rem; font-weight:700; font-variant-numeric:tabular-nums}
+
+/* ===================== */
+/*        TABLES         */
+/* ===================== */
+.admin-table-wrap{overflow-x:auto}
+.admin-table{width:100%; border-collapse:collapse; font-size:var(--fz-1)}
+.admin-table th{
+  text-align:left; padding:.6rem .9rem;
+  border-bottom:1px solid var(--border-strong);
+  color:var(--muted); font-size:var(--fz-0); font-weight:700;
+  text-transform:uppercase; letter-spacing:.05em; white-space:nowrap;
+}
+.admin-table td{padding:.65rem .9rem; border-bottom:1px solid var(--border); vertical-align:middle}
+.admin-table tbody tr:last-child td{border-bottom:0}
+.admin-table tbody tr:hover td{background:var(--glass)}
+.admin-table .num{font-variant-numeric:tabular-nums; white-space:nowrap}
+.cell-mono{font-family:var(--font-mono); font-size:var(--fz-0)}
+.cell-small{font-size:var(--fz-0)}
+.cell-break{word-break:break-all}
+.actions-row{display:flex; gap:.5rem; flex-wrap:wrap; align-items:center}
+
+/* ===================== */
+/*        BADGES         */
+/* ===================== */
+.badge-pending{background:var(--warn-soft); border-color:var(--warn-line); color:var(--warn)}
+.badge-paid,
+.badge-processing{background:var(--info-soft); border-color:var(--info-line); color:var(--info)}
+.badge-shipped,
+.badge-delivered,
+.badge-active{background:var(--ok-soft); border-color:var(--ok-line); color:var(--ok)}
+.badge-cancelled{background:var(--err-soft); border-color:var(--err-line); color:var(--err)}
+.badge-inactive{color:var(--muted)}
+
+.flash-msg{
+  padding:.75rem 1rem; border-radius:var(--radius-sm);
+  border:1px solid var(--border-strong); background:var(--surface-2); font-size:var(--fz-1);
+}
+.flash-msg.flash-success{border-color:var(--ok-line); background:var(--ok-soft); color:var(--ok)}
+.flash-msg.flash-error{border-color:var(--err-line); background:var(--err-soft); color:#ffd9d4}
+
+/* ===================== */
+/*         FORMS         */
+/* ===================== */
+.form-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:var(--space-2)}
+.form-actions{display:flex; gap:.6rem; flex-wrap:wrap}
+.form-actions-stack{display:grid; gap:.5rem}
+.check-row{display:flex; align-items:center; gap:.5rem; margin-bottom:.6rem}
+.check-row label{margin:0; font-weight:500; color:var(--text)}
+.inline-form{display:flex; gap:.5rem; flex-wrap:wrap; align-items:flex-end}
+.inline-form label{display:grid; gap:.3rem; font-size:var(--fz-1); color:var(--text-2)}
+.inline-form .form-input{width:auto; min-width:7rem}
+.inline-form .check-row{margin-bottom:.55rem}
+.input-upper{text-transform:uppercase}
+.input-narrow{max-width:7rem}
+.textarea-code{font-family:var(--font-mono); font-size:var(--fz-0); min-height:180px}
+.filter-bar{display:flex; gap:.5rem; align-items:center; flex-wrap:wrap}
+.filter-bar .form-input{width:auto}
+
+.detail-list{
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr);
+  gap:.45rem .75rem; font-size:var(--fz-1);
+}
+.detail-list dt{color:var(--muted)}
+.detail-list dd{min-width:0}
+
+.setup-shell{max-width:760px; margin:0 auto}
+.setup-form{display:grid; gap:var(--space-3)}
+.setup-group{border:1px solid var(--border); border-radius:var(--radius-sm); padding:var(--space-2) var(--space-2) var(--space-3)}
+.setup-group legend{
+  padding:0 .5rem; color:var(--muted);
+  font-size:var(--fz-0); font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+}
+.setup-group > p{color:var(--muted); font-size:var(--fz-1); margin-bottom:var(--space-2)}
+
+/* Product form */
+.price-row{
+  display:grid; grid-template-columns:1.4fr .8fr 1fr 1fr auto;
+  gap:.5rem; margin-bottom:.5rem; align-items:center;
+}
+.image-list{display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:var(--space-2)}
+.image-tile{position:relative; display:inline-block}
+.image-tile img{
+  width:80px; height:80px; object-fit:cover; display:block;
+  border-radius:var(--radius-sm); border:1px solid var(--border);
+}
+.image-remove{
+  position:absolute; top:-8px; right:-8px;
+  width:24px; height:24px; border-radius:50%;
+  background:var(--accent); border:none; color:var(--accent-ink);
+  font-size:.9rem; font-weight:700; line-height:1;
+}
+
+/* ===================== */
+/*      RESPONSIVE       */
+/* ===================== */
+@media (max-width: 900px){
+  .admin-grid-2,
+  .admin-grid-main{grid-template-columns:1fr}
+}
+@media (max-width: 768px){
+  .admin-layout{flex-direction:column}
+  .admin-sidebar{width:100%; border-right:none; border-bottom:1px solid var(--border); padding:var(--space-1) var(--space-2)}
+  .admin-sidebar nav{flex-direction:row; flex-wrap:wrap; align-items:center}
+  .admin-sidebar .sidebar-title{display:none}
+  .admin-main{padding:var(--space-3) var(--space-2)}
+  .admin-stats{grid-template-columns:repeat(2, minmax(0,1fr))}
+  .price-row{grid-template-columns:1fr 1fr}
+  .detail-list{grid-template-columns:1fr}
+  .detail-list dd{margin-bottom:.4rem}
+}
