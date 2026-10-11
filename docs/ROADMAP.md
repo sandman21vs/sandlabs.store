@@ -17,7 +17,7 @@ Rules for executing this plan are in `AGENTS.md`.
 - [x] **3. Design system** — `ui/02-design-system` — [#3](https://github.com/sandman21vs/sandlabs.store/pull/3)
   Revised tokens, system font stack, one set of buttons, forms, cards, badges,
   tables and alerts; calmer background; focus and reduced-motion support.
-- [ ] **4. Storefront** — `ui/03-storefront`
+- [x] **4. Storefront** — `ui/03-storefront` — [#4](https://github.com/sandman21vs/sandlabs.store/pull/4)
   Header, footer, home, catalog, product, about, support, terms, error pages.
 - [ ] **5. Purchase flow** — `ui/04-purchase-flow`
   Cart, checkout, payment, order lookup, account and auth pages. Presentation

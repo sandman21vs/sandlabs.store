@@ -9,23 +9,23 @@
       </div>
 
       <div class="grid cards-3">
-        <article class="card soft-shadow hover-lift">
+        <article class="card hover-lift">
           <div class="card-body">
             <h3 class="card-title">{{ t('public.support.cards.whatsapp.title') }}</h3>
             <p class="card-text">{{ t('public.support.cards.whatsapp.text') }}</p>
-            <a class="btn btn-accent" href="https://wa.me/41779786651" data-contact="whats" target="_blank" rel="noopener">{{ t('public.support.cards.whatsapp.button') }}</a>
+            <a class="btn btn-accent" href="https://wa.me/{{ store_config.contacts.whatsapp }}" data-contact="whats" target="_blank" rel="noopener">{{ t('public.support.cards.whatsapp.button') }}</a>
           </div>
         </article>
 
-        <article class="card soft-shadow hover-lift">
+        <article class="card hover-lift">
           <div class="card-body">
             <h3 class="card-title">{{ t('public.support.cards.telegram.title') }}</h3>
             <p class="card-text">{{ t('public.support.cards.telegram.text') }}</p>
-            <a class="btn btn-accent" href="https://t.me/SandLabs_21" data-contact="tele" target="_blank" rel="noopener">{{ t('public.support.cards.telegram.button') }}</a>
+            <a class="btn btn-accent" href="https://t.me/{{ store_config.contacts.telegram }}" data-contact="tele" target="_blank" rel="noopener">{{ t('public.support.cards.telegram.button') }}</a>
           </div>
         </article>
 
-        <article class="card soft-shadow hover-lift">
+        <article class="card hover-lift">
           <div class="card-body">
             <h3 class="card-title">{{ t('public.support.cards.x.title') }}</h3>
             <p class="card-text">{{ t('public.support.cards.x.text') }}</p>

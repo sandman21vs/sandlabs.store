@@ -16,10 +16,15 @@
       "support": "Soporte",
       "track_order": "Rastrear pedido",
       "config": "Config",
-      "menu": "Menú"
+      "menu": "Menú",
+      "skip": "Saltar al contenido"
     },
     "footer": {
-      "tagline": "Código abierto de punta a punta."
+      "tagline": "Código abierto de punta a punta.",
+      "shop": "Tienda",
+      "info": "Información",
+      "payments_title": "Pago",
+      "payments_text": "Solo Bitcoin: Lightning, Liquid y on-chain."
     },
     "language": {
       "label": "Idioma",

@@ -16,10 +16,15 @@
       "support": "Suporte",
       "track_order": "Rastrear pedido",
       "config": "Config",
-      "menu": "Menu"
+      "menu": "Menu",
+      "skip": "Pular para o conteúdo"
     },
     "footer": {
-      "tagline": "Open source de ponta a ponta."
+      "tagline": "Open source de ponta a ponta.",
+      "shop": "Loja",
+      "info": "Informações",
+      "payments_title": "Pagamento",
+      "payments_text": "Somente Bitcoin: Lightning, Liquid e on-chain."
     },
     "language": {
       "label": "Idioma",

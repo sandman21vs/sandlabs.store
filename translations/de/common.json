@@ -16,10 +16,15 @@
       "support": "Support",
       "track_order": "Bestellung verfolgen",
       "config": "Konfig",
-      "menu": "Menü"
+      "menu": "Menü",
+      "skip": "Zum Inhalt springen"
     },
     "footer": {
-      "tagline": "Durchgängig Open Source."
+      "tagline": "Durchgängig Open Source.",
+      "shop": "Shop",
+      "info": "Informationen",
+      "payments_title": "Zahlung",
+      "payments_text": "Nur Bitcoin: Lightning, Liquid und On-Chain."
     },
     "language": {
       "label": "Sprache",
