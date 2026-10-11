@@ -12,6 +12,9 @@ DEFAULT_CONFIG = {
     "dhl_enabled": "0",
     "dhl_api_key": "",
     "dhl_api_url": "",
+    "swisspost_enabled": "0",
+    "swisspost_client_id": "",
+    "swisspost_client_secret": "",
     "whatsapp": "",
     "telegram": "",
 }

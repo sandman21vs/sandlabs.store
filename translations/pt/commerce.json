@@ -70,6 +70,12 @@
           "exhausted": "Limite de uso do cupom atingido.",
           "not_applicable": "Cupom não aplicável a este pedido."
         }
+      },
+      "address_check": {
+        "valid": "Endereço confirmado pelos Correios Suíços.",
+        "suggestion": "Os Correios Suíços sugerem:",
+        "use_suggestion": "Usar sugestão",
+        "unknown": "Os Correios Suíços não confirmaram este endereço. Confira antes de continuar."
       }
     },
     "payment": {

@@ -1610,6 +1610,35 @@ one. `checkout.js` shows the selector when there is more than one option.
 
 ---
 
+## Swiss Post Digital Commerce API
+
+`services/service_swisspost.py` talks to Swiss Post. It is off unless
+`swisspost_enabled` is set and `swisspost_client_id` /
+`swisspost_client_secret` are stored (`/admin/settings`; the secret is
+write-only in the UI). Every function returns `None` when the integration is
+off or a call fails, so checkout never depends on it.
+
+- **Tokens.** OAuth2 client credentials against
+  `https://api.post.ch/OAuth/token`, one token per scope, cached in memory until
+  shortly before expiry and dropped when settings are saved.
+- **Address validation.** `validate_address(street, house_number, postal_code,
+  city)` posts to `.../address/v1/addresses/validation` (scope
+  `DCAPI_ADDRESS_VALIDATE`) and returns `valid`, `corrected` (with Swiss Post's
+  spelling as a suggestion) or `unknown`. Only the four address fields are
+  sent, never the recipient's name, and nothing from the address is logged.
+- **Checkout.** `POST /api/shipping/validate-address` exposes the check for
+  Swiss destinations. It is advisory: the page shows a confirmation, a
+  suggestion the customer can apply, or a warning, and the order can always be
+  placed. Lookups are capped per browser session because each one spends API
+  quota.
+
+Getting credentials requires a Swiss Post business customer login and an API
+subscription requested through <https://developer.post.ch>. The request and
+response field names follow the public documentation and still need to be
+confirmed against the live service.
+
+---
+
 ## Checkout convidado e PDF do pedido (Fase F)
 
 `GET /checkout` e `POST /checkout/create-order` aceitam carrinhos anônimos. Um
