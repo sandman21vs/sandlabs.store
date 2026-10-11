@@ -9,18 +9,18 @@
       </div>
 
       <div class="two-col">
-        <article class="card soft-shadow" style="padding:var(--space-4);">
-          <h3 style="font-size:1.25rem;margin-bottom:.75rem">{{ t('public.terms.payments.title') }}</h3>
-          <ul style="color:var(--text-2);line-height:1.7">
+        <article class="card card-pad prose">
+          <h2 class="card-heading">{{ t('public.terms.payments.title') }}</h2>
+          <ul>
             {% for item in t('public.terms.payments.items') %}
             <li>{{ item|safe }}</li>
             {% endfor %}
           </ul>
         </article>
 
-        <article class="card soft-shadow" style="padding:var(--space-4);">
-          <h3 style="font-size:1.25rem;margin-bottom:.75rem">{{ t('public.terms.shipping.title') }}</h3>
-          <ul style="color:var(--text-2);line-height:1.7">
+        <article class="card card-pad prose">
+          <h2 class="card-heading">{{ t('public.terms.shipping.title') }}</h2>
+          <ul>
             {% for item in t('public.terms.shipping.items') %}
             <li>{{ item|safe }}</li>
             {% endfor %}

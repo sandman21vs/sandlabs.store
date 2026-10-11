@@ -8,15 +8,15 @@
         <p class="section-sub">{{ t('public.about.subtitle') }}</p>
       </div>
       <div class="two-col">
-        <article class="card soft-shadow" style="padding:var(--space-4);">
-          <h3 style="font-size:1.3rem;margin-bottom:.75rem">{{ t('public.about.manifesto.title') }}</h3>
-          <p style="color:var(--text-2);margin-bottom:.75rem">{{ t('public.about.manifesto.paragraph_1') }}</p>
-          <p style="color:var(--text-2)">{{ t('public.about.manifesto.paragraph_2') }}</p>
+        <article class="card card-pad prose">
+          <h2 class="card-heading">{{ t('public.about.manifesto.title') }}</h2>
+          <p>{{ t('public.about.manifesto.paragraph_1') }}</p>
+          <p>{{ t('public.about.manifesto.paragraph_2') }}</p>
         </article>
 
-        <article class="card soft-shadow" style="padding:var(--space-4);">
-          <h3 style="font-size:1.3rem;margin-bottom:.75rem">{{ t('public.about.what.title') }}</h3>
-          <ul style="color:var(--text-2);line-height:1.6">
+        <article class="card card-pad prose">
+          <h2 class="card-heading">{{ t('public.about.what.title') }}</h2>
+          <ul>
             {% for item in t('public.about.what.items') %}
             <li>{{ item|safe }}</li>
             {% endfor %}
@@ -31,7 +31,7 @@
         <p class="section-sub">{{ t('public.about.channels.subtitle') }}</p>
       </div>
       <div class="grid cards-3">
-        <article class="card soft-shadow hover-lift">
+        <article class="card hover-lift">
           <div class="card-body">
             <h3 class="card-title">{{ t('public.about.channels.x.title') }}</h3>
             <p class="card-text">{{ t('public.about.channels.x.text') }}</p>
@@ -39,7 +39,7 @@
           </div>
         </article>
 
-        <article class="card soft-shadow hover-lift">
+        <article class="card hover-lift">
           <div class="card-body">
             <h3 class="card-title">{{ t('public.about.channels.youtube.title') }}</h3>
             <p class="card-text">{{ t('public.about.channels.youtube.text') }}</p>
@@ -47,7 +47,7 @@
           </div>
         </article>
 
-        <article class="card soft-shadow hover-lift">
+        <article class="card hover-lift">
           <div class="card-body">
             <h3 class="card-title">{{ t('public.about.channels.telegram.title') }}</h3>
             <p class="card-text">{{ t('public.about.channels.telegram.text') }}</p>

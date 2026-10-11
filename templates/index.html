@@ -6,7 +6,7 @@
 
 {% block content %}
     <section class="hero hero-with-bg">
-      <div class="hero-inner glass soft-shadow">
+      <div class="hero-inner">
         <div class="hero-badge">{{ t('public.index.hero.badge') }}</div>
         <h1 class="hero-title">{{ t('public.index.hero.title') }}</h1>
         <p class="hero-subtitle">{{ t('public.index.hero.subtitle') }}</p>
@@ -22,11 +22,22 @@
         <h2 class="section-title">{{ t('public.index.featured.title') }}</h2>
         <p class="section-sub">{{ t('public.index.featured.subtitle') }}</p>
       </div>
-      <div id="home-products" class="grid cards-3"></div>
+      <div id="home-products" class="produtos-grid"></div>
+    </section>
+
+    <section class="section">
+      <ul class="value-grid">
+        {% for key in ['payment', 'open', 'privacy'] %}
+        <li class="value-item">
+          <h3>{{ t('public.index.values.' ~ key ~ '.title') }}</h3>
+          <p>{{ t('public.index.values.' ~ key ~ '.text') }}</p>
+        </li>
+        {% endfor %}
+      </ul>
     </section>
 
     <section class="section section-cta">
-      <div class="cta glass soft-shadow">
+      <div class="cta card">
         <h3>{{ t('public.index.cta.title') }}</h3>
         <p>{{ t('public.index.cta.subtitle') }}</p>
         <a class="btn btn-accent" href="{{ url_for('public.produtos') }}">{{ t('public.index.cta.button') }}</a>
@@ -35,6 +46,7 @@
 {% endblock %}
 
 {% block scripts %}
+  <script src="{{ url_for('static', filename='js/product-card.js') }}"></script>
   <script src="{{ url_for('static', filename='js/render-home.js') }}"></script>
   <script src="{{ url_for('static', filename='js/cupom.js') }}"></script>
 {% endblock %}

@@ -16,10 +16,15 @@
       "support": "Support",
       "track_order": "Track order",
       "config": "Config",
-      "menu": "Menu"
+      "menu": "Menu",
+      "skip": "Skip to content"
     },
     "footer": {
-      "tagline": "End-to-end open source."
+      "tagline": "End-to-end open source.",
+      "shop": "Shop",
+      "info": "Information",
+      "payments_title": "Payment",
+      "payments_text": "Bitcoin only: Lightning, Liquid and on-chain."
     },
     "language": {
       "label": "Language",

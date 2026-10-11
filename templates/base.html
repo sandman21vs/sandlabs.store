@@ -10,15 +10,15 @@
   <meta property="og:description" content="{{ t('common.meta_og_description') }}"/>
   <meta property="og:image" content="{{ url_for('static', filename='images/logo.png', _external=True) }}"/>
   <meta name="csrf-token" content="{{ session.get('csrf_token', '') }}"/>
+  <meta name="theme-color" content="#0b0b0d"/>
+  <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
   {% block head %}{% endblock %}
 </head>
 <body class="theme-dark">
-  <div class="bg-blobs" aria-hidden="true">
-    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
-  </div>
+  <a class="skip-link" href="#main">{{ t('common.nav.skip') }}</a>
 
-  <header class="site-header glass">
+  <header class="site-header">
     <a class="brand" href="{{ url_for('public.index') }}">
       <img src="{{ url_for('static', filename='images/logo.png') }}" alt="{{ t('common.brand_logo_alt') }}" class="brand-logo"/>
       <span class="brand-name">{{ t('common.site_title') }}</span>
@@ -30,25 +30,28 @@
       <span class="nav-toggle-bar"></span>
     </button>
     <nav class="site-nav" id="site-nav">
-      <a class="nav-link{{ ' active' if active == 'inicio' }}" href="{{ url_for('public.index') }}">{{ t('common.nav.home') }}</a>
-      <a class="nav-link{{ ' active' if active == 'sobre' }}" href="{{ url_for('public.sobre') }}">{{ t('common.nav.about') }}</a>
-      <a class="nav-link{{ ' active' if active == 'produtos' }}" href="{{ url_for('public.produtos') }}">{{ t('common.nav.products') }}</a>
-      <a class="nav-link cart-link{{ ' active' if active == 'cart' }}" href="{{ url_for('cart.cart_page') }}">
-        {{ t('common.nav.cart') }}
-        <span id="cart-badge" class="cart-badge" style="display:none">0</span>
-      </a>
-      {% if session.get('user_id') %}
-      <a class="nav-link{{ ' active' if active == 'orders' }}" href="{{ url_for('account.orders') }}">{{ t('common.nav.orders') }}</a>
-      <form method="post" action="{{ url_for('auth.logout') }}" class="nav-form">
-        <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
-        <button type="submit" class="nav-link nav-button">{{ t('common.nav.logout') }}</button>
-      </form>
-      {% else %}
-      <a class="nav-link{{ ' active' if active in ['login', 'register'] }}" href="{{ url_for('auth.login') }}">{{ t('common.nav.login') }}</a>
-      <a class="nav-link{{ ' active' if active == 'order_lookup' }}" href="{{ url_for('checkout.order_lookup') }}">{{ t('common.nav.track_order') }}</a>
-      {% endif %}
-      <a class="nav-link{{ ' active' if active == 'termos' }}" href="{{ url_for('public.termos') }}">{{ t('common.nav.terms') }}</a>
-      <a class="nav-link{{ ' active' if active == 'suporte' }}" href="{{ url_for('public.suporte') }}">{{ t('common.nav.support') }}</a>
+      <div class="nav-primary">
+        <a class="nav-link{{ ' active' if active == 'inicio' }}" href="{{ url_for('public.index') }}">{{ t('common.nav.home') }}</a>
+        <a class="nav-link{{ ' active' if active == 'produtos' }}" href="{{ url_for('public.produtos') }}">{{ t('common.nav.products') }}</a>
+        <a class="nav-link{{ ' active' if active == 'sobre' }}" href="{{ url_for('public.sobre') }}">{{ t('common.nav.about') }}</a>
+        <a class="nav-link{{ ' active' if active == 'suporte' }}" href="{{ url_for('public.suporte') }}">{{ t('common.nav.support') }}</a>
+      </div>
+      <div class="nav-account">
+        {% if session.get('user_id') %}
+        <a class="nav-link{{ ' active' if active == 'orders' }}" href="{{ url_for('account.orders') }}">{{ t('common.nav.orders') }}</a>
+        <form method="post" action="{{ url_for('auth.logout') }}" class="nav-form">
+          <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+          <button type="submit" class="nav-link nav-button">{{ t('common.nav.logout') }}</button>
+        </form>
+        {% else %}
+        <a class="nav-link{{ ' active' if active == 'order_lookup' }}" href="{{ url_for('checkout.order_lookup') }}">{{ t('common.nav.track_order') }}</a>
+        <a class="nav-link{{ ' active' if active in ['login', 'register'] }}" href="{{ url_for('auth.login') }}">{{ t('common.nav.login') }}</a>
+        {% endif %}
+        <a class="nav-link cart-link{{ ' active' if active == 'cart' }}" href="{{ url_for('cart.cart_page') }}">
+          {{ t('common.nav.cart') }}
+          <span id="cart-badge" class="cart-badge" hidden>0</span>
+        </a>
+      </div>
       <div class="nav-extras">
         <div class="currency-switcher">
           <select id="display-currency" aria-label="{{ t('common.currency.label') }}" title="{{ t('common.currency.label') }}">
@@ -57,9 +60,10 @@
             {% endfor %}
           </select>
         </div>
-        <div class="lang-switcher" aria-label="{{ t('common.language.label') }}">
+        <div class="lang-switcher" role="group" aria-label="{{ t('common.language.label') }}">
           {% for code in supported_langs %}
-          <a class="nav-link{{ ' active' if lang == code }}" href="{{ url_for('set_lang', lang=code) }}">{{ code|upper }}</a>
+          <a class="nav-link{{ ' active' if lang == code }}" href="{{ url_for('set_lang', lang=code) }}"
+             lang="{{ code }}" title="{{ t('common.language.' ~ code) }}"{% if lang == code %} aria-current="true"{% endif %}>{{ code|upper }}</a>
           {% endfor %}
         </div>
       </div>
@@ -68,7 +72,7 @@
 
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-  <div class="flash-container">
+  <div class="flash-container" role="status">
     {% for category, message in messages %}
     <div class="flash flash-{{ category }}">{{ message }}</div>
     {% endfor %}
@@ -76,14 +80,38 @@
   {% endif %}
   {% endwith %}
 
-  <main>
+  <main id="main">
     {% block content %}{% endblock %}
   </main>
 
   <footer class="site-footer">
-    {% block footer %}
-    <p class="muted">&copy; {{ t('common.site_title') }} &bull; {{ t('common.footer.tagline') }}</p>
-    {% endblock %}
+    <div class="footer-note">{% block footer %}{% endblock %}</div>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="{{ url_for('public.index') }}">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" alt="" class="brand-logo"/>
+          <span class="brand-name">{{ t('common.site_title') }}</span>
+        </a>
+        <p>{{ t('common.footer.tagline') }}</p>
+      </div>
+      <nav class="footer-col" aria-label="{{ t('common.footer.shop') }}">
+        <h2 class="footer-title">{{ t('common.footer.shop') }}</h2>
+        <a href="{{ url_for('public.produtos') }}">{{ t('common.nav.products') }}</a>
+        <a href="{{ url_for('cart.cart_page') }}">{{ t('common.nav.cart') }}</a>
+        <a href="{{ url_for('checkout.order_lookup') }}">{{ t('common.nav.track_order') }}</a>
+      </nav>
+      <nav class="footer-col" aria-label="{{ t('common.footer.info') }}">
+        <h2 class="footer-title">{{ t('common.footer.info') }}</h2>
+        <a href="{{ url_for('public.sobre') }}">{{ t('common.nav.about') }}</a>
+        <a href="{{ url_for('public.termos') }}">{{ t('common.nav.terms') }}</a>
+        <a href="{{ url_for('public.suporte') }}">{{ t('common.nav.support') }}</a>
+      </nav>
+      <div class="footer-col">
+        <h2 class="footer-title">{{ t('common.footer.payments_title') }}</h2>
+        <p>{{ t('common.footer.payments_text') }}</p>
+      </div>
+    </div>
+    <p class="footer-legal">&copy; {{ t('common.site_title') }}</p>
   </footer>
 
   <script>window.I18N = {{ js_i18n|tojson }};</script>

@@ -34,6 +34,19 @@ As Fases 1, 2, 3, 4, 5, 6, 7, 8 e 9 ja foram implementadas. O projeto ja possui:
 - Flash messages globais, metadados SEO/Open Graph, endpoint `/health`, logging adicional em checkout/admin, Docker multi-stage com usuario non-root e healthcheck
 - Exibicao de sats ao lado dos precos fiat no payload `window.PRODUTOS`, e limpeza dos arquivos HTML/CSS/JS/imagens legados da raiz do repositorio
 
+### Storefront frontend (current)
+
+- `templates/base.html` owns the header (primary links, account links, cart,
+  currency and language switchers), the skip link and the site footer. Below
+  1100 px the navigation collapses into a drawer driven by `static/js/nav.js`.
+- `static/js/product-card.js` builds the product card used by both the home
+  page (`render-home.js`, first six products) and the catalog
+  (`render-produtos.js`). Each card links to the product page.
+- `GET /produtos/<product_id>` renders `templates/produto.html`; the gallery,
+  options and buy box are built by `static/js/render-produto.js`.
+- All styling lives in `static/css/style.css` (tokens, components, pages).
+  Templates carry no inline styles.
+
 ### Registro de execucao
 
 - Fase 2 executada no commit `c9a024f` — banco SQLite, inicializacao, model de produtos e seed

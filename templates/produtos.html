@@ -10,9 +10,6 @@
         <h1 class="section-title">{{ t('public.products.title') }}</h1>
         <p class="section-sub">{{ t('public.products.subtitle') }}</p>
       </div>
-    </section>
-
-    <section class="section">
       <div id="produtos-container" class="produtos-grid"></div>
     </section>
 {% endblock %}
@@ -23,5 +20,6 @@
 
 {% block scripts %}
   <script src="{{ url_for('static', filename='js/cupom.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/product-card.js') }}"></script>
   <script src="{{ url_for('static', filename='js/render-produtos.js') }}"></script>
 {% endblock %}

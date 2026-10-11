@@ -15,14 +15,28 @@
       },
       "cta": {
         "title": "¿Listo para tomar el control?",
-        "subtitle": "Arma tu pedido, elige colores y finaliza por WhatsApp o Telegram.",
+        "subtitle": "Elige el producto, personaliza los colores y paga en Bitcoin.",
         "button": "Empezar ahora"
+      },
+      "values": {
+        "payment": {
+          "title": "Pago en Bitcoin",
+          "text": "Lightning, Liquid u on-chain, directo en el checkout."
+        },
+        "open": {
+          "title": "Hardware abierto",
+          "text": "Diseños y firmware de código abierto, de la carcasa al código."
+        },
+        "privacy": {
+          "title": "Privacidad por defecto",
+          "text": "Compra sin crear cuenta. Los datos de envío se guardan cifrados."
+        }
       }
     },
     "products": {
       "page_title": "Productos",
       "title": "Arma el tuyo",
-      "subtitle": "Elige colores, accesorios y completa tu pedido por WhatsApp o Telegram.",
+      "subtitle": "Elige colores y accesorios y paga en Bitcoin en el checkout.",
       "footer": {
         "question": "¿Dudas?",
         "contact": "Habla con nosotros"
@@ -70,7 +84,8 @@
         "buy_now": "Comprar ahora",
         "quantity": "Cantidad",
         "description": "Descripción"
-      }
+      },
+      "view_product": "Ver producto"
     },
     "about": {
       "page_title": "Sobre",

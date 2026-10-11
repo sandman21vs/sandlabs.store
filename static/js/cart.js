@@ -29,10 +29,10 @@
     const value = Number(count || 0);
     if (value > 0) {
       badge.textContent = String(value);
-      badge.style.display = 'inline-flex';
+      badge.hidden = false;
     } else {
       badge.textContent = '0';
-      badge.style.display = 'none';
+      badge.hidden = true;
     }
   }
 

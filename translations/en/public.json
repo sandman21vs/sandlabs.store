@@ -15,14 +15,28 @@
       },
       "cta": {
         "title": "Ready to take control?",
-        "subtitle": "Build your order, choose colors, and finish through WhatsApp or Telegram.",
+        "subtitle": "Pick a product, choose your colors and pay in Bitcoin.",
         "button": "Start now"
+      },
+      "values": {
+        "payment": {
+          "title": "Pay in Bitcoin",
+          "text": "Lightning, Liquid or on-chain, right at checkout."
+        },
+        "open": {
+          "title": "Open hardware",
+          "text": "Open-source designs and firmware, from the case to the code."
+        },
+        "privacy": {
+          "title": "Private by default",
+          "text": "Buy without an account. Shipping details are encrypted."
+        }
       }
     },
     "products": {
       "page_title": "Products",
       "title": "Build yours",
-      "subtitle": "Choose colors, accessories, and complete your order through WhatsApp or Telegram.",
+      "subtitle": "Choose colors and accessories, then pay in Bitcoin at checkout.",
       "footer": {
         "question": "Questions?",
         "contact": "Contact us"
@@ -70,7 +84,8 @@
         "buy_now": "Buy now",
         "quantity": "Quantity",
         "description": "Description"
-      }
+      },
+      "view_product": "View product"
     },
     "about": {
       "page_title": "About",
