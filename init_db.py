@@ -1,3 +1,4 @@
+import json
 import os
 import sqlite3
 
@@ -340,6 +341,26 @@ def _migrate_users_pii(conn):
         conn.execute("PRAGMA foreign_keys=ON")
 
 
+def _drop_untouched_legacy_shipping_rates(conn):
+    """Let installs that never edited the rate table pick up the new defaults.
+
+    Older versions stored a single-service table. A stored copy that still
+    equals that old default is removed so PostPac Economy/Priority apply; a
+    table the admin changed is left exactly as it is.
+    """
+    from services.service_shipping import LEGACY_DEFAULT_RATES
+
+    row = conn.execute("SELECT value FROM config WHERE key = 'shipping_rates'").fetchone()
+    if row is None:
+        return
+    try:
+        stored = json.loads(row["value"])
+    except (TypeError, ValueError):
+        return
+    if stored == LEGACY_DEFAULT_RATES:
+        conn.execute("DELETE FROM config WHERE key = 'shipping_rates'")
+
+
 def init_db():
     db_dir = os.path.dirname(config.DATABASE_PATH)
     if db_dir:
@@ -371,6 +392,7 @@ def init_db():
         _ensure_column(conn, "orders", "discount_sats", "discount_sats INTEGER DEFAULT 0")
         _migrate_legacy_shipping_data(conn)
         _drop_legacy_shipping_columns(conn)
+        _drop_untouched_legacy_shipping_rates(conn)
         conn.executemany(
             """
             INSERT INTO colors (id, name)

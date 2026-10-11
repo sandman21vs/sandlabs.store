@@ -12,9 +12,6 @@ DEFAULT_CONFIG = {
     "dhl_enabled": "0",
     "dhl_api_key": "",
     "dhl_api_url": "",
-    "post_enabled": "0",
-    "post_api_key": "",
-    "post_api_url": "",
     "whatsapp": "",
     "telegram": "",
 }

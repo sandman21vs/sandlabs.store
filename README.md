@@ -8,7 +8,8 @@ Fork it to run your own shop.
 - **Payments:** Lightning, Liquid and on-chain through
   [Coinos](https://coinos.io). All amounts are handled in satoshis; fiat
   (CHF / USD / EUR / BRL) is only a display and pricing input.
-- **Shipping:** Swiss Post rate table with optional live carrier integrations.
+- **Shipping:** admin-editable rate table (Swiss Post PostPac Economy and
+  Priority for Switzerland, zone prices abroad) with optional live DHL quotes.
 - **Privacy:** customer names, addresses and emails are encrypted at rest.
 - **Languages:** Portuguese (default), English, Spanish and German.
 

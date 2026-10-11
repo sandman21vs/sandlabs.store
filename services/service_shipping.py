@@ -1,7 +1,19 @@
-"""Swiss Post shipping cost calculator.
+"""Shipping cost calculator.
 
-Uses a static lookup table (Post.ch rates) stored in the config table.
-The table is editable via the admin panel (Phase 7).
+Prices come from a rate table stored in the config table (key
+``shipping_rates``) and editable in the admin. Swiss Post publishes no price
+API, so its PostPac prices live in this table. Live carrier quotes (DHL) are
+added on top when credentials are configured.
+
+A zone maps either weight brackets to prices (one unnamed service)::
+
+    "EU": {"2": 20.0, "5": 30.0}
+
+or service names to their own brackets (several options at checkout)::
+
+    "CH": {"PostPac Economy": {"2": 9.0}, "PostPac Priority": {"2": 10.5}}
+
+Bracket keys are the maximum weight in kg; prices are in CHF.
 """
 import json
 import logging
@@ -10,11 +22,25 @@ import db
 
 logger = logging.getLogger(__name__)
 
-# Default PostPac rates (CHF) — thresholds are max weight in kg
+TABLE_CARRIER = "post"
+DEFAULT_SERVICE = "PostPac"
+
+# Swiss Post list prices in CHF incl. VAT (post.ch, checked October 2026).
 DEFAULT_RATES = {
-    "CH":    {2: 7.00, 10: 9.50, 30: 16.00},
+    "CH": {
+        "PostPac Economy": {2: 9.00, 10: 12.00, 30: 21.00},
+        "PostPac Priority": {2: 10.50, 10: 13.50, 30: 22.50},
+    },
     "EU":    {2: 20.00, 5: 30.00, 10: 45.00, 30: 80.00},
     "WORLD": {2: 30.00, 5: 50.00, 10: 75.00, 30: 120.00},
+}
+
+# The single-service table shipped before PostPac Economy/Priority were split.
+# init_db drops a stored copy of it so untouched installs pick up DEFAULT_RATES.
+LEGACY_DEFAULT_RATES = {
+    "CH":    {"2": 7.0, "10": 9.5, "30": 16.0},
+    "EU":    {"2": 20.0, "5": 30.0, "10": 45.0, "30": 80.0},
+    "WORLD": {"2": 30.0, "5": 50.0, "10": 75.0, "30": 120.0},
 }
 
 # EU + EEA countries (ISO 3166-1 alpha-2)
@@ -36,6 +62,11 @@ def get_country_zone(country_code: str) -> str:
     return "WORLD"
 
 
+def default_rates_json() -> str:
+    """DEFAULT_RATES as pretty JSON, for the admin editor."""
+    return json.dumps(DEFAULT_RATES, indent=2, ensure_ascii=False)
+
+
 def get_shipping_rates() -> dict:
     """Fetch rate table from config DB (key 'shipping_rates').
 
@@ -49,17 +80,61 @@ def get_shipping_rates() -> dict:
         ).fetchone()
         conn.close()
         if row:
-            return json.loads(row["value"])
+            rates = json.loads(row["value"])
+            if isinstance(rates, dict):
+                return rates
     except Exception:
         logger.exception("Failed to load shipping rates from DB")
     return DEFAULT_RATES
 
 
-def calculate_shipping_chf(weight_grams: int, country_code: str) -> float:
-    """Calculate shipping cost in CHF.
+def _zone_services(zone_rates) -> dict:
+    """Normalize a zone to ``{service_name: {threshold: price}}``."""
+    if not isinstance(zone_rates, dict) or not zone_rates:
+        return {}
+    if all(isinstance(value, dict) for value in zone_rates.values()):
+        return {name: brackets for name, brackets in zone_rates.items() if brackets}
+    if any(isinstance(value, dict) for value in zone_rates.values()):
+        logger.warning("Shipping zone mixes brackets and services; ignoring it")
+        return {}
+    return {DEFAULT_SERVICE: zone_rates}
 
-    Looks up the rate table for the destination zone and returns the
-    price for the smallest weight bracket that covers weight_grams.
+
+def _bracket_price(brackets, weight_grams):
+    """Price of the smallest bracket covering the weight, or None if unusable."""
+    try:
+        thresholds = sorted(brackets.keys(), key=float)
+        weight_kg = (weight_grams or 0) / 1000.0
+        for threshold in thresholds:
+            if weight_kg <= float(threshold):
+                return float(brackets[threshold])
+        # Heavier than all brackets — use the largest bracket price
+        return float(brackets[thresholds[-1]])
+    except (TypeError, ValueError, IndexError):
+        logger.warning("Shipping brackets are malformed; skipping them")
+        return None
+
+
+def get_table_options(weight_grams, country_code):
+    """Rate-table options for a destination, one per configured service."""
+    rates = get_shipping_rates()
+    zone_rates = rates.get(get_country_zone(country_code)) or rates.get("WORLD") or {}
+    options = []
+    for service, brackets in _zone_services(zone_rates).items():
+        price = _bracket_price(brackets, weight_grams)
+        if price is None:
+            continue
+        options.append({
+            "carrier": TABLE_CARRIER,
+            "service": service,
+            "price_chf": price,
+            "source": "table",
+        })
+    return options
+
+
+def calculate_shipping_chf(weight_grams: int, country_code: str) -> float:
+    """Cheapest rate-table price in CHF for a destination.
 
     Args:
         weight_grams: Total shipment weight in grams.
@@ -68,50 +143,27 @@ def calculate_shipping_chf(weight_grams: int, country_code: str) -> float:
     Returns:
         Shipping cost in CHF (float). Returns 0.0 if rates are empty.
     """
-    zone = get_country_zone(country_code)
-    rates = get_shipping_rates()
-    zone_rates = rates.get(zone) or rates.get("WORLD") or {}
-
-    if not zone_rates:
+    options = get_table_options(weight_grams, country_code)
+    if not options:
         return 0.0
-
-    weight_kg = weight_grams / 1000.0
-
-    # Keys may be ints (DEFAULT_RATES) or strings (from JSON in DB)
-    sorted_thresholds = sorted(zone_rates.keys(), key=lambda x: float(x))
-    for threshold in sorted_thresholds:
-        if weight_kg <= float(threshold):
-            return float(zone_rates[threshold])
-
-    # Heavier than all brackets — use the largest bracket price
-    return float(zone_rates[sorted_thresholds[-1]])
-
-
-def _table_option(weight_grams, country_code):
-    """The static rate-table option (always available as a fallback)."""
-    return {
-        "carrier": "post",
-        "service": "PostPac",
-        "price_chf": calculate_shipping_chf(weight_grams, country_code),
-        "source": "table",
-    }
+    return min(opt["price_chf"] for opt in options)
 
 
 def get_shipping_options(weight_grams, country_code):
-    """Return available shipping options for a destination (hybrid).
+    """Return available shipping options for a destination, cheapest first.
 
-    Live carrier quotes are used when credentials are configured (DHL and/or
-    Swiss Post); if none are available, falls back to a single option computed
-    from the static rate table. Each option is a dict with keys ``carrier``,
-    ``service``, ``price_chf`` and ``source`` (``"dhl"``/``"post"``/``"table"``).
+    Rate-table options are always offered. Live DHL quotes are added when DHL
+    credentials are configured; a failing carrier never removes the table
+    options. Each option is a dict with keys ``carrier``, ``service``,
+    ``price_chf`` and ``source`` (``"table"`` or the live carrier name).
 
     Prices are in CHF; satoshi conversion is left to the caller.
     """
     # Imported lazily to avoid import cycles and keep providers optional.
-    from services import service_shipping_dhl, service_shipping_post
+    from services import service_shipping_dhl
 
-    options = []
-    for provider in (service_shipping_dhl, service_shipping_post):
+    options = get_table_options(weight_grams, country_code)
+    for provider in (service_shipping_dhl,):
         try:
             quotes = provider.quote(weight_grams, country_code)
         except Exception:
@@ -121,7 +173,15 @@ def get_shipping_options(weight_grams, country_code):
             options.extend(quotes)
 
     if not options:
-        options = [_table_option(weight_grams, country_code)]
+        # Empty or unusable table: keep checkout working with a zero-cost line
+        # the admin will notice, rather than failing the order.
+        logger.error("No shipping options available; check the shipping rate table")
+        options = [{
+            "carrier": TABLE_CARRIER,
+            "service": DEFAULT_SERVICE,
+            "price_chf": 0.0,
+            "source": "table",
+        }]
 
     options.sort(key=lambda opt: opt["price_chf"])
     return options

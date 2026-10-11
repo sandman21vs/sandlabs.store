@@ -72,7 +72,7 @@ class TestShippingCalculateAPI:
         data = resp.get_json()
         assert data["ok"] is True
         assert data["zone"] == "CH"
-        assert data["shipping_chf"] == 7.00
+        assert data["shipping_chf"] == 9.00
         assert data["shipping_sats"] == 8500
 
     def test_eu_country_returns_eu_zone(self, client, csrf_headers):
@@ -139,7 +139,7 @@ class TestShippingCalculateAPI:
         with patch("routes.routes_checkout.chf_to_sats", return_value=20000):
             resp = self._post(client, {"country": "CH", "weight_grams": 15000}, csrf_headers)
         assert resp.status_code == 200
-        assert resp.get_json()["shipping_chf"] == 16.00
+        assert resp.get_json()["shipping_chf"] == 21.00
 
 
 class TestCheckoutFlow:
